@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOSAIC Data Selfie - Participatory Data Viz</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=IBM+Plex+Mono:wght@400;600&display=swap');
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'IBM Plex Mono', monospace;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    main {
+      padding: 40px 20px;
+      max-width: 1200px;
+    }
+    
+    h1 {
+      font-family: 'Playfair Display', serif;
+      color: #e94560;
+      text-align: center;
+      font-size: 3em;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(233, 69, 96, 0.3);
+      letter-spacing: 2px;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.9em;
+      margin-bottom: 30px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    
+    #canvas-container {
+      display: flex;
+      justify-content: center;
+      filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.5));
+    }
+    
+    canvas {
+      border-radius: 8px;
+      background: transparent !important;
+    }
+    
+    .legend {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    .legend-section {
+      padding: 15px;
+    }
+    
+    .legend-title {
+      font-family: 'Playfair Display', serif;
+      color: #e94560;
+      font-size: 1.1em;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      color: #cbd5e1;
+      font-size: 0.85em;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      border-radius: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .legend-star {
+      margin-right: 10px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>MOSAIC Data Selfie</h1>
+    <div class="subtitle">Participatory Data Viz</div>
+    <div id="canvas-container"></div>
+    
+    <div class="legend">
+      <div class="legend-section">
+        <div class="legend-title">Which role do you identify with the most?</div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #BA2D0B;"></div>
+          <span>Science Educator</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #F46036;"></div>
+          <span>Science Communicator</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #12355B;"></div>
+          <span>Scientist</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #FFC857;"></div>
+          <span>Student of Science</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #048BA8;"></div>
+          <span>Science Enthusiast</span>
+        </div>
+      </div>
+      
+      <div class="legend-section">
+        <div class="legend-title">Which subject fascinates you the most?</div>
+        <div class="legend-item">
+          <div class="legend-star" style="color: #FF0000;">★</div>
+          <span>Biology</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-star" style="color: #00008B;">★</div>
+          <span>Chemistry</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-star" style="color: #C0C0C0;">★</div>
+          <span>Physics</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-star" style="color: #FFD700;">★</div>
+          <span>Math</span>
+        </div>
+      </div>
+      
+      <div class="legend-section">
+        <div class="legend-title">Symbols</div>
+        <div class="legend-item">
+          <span style="margin-right: 10px; font-size: 1.2em;">☀</span>
+          <span>Early Bird</span>
+        </div>
+        <div class="legend-item">
+          <span style="margin-right: 10px; font-size: 1.2em;">☽</span>
+          <span>Night Owl</span>
+        </div>
+        <div class="legend-item">
+          <span style="margin-right: 10px; font-weight: bold;">XX</span>
+          <span>Dead</span>
+        </div>
+        <div class="legend-item">
+          <span style="margin-right: 10px; font-weight: bold;">OO</span>
+          <span>Alive</span>
+        </div>
+        <div class="legend-item">
+          <span style="margin-right: 10px; font-weight: bold;">XO</span>
+          <span>Schrödinger's Cat</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+const data = [
+  { role: "scientist", cat: "both", schedule: "night", scientist: "Steven Rose", subject: ["math", "physics", "biology", "chemistry"] },
+  { role: "communicator", cat: "dead", schedule: "night", scientist: "S. Ramanujan", subject: ["math"] },
+  { role: "educator", cat: "dead", schedule: "early", scientist: "Cat Bohannon", subject: ["math"] },
+  { role: "enthusiast", cat: "both", schedule: "night", scientist: "Marie Curie", subject: ["chemistry"] },
+  { role: "student", cat: "alive", schedule: "night", scientist: "John Nash", subject: ["math"] },
+  { role: "communicator", cat: "alive", schedule: "night", scientist: "Feynman", subject: ["biology", "chemistry"] },
+  { role: "educator", cat: "alive", schedule: "night", scientist: "Von Neuman", subject: ["math", "physics"] },
+  { role: "enthusiast", cat: "alive", schedule: "early", scientist: "C. V. Raman", subject: ["math"] },
+  { role: "student", cat: "both", schedule: "early", scientist: "M. C. Escher", subject: ["math"] },
+  { role: "communicator", cat: "both", schedule: "night", scientist: "Marie Curie", subject: ["physics"] },
+  { role: "enthusiast", cat: "dead", schedule: "night", scientist: "Shuji Nakamura", subject: ["physics", "biology"] },
+  { role: "educator", cat: "dead", schedule: "early", scientist: "Einstein", subject: ["physics"] },
+  { role: "student", cat: "alive", schedule: "early", scientist: "Einstein", subject: ["math", "physics"] },
+  { role: "communicator", cat: "alive", schedule: "night", scientist: "S. Ramanujan", subject: ["math", "physics"] },
+  { role: "enthusiast", cat: "both", schedule: "early", scientist: "Galileo", subject: ["math", "physics", "biology", "chemistry"] },
+  { role: "educator", cat: "dead", schedule: "night", scientist: "newton", subject: ["physics"] },
+  { role: "scientist", cat: "alive", schedule: "early", scientist: "Dr. Hema Somanathan", subject: ["biology", "chemistry"] },
+  { role: "enthusiast", cat: "alive", schedule: "night", scientist: "Tesla", subject: ["physics", "math"] },
+  { role: "communicator", cat: "both", schedule: "night", scientist: "Robert Sapolsky", subject: ["biology"] },
+  { role: "student", cat: "alive", schedule: "night", scientist: "Marie Curie", subject: ["chemistry"] },
+  { role: "educator", cat: "both", schedule: "both", scientist: "No favourite", subject: ["math"] },
+  { role: "enthusiast", cat: "both", schedule: "night", scientist: "Dr. Kalam", subject: ["physics", "biology", "chemistry"] },
+  { role: "communicator", cat: "alive", schedule: "night", scientist: "Barbara McClintock", subject: ["biology"] },
+  { role: "student", cat: "alive", schedule: "early", scientist: "", subject: ["biology", "chemistry"] },
+  { role: "enthusiast", cat: "dead", schedule: "early", scientist: "Feynman", subject: ["biology", "physics"] },
+  { role: "communicator", cat: "both", schedule: "", scientist: "Fermat", subject: ["math"] },
+  { role: "educator", cat: "alive", schedule: "early", scientist: "Emmy Noether", subject: ["physics"] },
+  { role: "enthusiast", cat: "alive", schedule: "night", scientist: "Tesla", subject: ["math", "physics"] },
+  { role: "communicator", cat: "dead", schedule: "early", scientist: "Jane Goodall", subject: ["biology"] },
+  { role: "enthusiast", cat: "both", schedule: "both", scientist: "", subject: ["math", "biology", "chemistry"] },
+  { role: "enthusiast", cat: "alive", schedule: "night", scientist: "", subject: ["physics"] },
+  { role: "enthusiast", cat: "alive", schedule: "night", scientist: "Marie Curie", subject: ["physics"] },
+  { role: "enthusiast", cat: "dead", schedule: "night", scientist: "Andrew Wiles", subject: ["math"] },
+  { role: "enthusiast", cat: "both", schedule: "night", scientist: "Alan Turing", subject: ["physics"] },
+  { role: "enthusiast", cat: "alive", schedule: "", scientist: "Prof. C. V. Vishveshwara", subject: ["physics"] },
+  { role: "enthusiast", cat: "alive", schedule: "", scientist: "Vishweshvaraya", subject: ["chemistry"] },
+  { role: "enthusiast", cat: "both", schedule: "", scientist: "Einstein", subject: ["math"] },
+  { role: "enthusiast", cat: "dead", schedule: "night", scientist: "S. Ramanujan", subject: ["math"] },
+  { role: "enthusiast", cat: "alive", schedule: "", scientist: "", subject: ["biology"] },
+  { role: "enthusiast", cat: "alive", schedule: "early", scientist: "Feynman", subject: ["physics"] }
+];
+
+const roleColors = {
+  educator: "#BA2D0B",
+  communicator: "#F46036",
+  scientist: "#12355B",
+  student: "#FFC857",
+  enthusiast: "#048BA8"
+};
+
+const subjectColors = {
+  'biology': '#FF0000',
+  'chemistry': '#00008B',
+  'physics': '#C0C0C0',
+  'math': '#FFD700'
+};
+
+let triangles = [];
+let hoveredTriangle = null;
+const SPACING = 3;
+
+// Shuffle function to randomize array
+function shuffleArray(array) {
+  let shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+function setup() {
+  let canvas = createCanvas(1000, 600);
+  canvas.parent('canvas-container');
+  textFont('IBM Plex Mono');
+  TRIANGLE_WIDTH = 200;
+  TRIANGLE_HEIGHT = 150;
+  buildTriangles();
+}
+
+function buildTriangles() {
+  // Shuffle the data to scatter enthusiasts and randomize order
+  let shuffledData = shuffleArray(data);
+  let dataIndex = 0;
+  let cols = 5;
+  let rows = 4;
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if (dataIndex >= shuffledData.length) break;
+      let x = TRIANGLE_WIDTH * col;
+      let y = row * TRIANGLE_HEIGHT;
+
+      for(let i=0; i<2; i++) {
+        if (dataIndex < shuffledData.length) {
+          triangles.push({
+            points: i === 0 ? 
+              [{x: x + SPACING, y: y + SPACING}, {x: x + TRIANGLE_WIDTH - SPACING, y: y + SPACING}, {x: x + TRIANGLE_WIDTH - SPACING, y: y + TRIANGLE_HEIGHT - SPACING}] :
+              [{x: x + SPACING, y: y + SPACING}, {x: x + TRIANGLE_WIDTH - SPACING, y: y + TRIANGLE_HEIGHT - SPACING}, {x: x + SPACING, y: y + TRIANGLE_HEIGHT - SPACING}],
+            data: shuffledData[dataIndex], isRight: i === 0, baseX: x, baseY: y
+          });
+          dataIndex++;
+        }
+      }
+    }
+  }
+}
+
+function draw() {
+  drawGradientBackground();
+  hoveredTriangle = triangles.find(tri => isPointInTriangle(mouseX, mouseY, tri.points));
+
+  for (let tri of triangles) {
+    push();
+    translate(tri.baseX, tri.baseY);
+    let isHovered = (tri === hoveredTriangle);
+    
+    // Enhanced fill with subtle transparency
+    let roleColor = color(roleColors[tri.data.role] || '#999999');
+    if (!isHovered) {
+      roleColor.setAlpha(240);
+    }
+    fill(roleColor);
+    
+    // More elegant stroke
+    stroke(255, 255, 255, isHovered ? 200 : 120);
+    strokeWeight(isHovered ? 3 : 1.5);
+
+    if (tri.isRight) {
+      triangle(SPACING, SPACING, TRIANGLE_WIDTH - SPACING, SPACING, TRIANGLE_WIDTH - SPACING, TRIANGLE_HEIGHT - SPACING);
+    } else {
+      triangle(SPACING, SPACING, TRIANGLE_WIDTH - SPACING, TRIANGLE_HEIGHT - SPACING, SPACING, TRIANGLE_HEIGHT - SPACING);
+    }
+
+    drawTriangleElements(tri.data, tri.isRight, isHovered);
+    pop();
+  }
+
+  if (hoveredTriangle) drawTooltip(hoveredTriangle);
+}
+
+function drawTriangleElements(d, isRight, isHovered) {
+  let ink = (d.role === "scientist") ? 255 : 0;
+  let bgColor = (d.role === "scientist") ? color(18, 53, 91) : color(245, 242, 235);
+  
+  let eyeSize = 14;
+  if (isHovered) {
+    eyeSize = 18 + sin(frameCount * 0.15) * 4;
+  }
+
+  if (isRight) {
+    if (d.cat) {
+      drawCat([{x: 195, y: 50}, {x: 165, y: 80}, {x: 170, y: 50}, {x: 135, y: 30}, {x: 100, y: 50}, {x: 120, y: 5}], ink);
+      drawEye(170, 30, d.cat === "alive" ? "O" : "X", ink, eyeSize); 
+      drawEye(150, 15, (d.cat === "alive" || d.cat === "both") ? "O" : "X", ink, eyeSize);
+    }
+    if (d.schedule === "early" || d.schedule === "both") drawSun(175, 110);
+    if (d.schedule === "night" || d.schedule === "both") drawMoon(70, 25, bgColor);
+    if (d.scientist) {
+      drawText(100, 65, d.scientist.toUpperCase(), ink);
+      drawStars(140, 65, d.subject);
+    }
+  } else {
+    if (d.cat) {
+      drawCat([{x: 5, y: 100}, {x: 35, y: 70}, {x: 30, y: 100}, {x: 65, y: 120}, {x: 100, y: 100}, {x: 80, y: 145}], ink);
+      drawEye(30, 120, d.cat === "alive" ? "O" : "X", ink, eyeSize); 
+      drawEye(50, 130, (d.cat === "alive" || d.cat === "both") ? "O" : "X", ink, eyeSize);
+    }
+    if (d.schedule === "early" || d.schedule === "both") drawSun(30, 45);
+    if (d.schedule === "night" || d.schedule === "both") drawMoon(130, 125, bgColor);
+    if (d.scientist) {
+      drawText(82, 85, d.scientist.toUpperCase(), ink);
+      drawStars(60, 95, d.subject);
+    }
+  }
+}
+
+function drawTooltip(tri) {
+  let d = tri.data;
+  
+  // Format schedule display
+  let scheduleDisplay = "N/A";
+  if (d.schedule === "early") scheduleDisplay = "Early Bird";
+  else if (d.schedule === "night") scheduleDisplay = "Night Owl";
+  else if (d.schedule === "both") scheduleDisplay = "Early Bird and Night Owl";
+  
+  let labels = ["ROLE:", "SCIENTIST:", "CAT:", "SCHEDULE:", "SUBJECT:"];
+  let values = [
+    d.role.toUpperCase(), 
+    (d.scientist || "N/A").toUpperCase(), 
+    (d.cat === 'both' ? 'DEAD AND ALIVE' : d.cat || 'N/A').toUpperCase(), 
+    scheduleDisplay.toUpperCase(), 
+    d.subject.map(s => s.toUpperCase()).join(', ')
+  ];
+  
+  let padding = 18;
+  let lineHeight = 24;
+  let textSizeVal = 12;
+  textSize(textSizeVal);
+  
+  let maxWidth = 0;
+  labels.forEach((l, i) => maxWidth = Math.max(maxWidth, textWidth(l + " " + values[i])));
+  
+  let tipW = maxWidth + padding * 3;
+  let tipH = labels.length * lineHeight + padding * 2.5;
+
+  let tx = mouseX + 20;
+  let ty = mouseY - tipH / 2;
+
+  if (tx + tipW > width) {
+    tx = mouseX - tipW - 20;
+  }
+  
+  if (ty + tipH > height) {
+    ty = height - tipH - 10;
+  }
+  
+  if (ty < 10) {
+    ty = 10;
+  }
+
+  // Enhanced tooltip styling
+  fill(20, 25, 40, 250); 
+  stroke(233, 69, 96, 180); 
+  strokeWeight(2);
+  rect(tx, ty, tipW, tipH, 10);
+  
+  // Inner glow effect
+  noStroke();
+  fill(233, 69, 96, 20);
+  rect(tx + 2, ty + 2, tipW - 4, tipH - 4, 8);
+
+  for (let i = 0; i < labels.length; i++) {
+    let currY = ty + padding + i * lineHeight + 12;
+    
+    noStroke(); 
+    textStyle(BOLD); 
+    textAlign(LEFT, CENTER);
+    
+    // Label in accent color
+    fill(233, 69, 96, 255); 
+    text(labels[i], tx + padding, currY);
+    
+    // Value in light color
+    fill(203, 213, 225, 255); 
+    textStyle(NORMAL); 
+    text(values[i], tx + padding + textWidth(labels[i]) + 10, currY);
+  }
+}
+
+function drawSun(x, y) {
+  push();
+  let glow = 20 + sin(frameCount * 0.08) * 4;
+  
+  // Outer glow
+  fill(255, 204, 0, 40); 
+  noStroke(); 
+  ellipse(x, y, glow * 1.5, glow * 1.5);
+  
+  // Middle glow
+  fill(255, 204, 0, 80); 
+  ellipse(x, y, glow, glow);
+  
+  // Core
+  fill(255, 230, 100); 
+  stroke(255, 180, 0, 200); 
+  strokeWeight(1.5); 
+  ellipse(x, y, 14, 14);
+  
+  // Animated rays
+  stroke(255, 200, 0, 180);
+  strokeWeight(2);
+  for(let i = 0; i < 8; i++) {
+    let a = (TWO_PI / 8) * i + frameCount * 0.02;
+    let innerR = 9;
+    let outerR = 15 + sin(frameCount * 0.1 + i) * 2;
+    line(x + cos(a)*innerR, y + sin(a)*innerR, x + cos(a)*outerR, y + sin(a)*outerR);
+  }
+  pop();
+}
+
+function drawMoon(x, y, backgroundColor) {
+  push();
+  translate(x, y);
+  
+  // Gentle rotation animation
+  let angle = sin(frameCount * 0.025) * 0.15; 
+  rotate(angle);
+  
+  // Draw moon emoji
+  fill(255, 255, 255);
+  noStroke();
+  textAlign(CENTER, CENTER);
+  textSize(20);
+  text("🌙", 0, 0);
+  
+  pop();
+}
+
+function drawStars(x, y, subs) {
+  let sp = 16;
+  let startX = x - (subs.length - 1) * sp / 2;
+  subs.forEach((s, i) => {
+    push(); 
+    translate(startX + i * sp, y);
+    
+    // Draw the main star with solid color
+    let sCol = color(subjectColors[s] || 200);
+    fill(sCol); 
+    
+    // Subtle outline
+    stroke(255, 255, 255, 100); 
+    strokeWeight(0.5);
+    
+    beginShape();
+    for(let j=0; j<10; j++) {
+      let r = j % 2 === 0 ? 8 : 3.5;
+      vertex(cos(TWO_PI/10*j)*r, sin(TWO_PI/10*j)*r);
+    }
+    endShape(CLOSE);
+    
+    // Add glitter sparkles ON the star - slower and smoother
+    let numGlitters = 6;
+    for(let k = 0; k < numGlitters; k++) {
+      // Much slower phase change (0.03 instead of 0.08)
+      let glitterPhase = frameCount * 0.03 + i * 500 + k * 150;
+      // Smoother fade with sine wave
+      let glitterAlpha = 255 * pow(abs(sin(glitterPhase)), 2);
+      
+      if(glitterAlpha > 50) {
+        // Random-ish positions within the star bounds
+        let angle = (TWO_PI / numGlitters) * k;
+        let dist = random(2, 6);
+        let gx = cos(angle) * dist;
+        let gy = sin(angle) * dist;
+        
+        fill(255, 255, 255, glitterAlpha);
+        noStroke();
+        
+        // Tiny sparkle dots that pulse gently
+        let dotSize = 1.5 + sin(glitterPhase * 0.5) * 0.3;
+        ellipse(gx, gy, dotSize, dotSize);
+        
+        // Some sparkles get a cross
+        if(random() > 0.6) {
+          stroke(255, 255, 255, glitterAlpha * 0.7);
+          strokeWeight(0.5);
+          let crossSize = 1.5 + sin(glitterPhase * 0.5) * 0.3;
+          line(gx - crossSize, gy, gx + crossSize, gy);
+          line(gx, gy - crossSize, gx, gy + crossSize);
+        }
+      }
+    }
+    
+    pop();
+  });
+}
+
+function drawCat(pts, ink) {
+  stroke(ink); 
+  strokeWeight(2); 
+  noFill();
+  strokeCap(ROUND);
+  strokeJoin(ROUND);
+  beginShape(); 
+  for(let p of pts) vertex(p.x, p.y); 
+  endShape();
+}
+
+function drawEye(x, y, type, ink, size) {
+  fill(ink); 
+  noStroke(); 
+  textAlign(CENTER, CENTER); 
+  textSize(size); 
+  textStyle(BOLD);
+  text(type, x, y);
+}
+
+function drawText(x, y, txt, ink) {
+  fill(ink); 
+  noStroke(); 
+  textAlign(CENTER, CENTER); 
+  textSize(9); 
+  textStyle(BOLD);
+  push(); 
+  translate(x, y); 
+  rotate(atan2(150, 200)); 
+  text(txt, 0, 0); 
+  pop();
+}
+
+function drawGradientBackground() {
+  for (let i = 0; i <= height; i++) {
+    let topColor = color(250, 248, 245, 230);
+    let bottomColor = color(235, 245, 250, 230);
+    stroke(lerpColor(topColor, bottomColor, map(i, 0, height, 0, 1)));
+    line(0, i, width, i);
+  }
+}
+
+function isPointInTriangle(px, py, p) {
+  let area = abs((p[1].x-p[0].x)*(p[2].y-p[0].y)-(p[2].x-p[0].x)*(p[1].y-p[0].y));
+  let a1 = abs((p[0].x-px)*(p[1].y-py)-(p[1].x-px)*(p[0].y-py));
+  let a2 = abs((p[1].x-px)*(p[2].y-py)-(p[2].x-px)*(p[1].y-py));
+  let a3 = abs((p[2].x-px)*(p[0].y-py)-(p[0].x-px)*(p[2].y-py));
+  return abs(area-(a1+a2+a3)) < 1;
+}
+  </script>
+</body>
+</html>
