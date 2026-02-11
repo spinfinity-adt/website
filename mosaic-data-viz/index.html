@@ -127,12 +127,85 @@
       margin-right: 10px;
       font-size: 1.2em;
     }
+    
+    .analog-section {
+      text-align: center;
+      margin: 30px 0 40px 0;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    .photos-container {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    
+    .analog-photo {
+      max-width: 100%;
+      max-height: 600px;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      border: 2px solid rgba(233, 69, 96, 0.3);
+      box-shadow: 0 8px 32px rgba(233, 69, 96, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      object-fit: contain;
+    }
+    
+    .analog-photo:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 40px rgba(233, 69, 96, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+      .analog-photo {
+        width: 100%;
+      }
+    }
+    
+    .analog-caption {
+      color: #94a3b8;
+      font-size: 0.9em;
+      margin-bottom: 15px;
+      font-style: italic;
+    }
+    
+    .read-more-link {
+      display: inline-block;
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #e94560 0%, #c23454 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+    }
+    
+    .read-more-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(233, 69, 96, 0.5);
+      background: linear-gradient(135deg, #ff4d6d 0%, #e94560 100%);
+    }
   </style>
 </head>
 <body>
   <main>
     <h1>MOSAIC Data Selfie</h1>
     <div class="subtitle">Participatory Data Viz</div>
+    
+    <div style="text-align: center; margin: 20px 0 30px 0;">
+      <a href="https://open.substack.com/pub/spinfinity/p/mosaic-data-selfie" target="_blank" class="read-more-link">Read About the Creative Process →</a>
+    </div>
+    
     <div id="canvas-container"></div>
     
     <div class="legend">
@@ -203,6 +276,14 @@
           <span>Schrödinger's Cat</span>
         </div>
       </div>
+    </div>
+    
+    <div class="analog-section">
+      <div class="photos-container">
+        <img src="analog-mosaic-1.jpg" alt="Analog MOSAIC Data Selfie on easel" class="analog-photo">
+        <img src="analog-mosaic-2.png" alt="Analog MOSAIC Data Selfie close-up" class="analog-photo">
+      </div>
+      <div class="analog-caption">The original analog data selfie created by participants at the Mosaic Science Community launch</div>
     </div>
   </main>
 
