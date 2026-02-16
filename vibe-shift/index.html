@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Self Portrait Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .submission-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .submission-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        input[type="file"] {
+            padding: 8px;
+        }
+
+        .hint {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .gallery-section {
+            margin-top: 40px;
+        }
+
+        .gallery-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            color: #333;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .portrait-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .portrait-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .portrait-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            background: #fafafa;
+            cursor: pointer;
+        }
+
+        .portrait-info {
+            padding: 15px;
+        }
+
+        .portrait-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .portrait-prompt {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .portrait-link {
+            display: inline-block;
+            background: #2196F3;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85em;
+            margin-top: 8px;
+        }
+
+        .portrait-link:hover {
+            background: #0b7dda;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            overflow: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            max-width: 900px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .modal-image {
+            width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+            background: #fafafa;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .modal-info h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-prompt {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            line-height: 1.6;
+            color: #555;
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+        }
+
+        .modal-link {
+            display: inline-block;
+            background: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 1em;
+        }
+
+        .modal-link:hover {
+            background: #0b7dda;
+        }
+
+        .empty-gallery {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-message {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #1976D2;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 1.6;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Digital Self Portrait Gallery</h1>
+            <p class="subtitle">Generative Data Portraits using p5.js</p>
+        </div>
+
+        <div class="submission-section">
+            <h2>Submit Your Portrait</h2>
+            
+            <div class="instructions">
+                <h3>How to submit:</h3>
+                <ol>
+                    <li>Create your portrait in the p5.js editor</li>
+                    <li>Save a screenshot or GIF of your portrait</li>
+                    <li>Copy your p5.js editor share link (File → Share)</li>
+                    <li>Fill out the form below and upload!</li>
+                </ol>
+            </div>
+
+            <form id="submission-form">
+                <div class="form-group">
+                    <label for="name">Your Name (optional):</label>
+                    <input type="text" id="name" placeholder="Anonymous">
+                    <div class="hint">Leave blank to remain anonymous</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Portrait Image (PNG/JPG/GIF):</label>
+                    <input type="file" id="image" accept="image/*" required>
+                    <div class="hint">Upload a screenshot or GIF of your portrait</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="link">p5.js Editor Link:</label>
+                    <input type="text" id="link" placeholder="https://editor.p5js.org/username/sketches/..." required>
+                    <div class="hint">Share your sketch: File → Share → Copy link</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="prompt">Your Prompt / Data Description:</label>
+                    <textarea id="prompt" required placeholder="e.g., 'Create a constellation portrait. I'm an ambivert, I've lived in 4 cities, I love rainy days...'"></textarea>
+                    <div class="hint">What did you tell Claude? What data did you encode?</div>
+                </div>
+
+                <button type="submit" id="submit-btn">Add to Gallery</button>
+                <div class="error-message" id="error-message"></div>
+                <div class="success-message" id="success-message">Portrait added to gallery! ✨</div>
+            </form>
+        </div>
+
+        <div class="gallery-section">
+            <h2>Gallery Wall 🖼️</h2>
+            <div id="loading" class="loading-spinner">Loading gallery...</div>
+            <div class="gallery-grid" id="gallery-grid"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <img class="modal-image" id="modal-image" src="" alt="">
+            <div class="modal-info">
+                <h3 id="modal-name"></h3>
+                <div class="modal-prompt" id="modal-prompt"></div>
+                <a id="modal-link" class="modal-link" href="" target="_blank">View Live Code →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, push, onValue, set } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGoDOxnUNX5PjWJ_RuRtntoaoZ8f-vaPk",
+            authDomain: "vibe-shift-portrait-gallery.firebaseapp.com",
+            databaseURL: "https://vibe-shift-portrait-gallery-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "vibe-shift-portrait-gallery",
+            storageBucket: "vibe-shift-portrait-gallery.firebasestorage.app",
+            messagingSenderId: "748220410602",
+            appId: "1:748220410602:web:228f1253c763a4c9984593"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const storage = getStorage(app);
+        const portraitsRef = ref(database, 'portraits');
+
+        // Listen for real-time updates
+        onValue(portraitsRef, (snapshot) => {
+            const data = snapshot.val();
+            document.getElementById('loading').style.display = 'none';
+            
+            if (!data) {
+                document.getElementById('gallery-grid').innerHTML = '<div class="empty-gallery">No portraits yet. Be the first to add yours!</div>';
+                return;
+            }
+
+            const portraits = Object.entries(data).map(([id, portrait]) => ({
+                id,
+                ...portrait
+            }));
+
+            renderGallery(portraits);
+        });
+
+        // Form submission
+        document.getElementById('submission-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const errorMsg = document.getElementById('error-message');
+            const successMsg = document.getElementById('success-message');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+
+            const name = document.getElementById('name').value.trim() || 'Anonymous';
+            const imageFile = document.getElementById('image').files[0];
+            const link = document.getElementById('link').value.trim();
+            const prompt = document.getElementById('prompt').value.trim();
+
+            if (!imageFile || !link || !prompt) {
+                errorMsg.textContent = 'Please fill in all required fields.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            // Validate p5.js link
+            if (!link.includes('editor.p5js.org')) {
+                errorMsg.textContent = 'Please enter a valid p5.js editor link.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+
+            try {
+                // Upload image to Firebase Storage
+                const imageId = Date.now();
+                const imageStorageRef = storageRef(storage, `portraits/${imageId}_${imageFile.name}`);
+                await uploadBytes(imageStorageRef, imageFile);
+                const imageURL = await getDownloadURL(imageStorageRef);
+
+                // Save portrait data to Realtime Database
+                const newPortraitRef = push(portraitsRef);
+                await set(newPortraitRef, {
+                    name,
+                    image: imageURL,
+                    link,
+                    prompt,
+                    timestamp: new Date().toISOString()
+                });
+
+                // Clear form
+                document.getElementById('name').value = '';
+                document.getElementById('image').value = '';
+                document.getElementById('link').value = '';
+                document.getElementById('prompt').value = '';
+
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+
+                document.getElementById('gallery-grid').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error uploading portrait:', error);
+                errorMsg.textContent = 'Error uploading portrait. Please try again.';
+                errorMsg.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Add to Gallery';
+            }
+        });
+
+        function renderGallery(portraits) {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+
+            // Sort by timestamp (newest first)
+            portraits.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            portraits.forEach((portrait) => {
+                const card = document.createElement('div');
+                card.className = 'portrait-card';
+
+                const img = document.createElement('img');
+                img.className = 'portrait-image';
+                img.src = portrait.image;
+                img.alt = `Portrait by ${portrait.name}`;
+                img.onclick = () => openModal(portrait);
+
+                const info = document.createElement('div');
+                info.className = 'portrait-info';
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'portrait-name';
+                nameDiv.textContent = portrait.name;
+
+                const promptDiv = document.createElement('div');
+                promptDiv.className = 'portrait-prompt';
+                promptDiv.textContent = portrait.prompt;
+
+                const link = document.createElement('a');
+                link.className = 'portrait-link';
+                link.href = portrait.link;
+                link.target = '_blank';
+                link.textContent = 'View Code →';
+
+                info.appendChild(nameDiv);
+                info.appendChild(promptDiv);
+                info.appendChild(link);
+
+                card.appendChild(img);
+                card.appendChild(info);
+                grid.appendChild(card);
+            });
+        }
+
+        function openModal(portrait) {
+            const modal = document.getElementById('modal');
+            const modalImage = document.getElementById('modal-image');
+            const modalName = document.getElementById('modal-name');
+            const modalPrompt = document.getElementById('modal-prompt');
+            const modalLink = document.getElementById('modal-link');
+
+            modalImage.src = portrait.image;
+            modalName.textContent = portrait.name;
+            modalPrompt.textContent = portrait.prompt;
+            modalLink.href = portrait.link;
+
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'none';
+        }
+
+        document.getElementById('close-modal').onclick = closeModal;
+        
+        window.onclick = (event) => {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // Make functions available globally for the modal
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+    </script>
+</body>
+</html>
