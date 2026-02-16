@@ -124,6 +124,17 @@
             color: #333;
         }
 
+        .refresh-btn {
+            display: block;
+            margin: 0 auto 20px;
+            background: #2196F3;
+            padding: 10px 20px;
+        }
+
+        .refresh-btn:hover {
+            background: #0b7dda;
+        }
+
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -359,13 +370,14 @@
 
                 <button type="submit" id="submit-btn">Add to Gallery</button>
                 <div class="error-message" id="error-message"></div>
-                <div class="success-message" id="success-message">Portrait added to gallery! ✨</div>
+                <div class="success-message" id="success-message">Portrait added! Click "Refresh Gallery" to see it ✨</div>
             </form>
         </div>
 
         <div class="gallery-section">
             <h2>Gallery Wall 🖼️</h2>
-            <div id="loading" class="loading-spinner">Loading gallery...</div>
+            <button class="refresh-btn" onclick="loadGallery()">🔄 Refresh Gallery</button>
+            <div id="loading" class="loading-spinner">Click refresh to load gallery...</div>
             <div class="gallery-grid" id="gallery-grid"></div>
         </div>
     </div>
@@ -382,48 +394,11 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, push, onValue, set } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCGoDOxnUNX5PjWJ_RuRtntoaoZ8f-vaPk",
-            authDomain: "vibe-shift-portrait-gallery.firebaseapp.com",
-            databaseURL: "https://vibe-shift-portrait-gallery-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "vibe-shift-portrait-gallery",
-            storageBucket: "vibe-shift-portrait-gallery.firebasestorage.app",
-            messagingSenderId: "748220410602",
-            appId: "1:748220410602:web:228f1253c763a4c9984593"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        const portraitsRef = ref(database, 'portraits');
-
+    <script>
         // Cloudinary configuration
         const CLOUDINARY_CLOUD_NAME = 'dygkrkgni';
         const CLOUDINARY_UPLOAD_PRESET = 'vibe-shift';
-
-        // Listen for real-time updates
-        onValue(portraitsRef, (snapshot) => {
-            const data = snapshot.val();
-            document.getElementById('loading').style.display = 'none';
-            
-            if (!data) {
-                document.getElementById('gallery-grid').innerHTML = '<div class="empty-gallery">No portraits yet. Be the first to add yours!</div>';
-                return;
-            }
-
-            const portraits = Object.entries(data).map(([id, portrait]) => ({
-                id,
-                ...portrait
-            }));
-
-            renderGallery(portraits);
-        });
+        const GALLERY_TAG = 'portrait-gallery';
 
         // Form submission
         document.getElementById('submission-form').addEventListener('submit', async (e) => {
@@ -459,12 +434,14 @@
             submitBtn.textContent = 'Uploading...';
 
             try {
-                // Upload image to Cloudinary
+                // Upload to Cloudinary with metadata
                 const formData = new FormData();
                 formData.append('file', imageFile);
                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+                formData.append('tags', GALLERY_TAG);
+                formData.append('context', `name=${encodeURIComponent(name)}|link=${encodeURIComponent(link)}|prompt=${encodeURIComponent(prompt)}`);
 
-                const cloudinaryResponse = await fetch(
+                const response = await fetch(
                     `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
                     {
                         method: 'POST',
@@ -472,22 +449,9 @@
                     }
                 );
 
-                if (!cloudinaryResponse.ok) {
-                    throw new Error('Failed to upload image to Cloudinary');
+                if (!response.ok) {
+                    throw new Error('Failed to upload image');
                 }
-
-                const cloudinaryData = await cloudinaryResponse.json();
-                const imageURL = cloudinaryData.secure_url;
-
-                // Save portrait data to Firebase Realtime Database
-                const newPortraitRef = push(portraitsRef);
-                await set(newPortraitRef, {
-                    name,
-                    image: imageURL,
-                    link,
-                    prompt,
-                    timestamp: new Date().toISOString()
-                });
 
                 // Clear form
                 document.getElementById('name').value = '';
@@ -496,9 +460,6 @@
                 document.getElementById('prompt').value = '';
 
                 successMsg.style.display = 'block';
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 3000);
 
                 document.getElementById('gallery-grid').scrollIntoView({ behavior: 'smooth' });
             } catch (error) {
@@ -510,6 +471,67 @@
                 submitBtn.textContent = 'Add to Gallery';
             }
         });
+
+        async function loadGallery() {
+            const loading = document.getElementById('loading');
+            const grid = document.getElementById('gallery-grid');
+            
+            loading.style.display = 'block';
+            loading.textContent = 'Loading gallery...';
+            grid.innerHTML = '';
+
+            try {
+                // Fetch images with the gallery tag from Cloudinary
+                const response = await fetch(
+                    `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/list/${GALLERY_TAG}.json`
+                );
+
+                const data = await response.json();
+                
+                loading.style.display = 'none';
+
+                if (!data.resources || data.resources.length === 0) {
+                    grid.innerHTML = '<div class="empty-gallery">No portraits yet. Be the first to add yours!</div>';
+                    return;
+                }
+
+                // Fetch detailed info for each image
+                const portraits = await Promise.all(
+                    data.resources.map(async (resource) => {
+                        try {
+                            const detailResponse = await fetch(
+                                `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${resource.public_id}.json`
+                            );
+                            const details = await detailResponse.json();
+                            
+                            // Parse context metadata
+                            const context = details.context?.custom || {};
+                            const name = decodeURIComponent(context.name || 'Anonymous');
+                            const link = decodeURIComponent(context.link || '');
+                            const prompt = decodeURIComponent(context.prompt || '');
+
+                            return {
+                                image: details.secure_url,
+                                name,
+                                link,
+                                prompt,
+                                timestamp: details.created_at
+                            };
+                        } catch (e) {
+                            console.error('Error fetching details:', e);
+                            return null;
+                        }
+                    })
+                );
+
+                const validPortraits = portraits.filter(p => p !== null);
+                renderGallery(validPortraits);
+            } catch (error) {
+                console.error('Error loading gallery:', error);
+                loading.style.display = 'none';
+                grid.innerHTML = '<div class="empty-gallery">Error loading gallery. Please try again.</div>';
+            }
+        }
 
         function renderGallery(portraits) {
             const grid = document.getElementById('gallery-grid');
@@ -539,15 +561,17 @@
                 promptDiv.className = 'portrait-prompt';
                 promptDiv.textContent = portrait.prompt;
 
-                const link = document.createElement('a');
-                link.className = 'portrait-link';
-                link.href = portrait.link;
-                link.target = '_blank';
-                link.textContent = 'View Code →';
-
                 info.appendChild(nameDiv);
                 info.appendChild(promptDiv);
-                info.appendChild(link);
+
+                if (portrait.link) {
+                    const link = document.createElement('a');
+                    link.className = 'portrait-link';
+                    link.href = portrait.link;
+                    link.target = '_blank';
+                    link.textContent = 'View Code →';
+                    info.appendChild(link);
+                }
 
                 card.appendChild(img);
                 card.appendChild(info);
@@ -565,7 +589,13 @@
             modalImage.src = portrait.image;
             modalName.textContent = portrait.name;
             modalPrompt.textContent = portrait.prompt;
-            modalLink.href = portrait.link;
+            
+            if (portrait.link) {
+                modalLink.href = portrait.link;
+                modalLink.style.display = 'inline-block';
+            } else {
+                modalLink.style.display = 'none';
+            }
 
             modal.style.display = 'block';
         }
@@ -583,10 +613,6 @@
                 closeModal();
             }
         };
-
-        // Make functions available globally for the modal
-        window.openModal = openModal;
-        window.closeModal = closeModal;
     </script>
 </body>
 </html>
