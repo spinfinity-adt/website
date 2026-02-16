@@ -386,7 +386,6 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getDatabase, ref, push, onValue, set } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -402,8 +401,11 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
-        const storage = getStorage(app);
         const portraitsRef = ref(database, 'portraits');
+
+        // Cloudinary configuration
+        const CLOUDINARY_CLOUD_NAME = 'dygkrkgni';
+        const CLOUDINARY_UPLOAD_PRESET = 'vibe-shift';
 
         // Listen for real-time updates
         onValue(portraitsRef, (snapshot) => {
@@ -457,13 +459,27 @@
             submitBtn.textContent = 'Uploading...';
 
             try {
-                // Upload image to Firebase Storage
-                const imageId = Date.now();
-                const imageStorageRef = storageRef(storage, `portraits/${imageId}_${imageFile.name}`);
-                await uploadBytes(imageStorageRef, imageFile);
-                const imageURL = await getDownloadURL(imageStorageRef);
+                // Upload image to Cloudinary
+                const formData = new FormData();
+                formData.append('file', imageFile);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-                // Save portrait data to Realtime Database
+                const cloudinaryResponse = await fetch(
+                    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+                    {
+                        method: 'POST',
+                        body: formData
+                    }
+                );
+
+                if (!cloudinaryResponse.ok) {
+                    throw new Error('Failed to upload image to Cloudinary');
+                }
+
+                const cloudinaryData = await cloudinaryResponse.json();
+                const imageURL = cloudinaryData.secure_url;
+
+                // Save portrait data to Firebase Realtime Database
                 const newPortraitRef = push(portraitsRef);
                 await set(newPortraitRef, {
                     name,
