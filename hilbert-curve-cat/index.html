@@ -455,6 +455,7 @@ let drawSpeed = 1;
 let catImg = null;
 let catSeed = Math.floor(Math.random() * 1e8);
 let isDrawing = false;
+let currentP = null;
 
 // ─────────────────────────────────────
 // Hilbert math
@@ -546,10 +547,10 @@ function getCanvasSize() {
 // ─────────────────────────────────────
 // Draw
 // ─────────────────────────────────────
-function startDraw(size) {
+function startDraw(p, size) {
   isDrawing = true;
   setProgress(0);
-  background(0);
+  p.background(0);
 
   path         = generateHilbertPath(order, size);
   currentIndex = 0;
@@ -559,7 +560,7 @@ function startDraw(size) {
   setStatus(`drawing order <span class="hl">${order}</span> — ${segs.toLocaleString()} segments…`);
   updateStats(order, size);
 
-  loop();
+  p.loop();
 }
 
 // ─────────────────────────────────────
@@ -598,6 +599,7 @@ function launchSketch() {
     };
 
     p.setup = function () {
+      currentP = p;
       const s   = getCanvasSize();
       const cnv = p.createCanvas(s, s);
       cnv.parent('canvas-container');
@@ -612,7 +614,7 @@ function launchSketch() {
 
       updateStats(order, s);
       setGenBtn(false);
-      startDraw(s);
+      startDraw(p, s);
     };
 
     p.draw = function () {
@@ -652,7 +654,7 @@ function launchSketch() {
       const s = getCanvasSize();
       p.resizeCanvas(s, s);
       updateStats(order, s);
-      if (catImg) startDraw(s);
+      if (catImg) startDraw(p, s);
     };
   };
 
@@ -672,9 +674,8 @@ document.getElementById('order-slider').addEventListener('input', function () {
 document.getElementById('order-slider').addEventListener('change', function () {
   order = parseInt(this.value);
   this.dataset.userSet = '1';
-  if (catImg && !isDrawing) {
-    const s = document.querySelector('#canvas-container canvas');
-    if (s) startDraw(s.width);
+  if (catImg && !isDrawing && currentP) {
+    startDraw(currentP, currentP.width);
   }
 });
 
@@ -684,9 +685,8 @@ document.getElementById('gen-btn').addEventListener('click', function () {
 });
 
 document.getElementById('redraw-btn').addEventListener('click', function () {
-  if (isDrawing || !catImg) return;
-  const s = document.querySelector('#canvas-container canvas');
-  if (s) startDraw(s.width);
+  if (isDrawing || !catImg || !currentP) return;
+  startDraw(currentP, currentP.width);
 });
 
 // ─────────────────────────────────────
