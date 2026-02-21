@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hilbert Cat Curve 🐱</title>
+  <title>Hilbert Curve Cat 🐱</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fredoka+One&display=swap');
@@ -359,7 +359,7 @@
 
   <!-- TOP BAR -->
   <div class="topbar">
-    <div class="title"><span class="wiggle">🐱</span> Hilbert Cat Curve</div>
+    <div class="title"><span class="wiggle">🐱</span> Hilbert Curve Cat</div>
     <div class="topbar-sub">space-filling curve · fractal image rendering</div>
   </div>
 
@@ -382,6 +382,7 @@
         <div class="panel-title">🐾 cat controls</div>
         <button class="btn btn-cat" id="gen-btn">✨ summon a new cat</button>
         <button class="btn btn-secondary" id="redraw-btn">↺ redraw same cat</button>
+        <button class="btn btn-secondary" id="save-btn">💾 save image</button>
         <div id="status">waiting for a cat…</div>
       </div>
 
@@ -687,6 +688,11 @@ document.getElementById('gen-btn').addEventListener('click', function () {
 document.getElementById('redraw-btn').addEventListener('click', function () {
   if (isDrawing || !catImg || !currentP) return;
   startDraw(currentP, currentP.width);
+});
+
+document.getElementById('save-btn').addEventListener('click', function () {
+  if (!currentP) return;
+  currentP.saveCanvas('hilbert-curve-cat', 'png');
 });
 
 // ─────────────────────────────────────
