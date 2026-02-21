@@ -548,6 +548,25 @@ function getCanvasSize() {
 // ─────────────────────────────────────
 // Draw
 // ─────────────────────────────────────
+let catPixels = null;
+let catImgW = 0, catImgH = 0;
+
+function loadCatPixels() {
+  catImg.loadPixels();
+  catPixels = catImg.pixels.slice();
+  catImgW   = catImg.width;
+  catImgH   = catImg.height;
+}
+
+function sampleCat(p, x, y, size) {
+  const imgX = Math.floor(p.map(x, 0, size, 0, catImgW));
+  const imgY = Math.floor(p.map(y, 0, size, 0, catImgH));
+  const cx   = p.constrain(imgX, 0, catImgW - 1);
+  const cy   = p.constrain(imgY, 0, catImgH - 1);
+  const idx  = (cy * catImgW + cx) * 4;
+  return [catPixels[idx], catPixels[idx+1], catPixels[idx+2]];
+}
+
 function startDraw(p, size) {
   isDrawing = true;
   setProgress(0);
@@ -565,19 +584,29 @@ function startDraw(p, size) {
 }
 
 // ─────────────────────────────────────
-// Cat fetch — triggers a full sketch reload with new preload
+// Cat fetch — uses loadImage on existing sketch, no teardown needed
 // ─────────────────────────────────────
 function fetchCat(newSeed) {
   if (newSeed) catSeed = Math.floor(Math.random() * 1e8);
   setGenBtn(true);
   setStatus('🐱 fetching cat…');
   setProgress(0);
+  catPixels = null;
 
-  // Remove existing p5 canvas and relaunch so preload runs again
-  const existing = document.querySelector('#canvas-container canvas');
-  if (existing) existing.remove();
-
-  launchSketch();
+  const url = `https://cataas.com/cat?width=800&height=800&t=${catSeed}`;
+  currentP.loadImage(
+    url,
+    function (img) {
+      catImg = img;
+      loadCatPixels();
+      setGenBtn(false);
+      startDraw(currentP, currentP.width);
+    },
+    function () {
+      setGenBtn(false);
+      setStatus('❌ fetch failed — try again?');
+    }
+  );
 }
 
 // ─────────────────────────────────────
@@ -615,6 +644,7 @@ function launchSketch() {
 
       updateStats(order, s);
       setGenBtn(false);
+      loadCatPixels();
       startDraw(p, s);
     };
 
@@ -635,14 +665,8 @@ function launchSketch() {
       for (let i = currentIndex; i < end; i++) {
         const x1 = path[i].x,   y1 = path[i].y;
         const x2 = path[i+1].x, y2 = path[i+1].y;
-
-        const imgX = Math.floor(p.map(x1, 0, size, 0, catImg.width));
-        const imgY = Math.floor(p.map(y1, 0, size, 0, catImg.height));
-        const cx   = p.constrain(imgX, 0, catImg.width  - 1);
-        const cy   = p.constrain(imgY, 0, catImg.height - 1);
-        const c    = catImg.get(cx, cy);
-
-        p.stroke(c);
+        const [r, g, b] = sampleCat(p, x1, y1, size);
+        p.stroke(r, g, b);
         p.strokeWeight(strokeW);
         p.line(x1, y1, x2, y2);
       }
