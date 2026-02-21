@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hilbert Cat Curve 🐱</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fredoka+One&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:   #ff6eb4;
+      --purple: #a855f7;
+      --cyan:   #22d3ee;
+      --yellow: #fde68a;
+      --bg:     #0d0d1a;
+      --card:   #13132b;
+      --border: #2a2a4a;
+    }
+
+    body {
+      background: var(--bg);
+      color: #e2e8f0;
+      font-family: 'Space Mono', monospace;
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* floating math bg */
+    body::before {
+      content: '∫ ∑ π ∞ √ ∂ Δ ∇ ∈ ℝ';
+      position: fixed;
+      inset: 0;
+      font-size: 5rem;
+      color: rgba(168,85,247,0.04);
+      word-break: break-all;
+      line-height: 1.4;
+      letter-spacing: 2rem;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.6rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13,13,26,0.85);
+      backdrop-filter: blur(8px);
+      flex-shrink: 0;
+    }
+
+    .title {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      background: linear-gradient(135deg, var(--pink), var(--purple), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+    }
+
+    .topbar-sub {
+      font-size: 0.6rem;
+      color: #7c7c9a;
+      letter-spacing: 0.06em;
+      display: none;
+    }
+    @media (min-width: 500px) { .topbar-sub { display: block; } }
+
+    /* ── MAIN AREA ── */
+    .main {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      gap: 0;
+    }
+
+    /* ── CANVAS SIDE ── */
+    .canvas-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      min-width: 0;
+      position: relative;
+    }
+
+    .canvas-card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 0.75rem;
+      box-shadow:
+        0 0 40px rgba(168,85,247,0.1),
+        0 0 80px rgba(255,110,180,0.05);
+    }
+
+    .canvas-card::before { content: '🐾'; position: absolute; top: 0.4rem; left: 0.7rem; font-size: 1rem; opacity: 0.5; }
+    .canvas-card::after  { content: '🐾'; position: absolute; bottom: 0.4rem; right: 0.7rem; font-size: 1rem; opacity: 0.5; }
+
+    #canvas-container canvas {
+      border-radius: 0.6rem;
+      display: block;
+    }
+
+    /* progress bar under canvas */
+    #progress-bar-wrap {
+      position: absolute;
+      bottom: 0.3rem;
+      left: 1.25rem;
+      right: 1.25rem;
+      height: 3px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--pink), var(--cyan));
+      border-radius: 99px;
+      transition: width 0.08s linear;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 230px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1rem 1rem 1rem 0;
+      overflow-y: auto;
+    }
+
+    /* hide sidebar on tiny screens, show below instead */
+    @media (max-width: 600px) {
+      body { overflow: auto; }
+      .main { flex-direction: column; overflow: visible; }
+      .sidebar {
+        width: 100%;
+        padding: 0 1rem 1rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .sidebar > * { flex: 1; min-width: 140px; }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .panel-title {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #5a5a7a;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+    }
+
+    /* ── SLIDER ── */
+    .control-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      color: #7c7c9a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-label .val {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cyan);
+      font-family: 'Fredoka One', cursive;
+    }
+
+    input[type='range'] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      border: 2px solid var(--bg);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    input[type='range']::-webkit-slider-thumb:hover { transform: scale(1.3); }
+    input[type='range']::-moz-range-thumb {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      border: 2px solid var(--bg);
+      cursor: pointer;
+    }
+
+    .slider-hint {
+      font-size: 0.58rem;
+      color: #4a4a6a;
+      line-height: 1.5;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.6rem 0.8rem;
+      border-radius: 0.7rem;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      letter-spacing: 0.02em;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      text-align: center;
+    }
+
+    .btn:hover  { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0px); }
+
+    .btn-cat {
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: #fff;
+      box-shadow: 0 0 18px rgba(255,110,180,0.35);
+      font-size: 0.82rem;
+      padding: 0.75rem;
+    }
+    .btn-cat:hover { box-shadow: 0 0 30px rgba(255,110,180,0.6); }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: #7c7c9a;
+    }
+    .btn-secondary:hover { border-color: var(--purple); color: var(--purple); }
+
+    .btn-cat.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .btn-cat.loading::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      animation: shimmer 1s infinite;
+    }
+    @keyframes shimmer {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* ── STATS ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      background: rgba(0,0,0,0.2);
+      border-radius: 0.5rem;
+      padding: 0.4rem 0.5rem;
+    }
+
+    .stat .s-label {
+      font-size: 0.52rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #5a5a7a;
+    }
+
+    .stat .s-value {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--yellow);
+      font-family: 'Fredoka One', cursive;
+    }
+
+    /* ── STATUS ── */
+    #status {
+      font-size: 0.62rem;
+      color: #5a5a7a;
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+    #status .hl { color: var(--cyan); }
+
+    /* ── EXPLAINER ── */
+    .explainer-text {
+      font-size: 0.63rem;
+      line-height: 1.75;
+      color: #6a6a8a;
+    }
+    .explainer-text code {
+      background: rgba(168,85,247,0.12);
+      color: var(--cyan);
+      padding: 0.05em 0.3em;
+      border-radius: 0.25em;
+      font-size: 0.9em;
+    }
+    .explainer-text strong { color: #a0a0c0; }
+
+    /* ── FOOTER ── */
+    .footer-links {
+      font-size: 0.55rem;
+      color: #3a3a5a;
+      letter-spacing: 0.04em;
+      text-align: center;
+      line-height: 2;
+    }
+    .footer-links a { color: var(--pink); text-decoration: none; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    @keyframes wiggle {
+      0%,100% { transform: rotate(-8deg); }
+      50%      { transform: rotate(8deg); }
+    }
+    .wiggle { display: inline-block; animation: wiggle 1.2s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="title"><span class="wiggle">🐱</span> Hilbert Cat Curve</div>
+    <div class="topbar-sub">space-filling curve · fractal image rendering</div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- CANVAS -->
+    <div class="canvas-wrap">
+      <div class="canvas-card">
+        <div id="canvas-container"></div>
+        <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <!-- GENERATE -->
+      <div class="panel">
+        <div class="panel-title">🐾 cat controls</div>
+        <button class="btn btn-cat" id="gen-btn">✨ summon a new cat</button>
+        <button class="btn btn-secondary" id="redraw-btn">↺ redraw same cat</button>
+        <div id="status">waiting for a cat…</div>
+      </div>
+
+      <!-- ORDER SLIDER -->
+      <div class="panel">
+        <div class="panel-title">📐 curve order</div>
+        <div class="control-label">
+          order n
+          <span class="val" id="order-display">—</span>
+        </div>
+        <input type="range" id="order-slider" min="1" max="9" step="1" value="5" />
+        <div class="slider-hint">
+          grid: <code id="hint-grid">—</code> &nbsp;·&nbsp; segments: <code id="hint-segs">—</code>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="panel">
+        <div class="panel-title">📊 stats</div>
+        <div class="stat-grid">
+          <div class="stat">
+            <span class="s-label">order</span>
+            <span class="s-value" id="stat-order">—</span>
+          </div>
+          <div class="stat">
+            <span class="s-label">segments</span>
+            <span class="s-value" id="stat-segments">—</span>
+          </div>
+          <div class="stat">
+            <span class="s-label">cells</span>
+            <span class="s-value" id="stat-cells">—</span>
+          </div>
+          <div class="stat">
+            <span class="s-label">canvas</span>
+            <span class="s-value" id="stat-canvas">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPLAINER -->
+      <div class="panel">
+        <div class="panel-title">🔢 what is this?</div>
+        <div class="explainer-text">
+          A <strong>Hilbert curve</strong> is a fractal that visits every cell in a
+          <code>2ⁿ×2ⁿ</code> grid exactly once.<br/><br/>
+          Each segment is coloured by sampling the cat photo — so the curve
+          <em>paints</em> your cat using only connected lines.<br/><br/>
+          Higher order = more detail but <strong>way</strong> more segments.
+          Order 9 = <code>262,143</code> segments. 🐱
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="footer-links">
+        <a href="https://p5js.org" target="_blank">p5.js</a> ·
+        <a href="https://cataas.com" target="_blank">cataas.com</a> ·
+        <a href="https://en.wikipedia.org/wiki/Hilbert_curve" target="_blank">hilbert curve ↗</a>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+// ─────────────────────────────────────
+// State
+// ─────────────────────────────────────
+let order = 5;
+let path = [];
+let currentIndex = 0;
+let drawSpeed = 1;
+let catImg = null;
+let catSeed = Math.floor(Math.random() * 1e8);
+let isDrawing = false;
+
+// ─────────────────────────────────────
+// Hilbert math
+// ─────────────────────────────────────
+function hilbert(index, ord) {
+  let x = 0, y = 0;
+  for (let s = 1; s < Math.pow(2, ord); s *= 2) {
+    let rx = 1 & (index >> 1);
+    let ry = 1 & (index ^ rx);
+    if (ry === 0) {
+      if (rx === 1) { x = s - 1 - x; y = s - 1 - y; }
+      let t = x; x = y; y = t;
+    }
+    x += s * rx;
+    y += s * ry;
+    index = index >> 2;
+  }
+  return { x, y };
+}
+
+function generateHilbertPath(ord, size) {
+  const total    = Math.pow(4, ord);
+  const cellSize = size / Math.pow(2, ord);
+  const points   = [];
+  for (let i = 0; i < total; i++) {
+    const pt = hilbert(i, ord);
+    points.push({
+      x: pt.x * cellSize + cellSize / 2,
+      y: pt.y * cellSize + cellSize / 2
+    });
+  }
+  return points;
+}
+
+// ─────────────────────────────────────
+// Default order from canvas size
+// ─────────────────────────────────────
+function defaultOrder(canvasSize) {
+  let n = 1;
+  while ((canvasSize / Math.pow(2, n + 1)) > 7 && n < 8) n++;
+  return Math.min(n, 8);
+}
+
+// ─────────────────────────────────────
+// UI helpers
+// ─────────────────────────────────────
+function updateStats(ord, size) {
+  const cells = Math.pow(4, ord);
+  const segs  = cells - 1;
+  const grid  = Math.pow(2, ord);
+
+  document.getElementById('stat-order').textContent    = ord;
+  document.getElementById('stat-segments').textContent = segs >= 1000
+    ? (segs / 1000).toFixed(0) + 'k' : segs;
+  document.getElementById('stat-cells').textContent    = cells >= 1000
+    ? (cells / 1000).toFixed(0) + 'k' : cells;
+  document.getElementById('stat-canvas').textContent   = size + 'px';
+  document.getElementById('order-display').textContent = ord;
+  document.getElementById('hint-grid').textContent     = grid + '×' + grid;
+  document.getElementById('hint-segs').textContent     = segs.toLocaleString();
+}
+
+function setStatus(msg) {
+  document.getElementById('status').innerHTML = msg;
+}
+
+function setProgress(frac) {
+  document.getElementById('progress-bar').style.width = (frac * 100).toFixed(1) + '%';
+}
+
+function setGenBtn(loading) {
+  const btn = document.getElementById('gen-btn');
+  btn.classList.toggle('loading', loading);
+  btn.textContent = loading ? '🐱 fetching cat…' : '✨ summon a new cat';
+}
+
+// ─────────────────────────────────────
+// Canvas size — fills available space
+// ─────────────────────────────────────
+function getCanvasSize() {
+  const wrap    = document.querySelector('.canvas-wrap');
+  const topbarH = document.querySelector('.topbar').offsetHeight;
+  const padding = 32;
+  const availW  = wrap.clientWidth - padding;
+  const availH  = window.innerHeight - topbarH - padding;
+  return Math.max(100, Math.min(availW, availH));
+}
+
+// ─────────────────────────────────────
+// Draw
+// ─────────────────────────────────────
+function startDraw(size) {
+  isDrawing = true;
+  setProgress(0);
+  background(0);
+
+  path         = generateHilbertPath(order, size);
+  currentIndex = 0;
+  drawSpeed    = Math.max(1, Math.ceil(path.length / 400));
+
+  const segs = path.length - 1;
+  setStatus(`drawing order <span class="hl">${order}</span> — ${segs.toLocaleString()} segments…`);
+  updateStats(order, size);
+
+  loop();
+}
+
+// ─────────────────────────────────────
+// Cat fetch — triggers a full sketch reload with new preload
+// ─────────────────────────────────────
+function fetchCat(newSeed) {
+  if (newSeed) catSeed = Math.floor(Math.random() * 1e8);
+  setGenBtn(true);
+  setStatus('🐱 fetching cat…');
+  setProgress(0);
+
+  // Remove existing p5 canvas and relaunch so preload runs again
+  const existing = document.querySelector('#canvas-container canvas');
+  if (existing) existing.remove();
+
+  launchSketch();
+}
+
+// ─────────────────────────────────────
+// p5 global-mode sketch — mounted after DOM ready
+// ─────────────────────────────────────
+function launchSketch() {
+  // p5 global mode: define sketch functions then call new p5(sketch, container)
+  const sketch = function (p) {
+
+    p.preload = function () {
+      const url = `https://cataas.com/cat?width=800&height=800&t=${catSeed}`;
+      catImg = p.loadImage(
+        url,
+        function () { /* success — setup will run next */ },
+        function () {
+          setGenBtn(false);
+          setStatus('❌ fetch failed — try again?');
+        }
+      );
+    };
+
+    p.setup = function () {
+      const s   = getCanvasSize();
+      const cnv = p.createCanvas(s, s);
+      cnv.parent('canvas-container');
+
+      // pick a sensible default order
+      const def = defaultOrder(s);
+      const slider = document.getElementById('order-slider');
+      if (!slider.dataset.userSet) {
+        slider.value = def;
+        order = def;
+      }
+
+      updateStats(order, s);
+      setGenBtn(false);
+      startDraw(s);
+    };
+
+    p.draw = function () {
+      if (currentIndex > path.length - 2) {
+        p.noLoop();
+        isDrawing = false;
+        setProgress(1);
+        const segs = path.length - 1;
+        setStatus(`✅ done — <span class="hl">${segs.toLocaleString()}</span> segments`);
+        return;
+      }
+
+      const size   = p.width;
+      const end    = Math.min(currentIndex + drawSpeed, path.length - 1);
+      const strokeW = Math.max(1, (size / Math.pow(2, order)) * 0.85);
+
+      for (let i = currentIndex; i < end; i++) {
+        const x1 = path[i].x,   y1 = path[i].y;
+        const x2 = path[i+1].x, y2 = path[i+1].y;
+
+        const imgX = Math.floor(p.map(x1, 0, size, 0, catImg.width));
+        const imgY = Math.floor(p.map(y1, 0, size, 0, catImg.height));
+        const cx   = p.constrain(imgX, 0, catImg.width  - 1);
+        const cy   = p.constrain(imgY, 0, catImg.height - 1);
+        const c    = catImg.get(cx, cy);
+
+        p.stroke(c);
+        p.strokeWeight(strokeW);
+        p.line(x1, y1, x2, y2);
+      }
+
+      currentIndex += drawSpeed;
+      setProgress(currentIndex / (path.length - 1));
+    };
+
+    p.windowResized = function () {
+      const s = getCanvasSize();
+      p.resizeCanvas(s, s);
+      updateStats(order, s);
+      if (catImg) startDraw(s);
+    };
+  };
+
+  new p5(sketch);
+}
+
+// ─────────────────────────────────────
+// Wire up controls
+// ─────────────────────────────────────
+document.getElementById('order-slider').addEventListener('input', function () {
+  order = parseInt(this.value);
+  this.dataset.userSet = '1';
+  const s = document.querySelector('#canvas-container canvas');
+  updateStats(order, s ? s.width : 500);
+});
+
+document.getElementById('order-slider').addEventListener('change', function () {
+  order = parseInt(this.value);
+  this.dataset.userSet = '1';
+  if (catImg && !isDrawing) {
+    const s = document.querySelector('#canvas-container canvas');
+    if (s) startDraw(s.width);
+  }
+});
+
+document.getElementById('gen-btn').addEventListener('click', function () {
+  if (isDrawing) return;
+  fetchCat(true);
+});
+
+document.getElementById('redraw-btn').addEventListener('click', function () {
+  if (isDrawing || !catImg) return;
+  const s = document.querySelector('#canvas-container canvas');
+  if (s) startDraw(s.width);
+});
+
+// ─────────────────────────────────────
+// Init
+// ─────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function () {
+  launchSketch();
+});
+</script>
+</body>
+</html>
