@@ -21,8 +21,8 @@
 
         .header {
             text-align: center;
-            margin-bottom: 60px;
-            padding: 40px 20px;
+            margin-bottom: 40px;
+            padding: 40px 20px 20px;
         }
 
         h1 {
@@ -104,9 +104,9 @@
 
         .event-tag {
             font-size: 0.7em;
-            color: #888;
+            color: #b8a1ff;
             padding: 3px 8px;
-            border: 1px solid #333;
+            border: 1px solid #4a3f6f;
             border-radius: 3px;
             white-space: nowrap;
         }
@@ -140,24 +140,27 @@
 
         .submission-section {
             background: #1a1a1a;
-            padding: 40px;
+            padding: 50px;
             border-radius: 4px;
             margin-bottom: 60px;
             border: 1px solid #2a2a2a;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .submission-section h2 {
-            margin-bottom: 30px;
+            margin-bottom: 35px;
             color: #fff;
             font-weight: normal;
-            font-size: 1.5em;
+            font-size: 1.4em;
         }
 
         .instructions {
             background: #0a0a0a;
-            padding: 20px;
+            padding: 25px;
             border-radius: 3px;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
             border-left: 3px solid #444;
         }
 
@@ -165,70 +168,77 @@
             margin-bottom: 15px;
             color: #fff;
             font-weight: normal;
-            font-size: 1.1em;
+            font-size: 1em;
         }
 
         .instructions ol {
             margin-left: 25px;
-            line-height: 1.8;
+            line-height: 1.9;
             color: #aaa;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         label {
             display: block;
             margin-bottom: 10px;
             font-weight: normal;
-            color: #ccc;
+            color: #bbb;
+            font-size: 0.95em;
         }
 
         input[type="text"],
         input[type="file"],
         textarea {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: 1px solid #333;
             border-radius: 3px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
             background: #0a0a0a;
             color: #e0e0e0;
+            transition: border-color 0.2s;
         }
 
         input[type="text"]:focus,
         textarea:focus {
             outline: none;
-            border-color: #555;
+            border-color: #666;
+            background: #111;
         }
 
         textarea {
-            min-height: 100px;
+            min-height: 120px;
             resize: vertical;
+            line-height: 1.6;
         }
 
         input[type="file"] {
-            padding: 10px;
+            padding: 12px;
+            cursor: pointer;
         }
 
         .hint {
-            font-size: 0.85em;
+            font-size: 0.8em;
             color: #666;
-            margin-top: 6px;
+            margin-top: 8px;
+            line-height: 1.4;
         }
 
         button {
             background: #2a2a2a;
             color: #fff;
-            padding: 12px 30px;
+            padding: 14px 35px;
             border: 1px solid #444;
             border-radius: 3px;
             font-size: 1em;
             cursor: pointer;
             font-family: 'Courier New', monospace;
             transition: all 0.2s;
+            margin-top: 10px;
         }
 
         button:hover {
