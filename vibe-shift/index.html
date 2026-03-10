@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Self Portrait Gallery</title>
+    <title>generative data portraits</title>
     <style>
         * {
             margin: 0;
@@ -13,28 +13,29 @@
 
         body {
             font-family: 'Courier New', monospace;
-            background: #f5f5f5;
+            background: #0a0a0a;
+            color: #e0e0e0;
             padding: 20px;
+            line-height: 1.6;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 30px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+            padding: 40px 20px;
         }
 
         h1 {
             font-size: 2em;
             margin-bottom: 10px;
-            color: #333;
+            color: #ffffff;
+            font-weight: normal;
         }
 
         .subtitle {
-            color: #666;
-            font-size: 1.1em;
+            color: #888;
+            font-size: 1em;
+            font-weight: normal;
         }
 
         .container {
@@ -42,132 +43,79 @@
             margin: 0 auto;
         }
 
-        .submission-section {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            margin-bottom: 40px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .submission-section h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="text"],
-        input[type="file"],
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-        }
-
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        input[type="file"] {
-            padding: 8px;
-        }
-
-        .hint {
-            font-size: 0.9em;
-            color: #888;
-            margin-top: 5px;
-        }
-
-        button {
-            background: #4CAF50;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            font-size: 1em;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background: #45a049;
-        }
-
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
         .gallery-section {
-            margin-bottom: 40px;
+            margin-bottom: 80px;
         }
 
         .gallery-section h2 {
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 1.8em;
-            color: #333;
+            margin-bottom: 40px;
+            font-size: 1.5em;
+            color: #fff;
+            font-weight: normal;
         }
 
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
             margin-bottom: 40px;
         }
 
         .portrait-card {
-            background: white;
-            border-radius: 8px;
+            background: #1a1a1a;
+            border-radius: 4px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            transition: transform 0.2s ease;
+            border: 1px solid #2a2a2a;
         }
 
         .portrait-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            border-color: #3a3a3a;
         }
 
         .portrait-image {
             width: 100%;
-            height: 300px;
+            height: 320px;
             object-fit: cover;
-            background: #fafafa;
+            background: #0a0a0a;
             cursor: pointer;
+            display: block;
         }
 
         .portrait-info {
-            padding: 15px;
+            padding: 20px;
+        }
+
+        .portrait-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+            gap: 10px;
         }
 
         .portrait-name {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
+            font-weight: normal;
+            color: #fff;
             font-size: 1.1em;
+        }
+
+        .event-tag {
+            font-size: 0.7em;
+            color: #888;
+            padding: 3px 8px;
+            border: 1px solid #333;
+            border-radius: 3px;
+            white-space: nowrap;
         }
 
         .portrait-prompt {
             font-size: 0.9em;
-            color: #666;
-            line-height: 1.4;
-            margin-bottom: 10px;
+            color: #aaa;
+            line-height: 1.5;
+            margin-bottom: 15px;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
@@ -176,17 +124,123 @@
 
         .portrait-link {
             display: inline-block;
-            background: #2196F3;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
+            color: #fff;
+            padding: 8px 16px;
+            border: 1px solid #444;
+            border-radius: 3px;
             text-decoration: none;
             font-size: 0.85em;
-            margin-top: 8px;
+            transition: all 0.2s;
         }
 
         .portrait-link:hover {
-            background: #0b7dda;
+            background: #2a2a2a;
+            border-color: #555;
+        }
+
+        .submission-section {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 4px;
+            margin-bottom: 60px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .submission-section h2 {
+            margin-bottom: 30px;
+            color: #fff;
+            font-weight: normal;
+            font-size: 1.5em;
+        }
+
+        .instructions {
+            background: #0a0a0a;
+            padding: 20px;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            border-left: 3px solid #444;
+        }
+
+        .instructions h3 {
+            margin-bottom: 15px;
+            color: #fff;
+            font-weight: normal;
+            font-size: 1.1em;
+        }
+
+        .instructions ol {
+            margin-left: 25px;
+            line-height: 1.8;
+            color: #aaa;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: normal;
+            color: #ccc;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            background: #0a0a0a;
+            color: #e0e0e0;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+        }
+
+        .hint {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        button {
+            background: #2a2a2a;
+            color: #fff;
+            padding: 12px 30px;
+            border: 1px solid #444;
+            border-radius: 3px;
+            font-size: 1em;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #333;
+            border-color: #555;
+        }
+
+        button:disabled {
+            background: #1a1a1a;
+            border-color: #222;
+            cursor: not-allowed;
+            color: #555;
         }
 
         .modal {
@@ -196,176 +250,177 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 1000;
             overflow: auto;
         }
 
         .modal-content {
-            background: white;
+            background: #1a1a1a;
             margin: 50px auto;
-            padding: 30px;
+            padding: 40px;
             max-width: 900px;
-            border-radius: 8px;
+            border-radius: 4px;
             position: relative;
+            border: 1px solid #2a2a2a;
         }
 
         .close-modal {
             position: absolute;
-            top: 15px;
-            right: 20px;
+            top: 20px;
+            right: 25px;
             font-size: 28px;
             cursor: pointer;
-            color: #999;
+            color: #666;
+            transition: color 0.2s;
         }
 
         .close-modal:hover {
-            color: #333;
+            color: #fff;
         }
 
         .modal-image {
             width: 100%;
             max-height: 600px;
             object-fit: contain;
-            background: #fafafa;
-            border-radius: 4px;
-            margin-bottom: 20px;
+            background: #0a0a0a;
+            border-radius: 3px;
+            margin-bottom: 25px;
         }
 
         .modal-info h3 {
-            margin-bottom: 15px;
-            color: #333;
+            margin-bottom: 8px;
+            color: #fff;
+            font-weight: normal;
+            font-size: 1.3em;
+        }
+
+        .modal-event {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 20px;
         }
 
         .modal-prompt {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 4px;
-            line-height: 1.6;
-            color: #555;
+            background: #0a0a0a;
+            padding: 20px;
+            border-radius: 3px;
+            line-height: 1.7;
+            color: #aaa;
             white-space: pre-wrap;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            border-left: 3px solid #333;
         }
 
         .modal-link {
             display: inline-block;
-            background: #2196F3;
-            color: white;
+            background: #2a2a2a;
+            color: #fff;
             padding: 10px 20px;
-            border-radius: 4px;
+            border-radius: 3px;
             text-decoration: none;
             font-size: 1em;
+            border: 1px solid #444;
+            transition: all 0.2s;
         }
 
         .modal-link:hover {
-            background: #0b7dda;
+            background: #333;
+            border-color: #555;
         }
 
         .empty-gallery {
             text-align: center;
-            padding: 60px 20px;
-            color: #999;
+            padding: 80px 20px;
+            color: #666;
+            font-size: 1.1em;
         }
 
         .error-message {
-            background: #fee;
-            border: 1px solid #fcc;
-            color: #c33;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 10px;
+            background: #2a1a1a;
+            border: 1px solid #4a2a2a;
+            color: #ff6b6b;
+            padding: 12px;
+            border-radius: 3px;
+            margin-top: 15px;
             display: none;
         }
 
         .success-message {
-            background: #efe;
-            border: 1px solid #cfc;
-            color: #3c3;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 10px;
+            background: #1a2a1a;
+            border: 1px solid #2a4a2a;
+            color: #6bff6b;
+            padding: 12px;
+            border-radius: 3px;
+            margin-top: 15px;
             display: none;
-        }
-
-        .instructions {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            border-left: 4px solid #2196F3;
-        }
-
-        .instructions h3 {
-            margin-bottom: 10px;
-            color: #1976D2;
-        }
-
-        .instructions ol {
-            margin-left: 20px;
-            line-height: 1.6;
         }
 
         .loading-spinner {
             text-align: center;
-            padding: 20px;
+            padding: 40px;
             color: #666;
+        }
+
+        a {
+            color: inherit;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Digital Self Portrait Gallery</h1>
-            <p class="subtitle">Generative Data Portraits using p5.js</p>
+            <h1>generative data portraits</h1>
+            <p class="subtitle">made with p5.js and claude</p>
         </div>
 
         <div class="gallery-section">
-            <h2>Gallery Wall 🖼️</h2>
-            <div id="loading" class="loading-spinner">Loading gallery...</div>
+            <h2>gallery wall 🖼️</h2>
+            <div id="loading" class="loading-spinner">loading gallery...</div>
             <div class="gallery-grid" id="gallery-grid"></div>
         </div>
 
         <div class="submission-section">
-            <h2>Submit Your Portrait</h2>
+            <h2>submit your portrait</h2>
             
             <div class="instructions">
-                <h3>How to submit:</h3>
+                <h3>how to submit:</h3>
                 <ol>
-                    <li>Create your portrait in the p5.js editor</li>
-                    <li>Save a screenshot or GIF of your portrait</li>
-                    <li>Copy your p5.js editor share link (File → Share)</li>
-                    <li>Fill out the form below and upload!</li>
+                    <li>create your portrait in the p5.js editor</li>
+                    <li>save a screenshot or GIF of your portrait</li>
+                    <li>copy your p5.js editor share link (File → Share)</li>
+                    <li>fill out the form below and upload!</li>
                 </ol>
             </div>
 
             <form id="submission-form">
                 <div class="form-group">
-                    <label for="name">Your Name (optional):</label>
-                    <input type="text" id="name" placeholder="Anonymous">
-                    <div class="hint">Leave blank to remain anonymous</div>
+                    <label for="name">your name (optional):</label>
+                    <input type="text" id="name" placeholder="anonymous">
+                    <div class="hint">leave blank to remain anonymous</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="image">Portrait Image (PNG/JPG/GIF):</label>
+                    <label for="image">portrait image (PNG/JPG/GIF):</label>
                     <input type="file" id="image" accept="image/*" required>
-                    <div class="hint">Upload a screenshot or GIF of your portrait</div>
+                    <div class="hint">upload a screenshot or GIF of your portrait</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="link">p5.js Editor Link:</label>
+                    <label for="link">p5.js editor link:</label>
                     <input type="text" id="link" placeholder="https://editor.p5js.org/username/sketches/..." required>
-                    <div class="hint">Share your sketch: File → Share → Copy link</div>
+                    <div class="hint">share your sketch: File → Share → Copy link</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="prompt">Your Prompt / Data Description:</label>
-                    <textarea id="prompt" required placeholder="e.g., 'Create a constellation portrait. I'm an ambivert, I've lived in 4 cities, I love rainy days...'"></textarea>
-                    <div class="hint">What did you tell Claude? What data did you encode?</div>
+                    <label for="prompt">your prompt / data description:</label>
+                    <textarea id="prompt" required placeholder="e.g., 'create a constellation portrait. I'm an ambivert, I've lived in 4 cities, I love rainy days...'"></textarea>
+                    <div class="hint">what did you tell Claude? what data did you encode?</div>
                 </div>
 
-                <button type="submit" id="submit-btn">Add to Gallery</button>
+                <button type="submit" id="submit-btn">add to gallery</button>
                 <div class="error-message" id="error-message"></div>
-                <div class="success-message" id="success-message">Portrait added to gallery! ✨</div>
+                <div class="success-message" id="success-message">portrait added to gallery! ✨</div>
             </form>
         </div>
     </div>
@@ -376,8 +431,9 @@
             <img class="modal-image" id="modal-image" src="" alt="">
             <div class="modal-info">
                 <h3 id="modal-name"></h3>
+                <div class="modal-event" id="modal-event"></div>
                 <div class="modal-prompt" id="modal-prompt"></div>
-                <a id="modal-link" class="modal-link" href="" target="_blank">View Live Code →</a>
+                <a id="modal-link" class="modal-link" href="" target="_blank">view live code →</a>
             </div>
         </div>
     </div>
@@ -434,7 +490,7 @@
             }
 
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Uploading...';
+            submitBtn.textContent = 'uploading...';
 
             try {
                 // Upload image to Cloudinary
@@ -489,7 +545,7 @@
                 errorMsg.style.display = 'block';
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Add to Gallery';
+                submitBtn.textContent = 'add to gallery';
             }
         });
 
@@ -510,7 +566,7 @@
                 if (error) throw error;
 
                 if (!data || data.length === 0) {
-                    grid.innerHTML = '<div class="empty-gallery">No portraits yet. Be the first to add yours!</div>';
+                    grid.innerHTML = '<div class="empty-gallery">no portraits yet. be the first to add yours!</div>';
                     return;
                 }
 
@@ -518,7 +574,7 @@
             } catch (error) {
                 console.error('Error loading gallery:', error);
                 loading.style.display = 'none';
-                grid.innerHTML = '<div class="empty-gallery">Error loading gallery. Please refresh the page.</div>';
+                grid.innerHTML = '<div class="empty-gallery">error loading gallery. please refresh the page.</div>';
             }
         }
 
@@ -533,15 +589,28 @@
                 const img = document.createElement('img');
                 img.className = 'portrait-image';
                 img.src = portrait.image_url;
-                img.alt = `Portrait by ${portrait.name}`;
+                img.alt = `portrait by ${portrait.name}`;
                 img.onclick = () => openModal(portrait);
 
                 const info = document.createElement('div');
                 info.className = 'portrait-info';
                 
+                const header = document.createElement('div');
+                header.className = 'portrait-header';
+                
                 const nameDiv = document.createElement('div');
                 nameDiv.className = 'portrait-name';
                 nameDiv.textContent = portrait.name;
+                
+                header.appendChild(nameDiv);
+                
+                // Add event tag if event exists
+                if (portrait.event) {
+                    const eventTag = document.createElement('div');
+                    eventTag.className = 'event-tag';
+                    eventTag.textContent = portrait.event;
+                    header.appendChild(eventTag);
+                }
 
                 const promptDiv = document.createElement('div');
                 promptDiv.className = 'portrait-prompt';
@@ -551,9 +620,9 @@
                 link.className = 'portrait-link';
                 link.href = portrait.p5js_link;
                 link.target = '_blank';
-                link.textContent = 'View Code →';
+                link.textContent = 'view code →';
 
-                info.appendChild(nameDiv);
+                info.appendChild(header);
                 info.appendChild(promptDiv);
                 info.appendChild(link);
 
@@ -567,11 +636,14 @@
             const modal = document.getElementById('modal');
             const modalImage = document.getElementById('modal-image');
             const modalName = document.getElementById('modal-name');
+            const modalEvent = document.getElementById('modal-event');
             const modalPrompt = document.getElementById('modal-prompt');
             const modalLink = document.getElementById('modal-link');
 
             modalImage.src = portrait.image_url;
             modalName.textContent = portrait.name;
+            modalEvent.textContent = portrait.event || '';
+            modalEvent.style.display = portrait.event ? 'block' : 'none';
             modalPrompt.textContent = portrait.prompt;
             modalLink.href = portrait.p5js_link;
 
