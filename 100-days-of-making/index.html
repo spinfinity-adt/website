@@ -498,29 +498,32 @@ function syncMobileActive() {
   const f = window._mobileFilter;
   document.querySelectorAll('#mobile-legend .legend-item').forEach(el => {
     const type = el.dataset.filter, val = el.dataset.value;
-    let active = false;
-    if (type === 'medium') active = f.medium === val;
-    if (type === 'maker')  active = f.maker  === val;
-    if (type === 'cat')    active = f.cat    === true;
-    if (type === 'theme')  active = f.theme  === val;
+    const active =
+      (type === 'medium' && f.medium === val) ||
+      (type === 'maker'  && f.maker  === val) ||
+      (type === 'cat'    && f.cat    === true) ||
+      (type === 'theme'  && f.theme  === val);
     el.classList.toggle('active', active);
   });
-  const anyActive = f.medium || f.maker || f.cat || f.theme;
-  document.getElementById('mobile-clear').classList.toggle('visible', !!anyActive);
+  const anyActive = !!(f.medium || f.maker || f.cat || f.theme);
+  document.getElementById('mobile-clear').classList.toggle('visible', anyActive);
+}
+
+function applyMobileTap(type, val) {
+  const f = window._mobileFilter;
+  // clear all first, then toggle the tapped one
+  const prev = { medium: f.medium, maker: f.maker, cat: f.cat, theme: f.theme };
+  f.medium = null; f.maker = null; f.cat = false; f.theme = null;
+  if (type === 'medium' && prev.medium !== val) f.medium = val;
+  if (type === 'maker'  && prev.maker  !== val) f.maker  = val;
+  if (type === 'cat'    && !prev.cat)           f.cat    = true;
+  if (type === 'theme'  && prev.theme  !== val) f.theme  = val;
+  syncMobileActive();
+  if (window._p5redraw) window._p5redraw();
 }
 
 document.querySelectorAll('#mobile-legend .legend-item').forEach(el => {
-  el.addEventListener('click', () => {
-    const f    = window._mobileFilter;
-    const type = el.dataset.filter, val = el.dataset.value;
-    // Toggle: clicking same clears, clicking different sets
-    if (type === 'medium') { f.medium = f.medium === val ? null : val; f.maker = null; f.cat = false; f.theme = null; }
-    if (type === 'maker')  { f.maker  = f.maker  === val ? null : val; f.medium = null; f.cat = false; f.theme = null; }
-    if (type === 'cat')    { f.cat    = !f.cat;                         f.medium = null; f.maker = null; f.theme = null; }
-    if (type === 'theme')  { f.theme  = f.theme  === val ? null : val; f.medium = null; f.maker = null; f.cat = false; }
-    syncMobileActive();
-    if (window._p5redraw) window._p5redraw();
-  });
+  el.addEventListener('click', () => applyMobileTap(el.dataset.filter, el.dataset.value));
 });
 
 document.getElementById('mobile-clear').addEventListener('click', () => {
@@ -775,8 +778,19 @@ new p5(function(p) {
         window.open(LINKS[idx], '_blank');
       }
     }
-    cnv.canvas.addEventListener('click',      handleTap);
-    cnv.canvas.addEventListener('touchstart', handleTap, {passive: true});
+    cnv.canvas.addEventListener('click', handleTap);
+
+    // Mobile: use touchend with scroll guard
+    let _touchStartY = 0;
+    cnv.canvas.addEventListener('touchstart', e => {
+      _touchStartY = e.touches[0].clientY;
+    }, {passive: true});
+    cnv.canvas.addEventListener('touchend', e => {
+      const dy = Math.abs(e.changedTouches[0].clientY - _touchStartY);
+      if (dy > 8) return; // was a scroll, not a tap
+      e.preventDefault();
+      handleTap({ touches: e.changedTouches });
+    }, {passive: false});
   };
 
   p.draw = function() {
