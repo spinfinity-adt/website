@@ -62,7 +62,34 @@
     gap: 8px;
     font-size: 12px;
     color: #2a2520;
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 4px;
+    transition: background 0.15s;
+    user-select: none;
   }
+
+  .legend-item:active { background: rgba(0,0,0,0.07); }
+
+  .legend-item.active {
+    background: #2a2520;
+    color: #f2ede3;
+  }
+
+  .legend-item.active .legend-swatch {
+    outline: 2px solid #f2ede3;
+    outline-offset: 1px;
+  }
+
+  #mobile-clear {
+    display: none;
+    font-size: 11px;
+    color: #888;
+    cursor: pointer;
+    padding: 2px 6px;
+    margin-bottom: 10px;
+  }
+  #mobile-clear.visible { display: inline-block; }
 
   .legend-swatch {
     width: 13px;
@@ -135,15 +162,22 @@
 
 <!-- Mobile legend (shown below canvas on small screens) -->
 <div id="mobile-legend">
+  <span id="mobile-clear">✕ clear filter</span>
   <h3>Medium</h3>
   <div class="legend-grid" id="mat-legend"></div>
   <h3>Maker</h3>
-  <div class="legend-grid">
-    <div class="legend-item"><span class="legend-swatch" style="background:#b8b0a4;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)"></span>Aditi — hexagon</div>
-    <div class="legend-item"><span class="legend-swatch" style="background:#b8b0a4;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)"></span>Mathura — diamond</div>
-    <div class="legend-item"><span class="legend-swatch" style="background:#b8b0a4;clip-path:polygon(50% 0%,100% 100%,0% 100%)"></span>Sakshi — triangle</div>
+  <div class="legend-grid" id="maker-legend">
+    <div class="legend-item" data-filter="maker" data-value="Aditi"><span class="legend-swatch" style="background:#b8b0a4;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)"></span>Aditi</div>
+    <div class="legend-item" data-filter="maker" data-value="Mathura"><span class="legend-swatch" style="background:#b8b0a4;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)"></span>Mathura</div>
+    <div class="legend-item" data-filter="maker" data-value="Sakshi"><span class="legend-swatch" style="background:#b8b0a4;clip-path:polygon(50% 0%,100% 100%,0% 100%)"></span>Sakshi</div>
   </div>
-  <p class="legend-note">🐱 Cat days have little ears &nbsp;·&nbsp; Grey lines connect same-maker streaks<br>Tap any shape to open on Instagram &nbsp;·&nbsp; On desktop: click legend to filter by medium, maker, theme or cat days</p>
+  <h3>Cat days</h3>
+  <div class="legend-grid">
+    <div class="legend-item" data-filter="cat" data-value="true"><span class="legend-swatch" style="background:#b8b0a4;clip-path:polygon(20% 60%,50% 0%,80% 60%)"></span>🐱 cat day</div>
+  </div>
+  <h3>Series</h3>
+  <div class="legend-grid" id="series-legend"></div>
+  <p class="legend-note">Grey lines connect same-maker streaks &nbsp;·&nbsp; Tap shapes to open on Instagram</p>
 </div>
 
 <div id="banner">
@@ -436,8 +470,64 @@ const matLegendEl = document.getElementById('mat-legend');
 Object.entries(MAT).forEach(([grp, col]) => {
   const item = document.createElement('div');
   item.className = 'legend-item';
+  item.dataset.filter = 'medium';
+  item.dataset.value  = grp;
   item.innerHTML = `<span class="legend-swatch" style="background:${col}"></span>${MAT_LABELS[grp]}`;
   matLegendEl.appendChild(item);
+});
+
+const seriesLegendEl = document.getElementById('series-legend');
+const SERIES_ICONS = {
+  "Hilbert Curve": "〰", "Tiling": "⬡", "Puzzle": "⬜",
+  "Origami Tessellation": "✦", "Hooping Cat": "🐱"
+};
+Object.keys(THEME_DAYS).forEach(name => {
+  const item = document.createElement('div');
+  item.className = 'legend-item';
+  item.dataset.filter = 'theme';
+  item.dataset.value  = name;
+  const icon = SERIES_ICONS[name] || '·';
+  item.innerHTML = `<span class="legend-swatch" style="background:#b8b0a4;display:flex;align-items:center;justify-content:center;font-size:9px;border-radius:2px">${icon}</span>${name}`;
+  seriesLegendEl.appendChild(item);
+});
+
+// ── MOBILE FILTER STATE (shared with p5 sketch via window) ───────────────────
+window._mobileFilter = { medium: null, maker: null, cat: false, theme: null };
+
+function syncMobileActive() {
+  const f = window._mobileFilter;
+  document.querySelectorAll('#mobile-legend .legend-item').forEach(el => {
+    const type = el.dataset.filter, val = el.dataset.value;
+    let active = false;
+    if (type === 'medium') active = f.medium === val;
+    if (type === 'maker')  active = f.maker  === val;
+    if (type === 'cat')    active = f.cat    === true;
+    if (type === 'theme')  active = f.theme  === val;
+    el.classList.toggle('active', active);
+  });
+  const anyActive = f.medium || f.maker || f.cat || f.theme;
+  document.getElementById('mobile-clear').classList.toggle('visible', !!anyActive);
+}
+
+document.querySelectorAll('#mobile-legend .legend-item').forEach(el => {
+  el.addEventListener('click', () => {
+    const f    = window._mobileFilter;
+    const type = el.dataset.filter, val = el.dataset.value;
+    // Toggle: clicking same clears, clicking different sets
+    if (type === 'medium') { f.medium = f.medium === val ? null : val; f.maker = null; f.cat = false; f.theme = null; }
+    if (type === 'maker')  { f.maker  = f.maker  === val ? null : val; f.medium = null; f.cat = false; f.theme = null; }
+    if (type === 'cat')    { f.cat    = !f.cat;                         f.medium = null; f.maker = null; f.theme = null; }
+    if (type === 'theme')  { f.theme  = f.theme  === val ? null : val; f.medium = null; f.maker = null; f.cat = false; }
+    syncMobileActive();
+    if (window._p5redraw) window._p5redraw();
+  });
+});
+
+document.getElementById('mobile-clear').addEventListener('click', () => {
+  const f = window._mobileFilter;
+  f.medium = null; f.maker = null; f.cat = false; f.theme = null;
+  syncMobileActive();
+  if (window._p5redraw) window._p5redraw();
 });
 
 // Redraw on resize (reloads page — simplest for static canvas)
@@ -576,10 +666,14 @@ new p5(function(p) {
   let pclHit = null; // bounding box of "PCL" in title
 
   function isVisible(day) {
-    if (filterCat    && !day.isCat)                        return false;
-    if (filterMedium && day.group !== filterMedium)        return false;
-    if (filterMaker  && day.maker !== filterMaker)         return false;
-    if (filterTheme  && !day.themes.includes(filterTheme)) return false;
+    const fMed    = isMobile ? window._mobileFilter.medium : filterMedium;
+    const fMaker  = isMobile ? window._mobileFilter.maker  : filterMaker;
+    const fCat    = isMobile ? window._mobileFilter.cat    : filterCat;
+    const fTheme  = isMobile ? window._mobileFilter.theme  : filterTheme;
+    if (fCat    && !day.isCat)                        return false;
+    if (fMed    && day.group !== fMed)                return false;
+    if (fMaker  && day.maker !== fMaker)              return false;
+    if (fTheme  && !day.themes.includes(fTheme))      return false;
     return true;
   }
 
@@ -603,6 +697,9 @@ new p5(function(p) {
       p.textFont('Open Sans');
       p.redraw();
     });
+
+    // Expose redraw for mobile legend taps
+    window._p5redraw = () => p.redraw();
 
     function getCanvasPos(e) {
       const rect = cnv.canvas.getBoundingClientRect();
@@ -990,7 +1087,7 @@ new p5(function(p) {
       // Mobile hint at bottom of canvas
       p.noStroke(); p.fill(160); p.textSize(8);
       p.textAlign(p.CENTER, p.BOTTOM);
-      p.text("tap any shape to open on instagram", SZ / 2, SZ - 5);
+      p.text("tap shape to open on instagram · filter below", SZ / 2, SZ - 5);
     }
   };
 
