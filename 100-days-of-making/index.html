@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100 Days of Making at PCL · Paper Crane Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Serif+Display&family=Fraunces:opsz,wght@9..144,500&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f2ede3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  #canvas-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 28px 16px 0;
+  }
+
+  #canvas-container canvas {
+    display: block;
+    max-width: 100%;
+    height: auto !important;
+  }
+
+  /* ── Mobile legend (shown below canvas on small screens) ── */
+  #mobile-legend {
+    display: none;
+    width: 100%;
+    max-width: 600px;
+    padding: 20px 20px 8px;
+    color: #2a2520;
+  }
+
+  #mobile-legend h3 {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    color: #2a2520;
+  }
+
+  .legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+    margin-bottom: 18px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #2a2520;
+  }
+
+  .legend-swatch {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-note {
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+    line-height: 1.6;
+  }
+
+  /* ── Banner ── */
+  #banner {
+    width: 100%;
+    background: #2a2520;
+    margin-top: auto;
+  }
+
+  #banner-link {
+    display: block;
+    text-align: center;
+    padding: 18px 24px;
+    color: #f2ede3;
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+  }
+
+  #banner-link span {
+    color: #eab69f;
+    font-weight: 600;
+  }
+
+  #banner-link:hover span { text-decoration: underline; }
+
+
+
+  /* ── Tooltip ── */
+  #tooltip {
+    position: fixed;
+    background: #1c1c1c;
+    color: #f2ede3;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 13px;
+    border-radius: 4px;
+    pointer-events: none;
+    display: none;
+    max-width: 230px;
+    line-height: 1.55;
+    z-index: 100;
+  }
+
+  /* ── Mobile breakpoint ── */
+  @media (max-width: 699px) {
+    #mobile-legend { display: block; }
+    #canvas-container { padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+<div id="tooltip"></div>
+
+<!-- Mobile legend (shown below canvas on small screens) -->
+<div id="mobile-legend">
+  <h3>Medium</h3>
+  <div class="legend-grid" id="mat-legend"></div>
+  <h3>Maker</h3>
+  <div class="legend-grid">
+    <div class="legend-item"><span class="legend-swatch" style="background:#b8b0a4;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)"></span>Aditi — hexagon</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#b8b0a4;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)"></span>Mathura — diamond</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#b8b0a4;clip-path:polygon(50% 0%,100% 100%,0% 100%)"></span>Sakshi — triangle</div>
+  </div>
+  <p class="legend-note">🐱 Cat days have little ears &nbsp;·&nbsp; Grey lines connect same-maker streaks<br>Tap any shape to open on Instagram &nbsp;·&nbsp; On desktop: click legend to filter by medium, maker, theme or cat days</p>
+</div>
+
+<div id="banner">
+  <a href="https://papercranelab.com" target="_blank" id="banner-link">
+    come make things with us at <span>Paper Crane Lab!</span>
+  </a>
+</div>
+
+<script>
+
+// ── MATERIAL GROUPS ───────────────────────────────────────────────────────────
+const MAT = {
+  "Creative Coding": "#eab69f",
+  "Digital":         "#e07a5f",
+  "Laser Cutter":    "#8f5d5d",
+  "Vinyl Cutter":    "#3d405b",
+  "Woodworking":     "#444444",
+  "3D Printing":     "#5f797b",
+  "Paper":           "#81b29a",
+  "Electronics":     "#babf95",
+  "Analog Art":      "#f2cc8f",
+};
+
+function getGroup(machine) {
+  const m = machine.toLowerCase();
+  const parts = m.split(",").map(s => s.trim());
+  const found = new Set();
+  for (const pt of parts) {
+    if (["p5js","dataviz","claude"].some(k => pt.includes(k)))                          found.add("Creative Coding");
+    else if (["canva","slides"].some(k => pt.includes(k)))                              found.add("Digital");
+    else if (["laser"].some(k => pt.includes(k)))                                       found.add("Laser Cutter");
+    else if (["vinyl","plotter"].some(k => pt.includes(k)))                             found.add("Vinyl Cutter");
+    else if (["scroll saw"].some(k => pt.includes(k)))                                  found.add("Woodworking");
+    else if (["3d printer","3d pen"].some(k => pt.includes(k)))                         found.add("3D Printing");
+    else if (["origami","paper bag","pop up","zine","paper"].some(k => pt.includes(k))) found.add("Paper");
+    else if (["light up"].some(k => pt.includes(k)))                                    found.add("Electronics");
+    else if (["hand drawn"].some(k => pt.includes(k)))                                  found.add("Analog Art");
+    else found.add("Digital");
+  }
+  for (const g of ["Creative Coding","Digital","Laser Cutter","Vinyl Cutter","Woodworking","3D Printing","Paper","Electronics","Analog Art"]) {
+    if (found.has(g)) return g;
+  }
+  return "Digital";
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const RAW = [
+  [1,"Spiral Hooping Cats","Plotter","Aditi",true],
+  [2,"Cookie Cutters","3D Printer","Mathura",false],
+  [3,"Cat Tessellation","Scroll Saw","Aditi",true],
+  [4,"Laser Etched Crossword","Laser Cutter","Aditi",false],
+  [5,"p5js art","p5js","Mathura",false],
+  [6,"Blinkit paper lantern","paper bag","Mathura",false],
+  [7,"Origami christmas tree card","Origami","Aditi",false],
+  [8,"Origami christmas trees","Origami","Aditi",false],
+  [9,"3D printed cat charms","3D Printer","Aditi",true],
+  [10,"Hamley's paper bag bauble","paper bag","Mathura",false],
+  [11,"Laser cut ornaments","Laser Cutter","Aditi",true],
+  [12,"p5js eyes on the prize","p5js","Mathura",false],
+  [13,"Pentominoes","Laser Cutter","Mathura",false],
+  [14,"Laser cut ornaments + acrylic","Laser Cutter","Aditi",false],
+  [15,"Christmas Lantern","pop up","Mathura",false],
+  [16,"Laser cut Christmas lantern","Laser Cutter, pop up","Aditi",false],
+  [17,"Xmas tree of prototypes","DataViz","Aditi",false],
+  [18,"Five and four tessellation","paper","Aditi",false],
+  [19,"Annual report generative data","p5js","Mathura",false],
+  [20,"Annual report generative data","p5js, DataViz","Mathura",false],
+  [21,"Annual report generative data","p5js, DataViz","Mathura",false],
+  [22,"Light up card","paper","Mathura",false],
+  [23,"Paper crane","Origami","Mathura",false],
+  [24,"Paper envelope","paper bag","Mathura",false],
+  [25,"Cat tessellation","Vinyl cutter","Aditi",true],
+  [26,"Visual summary annual report","p5js, DataViz","Mathura",false],
+  [27,"Mosaic p5js","p5js","Mathura",false],
+  [28,"3D pen puzzle piece","3d pen","Mathura",false],
+  [29,"2025/6","p5js","Mathura",false],
+  [30,"2026 cats","Plotter","Aditi",true],
+  [31,"Illustrations for kitchen chem","hand drawn","Mathura",false],
+  [32,"Gyro earrings","3D Printer","Aditi",false],
+  [33,"Acrylic puzzle","Laser Cutter","Mathura",false],
+  [34,"Tiling iPad creative coding","p5js","Mathura",false],
+  [35,"Tiled pattern creative coding","p5js","Mathura",false],
+  [36,"Tiled cats","p5js","Mathura",true],
+  [37,"Tiled linkinbio","p5js","Mathura",false],
+  [38,"Circular symmetry pattern","p5js","Mathura",false],
+  [39,"Boxes","Origami","Aditi",false],
+  [40,"Cat mandala puzzle","Laser Cutter","Aditi",true],
+  [41,"p5.js tiling","p5js","Mathura",false],
+  [42,"Laser Cut fridge magnet","Laser Cutter","Mathura",false],
+  [43,"Graphic Design Poster","canva","Mathura",false],
+  [44,"F1 coaster","Laser Cutter","Mathura",false],
+  [45,"Japanese cuisine poster","canva","Mathura",false],
+  [46,"Hexagon Box","Origami","Aditi",false],
+  [47,"Vinyl Cut Bottle stickers","Vinyl cutter","Aditi",true],
+  [48,"Stars jar","Origami","Mathura",false],
+  [49,"Vinyl cut sticker mug","Vinyl cutter","Aditi",false],
+  [50,"Computer Skilling Slideshow","slides","Mathura",false],
+  [51,"Zine with POSCA","zine","Mathura",false],
+  [52,"Zine workshop","zine","Mathura",false],
+  [53,"Sakshi's sticker","Vinyl cutter","Aditi",false],
+  [54,"Hilbert Curve Puzzle","Laser Cutter","Aditi",false],
+  [55,"Fractal Puzzle (Mandelbrot)","Laser Cutter","Aditi",false],
+  [56,"Bookmark","paper","Mathura",false],
+  [57,"Stretching cat","Vinyl cutter","Aditi",true],
+  [58,"Pop up Light up Modular Kitchen","pop up, light up","Mathura",false],
+  [59,"Sia coasters","Laser Cutter","Aditi",false],
+  [60,"Yin yang coaster","Laser Cutter","Aditi",false],
+  [61,"Third Wave cats","Laser Cutter, paper bag","Aditi",true],
+  [62,"Yin yang fractal flasher","Origami","Aditi",false],
+  [63,"Light up Badge - Jiji","light up","Aditi",true],
+  [64,"Light up Badge - Sakshi","light up","Sakshi",false],
+  [65,"Pop up - Sakshi","pop up","Sakshi",false],
+  [66,"Pop up - Sakshi","pop up","Sakshi",false],
+  [67,"Vinyl cut house","Vinyl cutter","Aditi",false],
+  [68,"Vinyl decals","Vinyl cutter","Aditi",true],
+  [69,"Sakshi Paper Bag","hand drawn","Sakshi",false],
+  [70,"Stamps","Laser Cutter","Sakshi",false],
+  [71,"Math Creatures Zine","zine","Aditi",false],
+  [72,"Kinetic Flasher","Origami","Aditi",false],
+  [73,"Kinetic Flasher","Origami","Aditi",true],
+  [74,"p5 cat heart","p5js","Aditi",true],
+  [75,"Spread hex tessellation","Origami","Aditi",false],
+  [76,"Rubber Duck p5.js","p5js","Mathura",false],
+  [77,"Matisse Slot Machine p5.js","p5js","Mathura",false],
+  [78,"NID Ahm Mandala p5js","p5js","Mathura",false],
+  [79,"Bluey","Vinyl cutter","Mathura",false],
+  [80,"Interactive compositions","p5js","Mathura",false],
+  [81,"Truchet Tiles","p5js","Mathura",false],
+  [82,"Hilbert Curve Cat Generator","p5js","Aditi",true],
+  [83,"Hilbert Cat NFC Tag","p5js, Laser Cutter","Aditi",true],
+  [84,"Bloom","p5js","Mathura",false],
+  [85,"Lungi","p5js","Mathura",false],
+  [86,"Spiral Cat","p5js","Mathura",true],
+  [87,"Puzzle Box","Laser Cutter","Aditi",true],
+  [88,"Origami Star Puff Tessellation","Origami","Aditi",false],
+  [89,"Hilbert Curve Cat Earrings","p5js, 3D Printer","Aditi",true],
+  [90,"M.C. Escher Puzzle","3D Printer","Aditi",false],
+  [91,"PCL Cat!","p5js","Aditi",true],
+  [92,"Lavonne Bag Paper Cranes","paper bag","Mathura",false],
+  [93,"Origami Spirals","Origami","Sakshi",false],
+  [94,"Sitalakshi Mandala","Plotter","Mathura",false],
+  [95,"Community Wall Mirror","paper","Sakshi",false],
+  [96,"Canva Collage","canva","Mathura",false],
+  [97,"3D Printed pen-drive organizer","3D Printer","Sakshi",false],
+  [98,"Vinyl Stickers","Vinyl cutter","Sakshi",false],
+  [99,"Vibe shift portraits","p5js, claude","Aditi",false],
+  [100,"100 days data viz","DataViz","Aditi",false],
+];
+
+// ── INSTAGRAM LINKS ───────────────────────────────────────────────────────────
+const LINKS = [
+  "https://www.instagram.com/reel/DRzTiojiemr/",
+  "https://www.instagram.com/reel/DR2GGvPib-a/",
+  "https://www.instagram.com/reel/DR4pGBJiW8f/",
+  "https://www.instagram.com/reel/DR7P9KlkgD8/",
+  "https://www.instagram.com/p/DR-FtXDEmch/",
+  "https://www.instagram.com/reel/DSAajcJCfgQ/",
+  "https://www.instagram.com/reel/DSC6IXiDMc8/",
+  "https://www.instagram.com/reel/DSFZakAibaG/",
+  "https://www.instagram.com/reel/DSIGQoViQPU/",
+  "https://www.instagram.com/reel/DSK8PyCEhj7/",
+  "https://www.instagram.com/reel/DSNGoSqj4Ui/",
+  "https://www.instagram.com/reel/DSQNQDPkrWo/",
+  "https://www.instagram.com/reel/DSSk03jjMij/",
+  "https://www.instagram.com/reel/DSU3oSnicT8/",
+  "https://www.instagram.com/reel/DSXtYkzDOvy/",
+  "https://www.instagram.com/reel/DSZ8CCRCUJU/",
+  "https://www.instagram.com/reel/DScxGmVDOUN/",
+  "https://www.instagram.com/reel/DSfH5PzCWN4/",
+  "https://www.instagram.com/p/DSiK_HNgUAf/",
+  "https://www.instagram.com/reel/DSlzXSHkfq5/",
+  "https://www.instagram.com/reel/DSnLb6qicVd/",
+  "https://www.instagram.com/reel/DSppNG-iQvH/",
+  "https://www.instagram.com/reel/DSsOGpZiSdC/",
+  "https://www.instagram.com/reel/DSusgonCSrK/",
+  "https://www.instagram.com/reel/DSxMZKdgWG8/",
+  "https://www.instagram.com/p/DS0FAEJCftU/",
+  "https://www.instagram.com/reel/DS2vvwuDLsD/",
+  "https://www.instagram.com/reel/DS5MHn_knrr/",
+  "https://www.instagram.com/reel/DS7leM3iQ_N/",
+  "https://www.instagram.com/reel/DS-FYZxib_1/",
+  "https://www.instagram.com/reel/DTDpVREkq4r/",
+  "https://www.instagram.com/reel/DTDOWbTiZgt/",
+  "https://www.instagram.com/reel/DTGKm7RCZUS/",
+  "https://www.instagram.com/reel/DTImlo5CQj6/",
+  "https://www.instagram.com/reel/DTMxcMRiV2s/",
+  "https://www.instagram.com/p/DTN3NcHCQ_S/",
+  "https://www.instagram.com/reel/DTSehf-Cu0F/",
+  "https://www.instagram.com/reel/DTTFJzRCZpU/",
+  "https://www.instagram.com/reel/DTVNJMFiQo9/",
+  "https://www.instagram.com/reel/DTXE1fziQPf/",
+  "https://www.instagram.com/reel/DTa1OXdgQXz/",
+  "https://www.instagram.com/reel/DTckbFeCcCR/",
+  "https://www.instagram.com/reel/DTfre7OiRbV/",
+  "https://www.instagram.com/reel/DTifV_FCTeH/",
+  "https://www.instagram.com/p/DTlBWdFCQsl/",
+  "https://www.instagram.com/reel/DTnMgd1ic17/",
+  "https://www.instagram.com/reel/DTpBL9-CR2T/",
+  "https://www.instagram.com/reel/DTsr04hCUcf/",
+  "https://www.instagram.com/reel/DTu29oNiSJA/",
+  "https://www.instagram.com/reel/DTxuc-2CSiC/",
+  "https://www.instagram.com/reel/DT0JMRqkmg0/",
+  "https://www.instagram.com/reel/DT2TiGjCVOi/",
+  "https://www.instagram.com/reel/DT5KAc4iQ_B/",
+  "https://www.instagram.com/reel/DT7KJk-CZyx/",
+  "https://www.instagram.com/reel/DT-vIUfCV40/",
+  "https://www.instagram.com/reel/DUBTeHzCfkk/",
+  "https://www.instagram.com/reel/DUDn6VWiVY4/",
+  "https://www.instagram.com/reel/DUGFfO3ieIK/",
+  "https://www.instagram.com/reel/DUIsfYyCWmd/",
+  "https://www.instagram.com/reel/DULRTrYCdH9/",
+  "https://www.instagram.com/reel/DUNM1haiQYL/",
+  "https://www.instagram.com/reel/DUPqQVdieqZ/",
+  "https://www.instagram.com/reel/DUSwRtNiXEj/",
+  "https://www.instagram.com/reel/DUVlxNaiXqu/",
+  "https://www.instagram.com/reel/DUX53iIichw/",
+  "https://www.instagram.com/reel/DUZ_szZCaPG/",
+  "https://www.instagram.com/reel/DUcmTCfiQVb/",
+  "https://www.instagram.com/p/DUfPFaZiQIT/",
+  "https://www.instagram.com/p/DUhoqz8CWZh/",
+  "https://www.instagram.com/reel/DUlHk-CCQh-/",
+  "https://www.instagram.com/reel/DUnipXKCcIl/",
+  "https://www.instagram.com/reel/DUp7ZWViYTW/",
+  "https://www.instagram.com/reel/DUspXxbCdh_/",
+  "https://www.instagram.com/reel/DUvPXhHCWp4/",
+  "https://www.instagram.com/p/DUxx7KMie69/",
+  "https://www.instagram.com/reel/DU2BICyEo-D/",
+  "https://www.instagram.com/reel/DU3ZVmjkl1f/",
+  "https://www.instagram.com/reel/DU56J-IkgXq/",
+  "https://www.instagram.com/reel/DU8m1JLCbTP/",
+  "https://www.instagram.com/reel/DU_Af41CYDQ/",
+  "https://www.instagram.com/reel/DVBwMPuCWk8/",
+  "https://www.instagram.com/reel/DVDRONIiU30/",
+  "https://www.instagram.com/reel/DVGXQqPCeHr/",
+  "https://www.instagram.com/reel/DVJPnCXiUlR/",
+  "https://www.instagram.com/reel/DVL0CzUEq8f/",
+  "https://www.instagram.com/reel/DVOpi0Zklqq/",
+  "https://www.instagram.com/reel/DVQxEh2ATae/",
+  "https://www.instagram.com/reel/DVTLBXgAfTP/",
+  "https://www.instagram.com/reel/DVVTuDzE1ic/",
+  "https://www.instagram.com/reel/DVaYrKyiYLx/",
+  "https://www.instagram.com/reel/DVbEPSsjym7/",
+  "https://www.instagram.com/reel/DVdcln0kQjw/",
+  "https://www.instagram.com/reel/DVgDhebiV5t/",
+  "https://www.instagram.com/reel/DVjC4HUCWM6/",
+  "https://www.instagram.com/reel/DVlRx41CS2m/",
+  "https://www.instagram.com/reel/DVoUcEHkvOo/",
+  "https://www.instagram.com/reel/DVqpwQYiW2Q/",
+  "https://www.instagram.com/reel/DVs4TFzCfxT/",
+  "https://www.instagram.com/reel/DVvparhCTSN/",
+  null,
+];
+
+// ── THEMES ────────────────────────────────────────────────────────────────────
+const THEME_DAYS = {
+  "Hilbert Curve":       new Set([54, 82, 83, 89]),
+  "Tiling":              new Set([34, 35, 36, 37, 38, 41]),
+  "Puzzle":              new Set([33, 40, 54, 55, 90]),
+  "Origami Tessellation":new Set([7, 8, 18, 75, 88]),
+  "Hooping Cat":         new Set([1, 47, 83, 89]),
+};
+
+function resolveMaker(maker) {
+  if (maker.includes("Sakshi")) return "Sakshi";
+  if (maker.includes("Aditi"))  return "Aditi";
+  return "Mathura";
+}
+
+const days = RAW.map(([d, thing, machine, maker, isCat]) => {
+  const themes = Object.entries(THEME_DAYS)
+    .filter(([, set]) => set.has(d))
+    .map(([name]) => name);
+  return { d, thing, machine, maker: resolveMaker(maker), isCat, group: getGroup(machine), themes };
+});
+
+const MAT_LABELS = {
+  "Creative Coding": "Creative Coding",
+  "Digital":         "Digital",
+  "Laser Cutter":    "Laser Cutter",
+  "Vinyl Cutter":    "Sitalakshmi the Vinyl Cutter",
+  "Woodworking":     "Woodworking",
+  "3D Printing":     "SaviTHREE the 3D Printer",
+  "Paper":           "Paper",
+  "Electronics":     "Electronics",
+  "Analog Art":      "Analog Art",
+};
+
+// ── BUILD MOBILE LEGEND ───────────────────────────────────────────────────────
+const matLegendEl = document.getElementById('mat-legend');
+Object.entries(MAT).forEach(([grp, col]) => {
+  const item = document.createElement('div');
+  item.className = 'legend-item';
+  item.innerHTML = `<span class="legend-swatch" style="background:${col}"></span>${MAT_LABELS[grp]}`;
+  matLegendEl.appendChild(item);
+});
+
+// Redraw on resize (reloads page — simplest for static canvas)
+window.addEventListener('resize', () => {
+  clearTimeout(window._resizeTimer);
+  window._resizeTimer = setTimeout(() => window.location.reload(), 300);
+});
+
+// ── P5 SKETCH ─────────────────────────────────────────────────────────────────
+new p5(function(p) {
+
+  const isMobile = window.innerWidth < 700;
+
+  // On mobile: fill screen width, no legend column
+  // On desktop: use min(90vw, 860px) with legend
+  const SZ    = isMobile ? window.innerWidth : Math.min(window.innerWidth * 0.92, 860);
+  const GTOP  = isMobile ? 58 : 82;
+  const LGND  = isMobile ? 0  : 190;
+  const PAD   = isMobile ? 14 : 52;
+  const COLS  = 10;
+  const ROWS  = 10;
+  const GRIDW = SZ - PAD * 2 - LGND;
+  const GRIDH = SZ - GTOP - (isMobile ? 20 : 36);
+  const CELLW = GRIDW / COLS;
+  const CELLH = GRIDH / ROWS;
+  const R     = Math.min(CELLW, CELLH) * 0.33;
+  const INK   = '#2a2520';
+
+  const tooltip = document.getElementById('tooltip');
+
+  function getXY(i) {
+    const col = i % COLS;
+    const row = Math.floor(i / COLS);
+    return {
+      cx: PAD + col * CELLW + CELLW / 2,
+      cy: GTOP + row * CELLH + CELLH / 2,
+    };
+  }
+
+  function wNoise(seed, ang, amt) {
+    return 1 + (p.noise(seed + p.cos(ang) * 0.5, p.sin(ang) * 0.5 + seed * 0.07) - 0.5) * amt;
+  }
+
+  // ── SHAPES ────────────────────────────────────────────────────────────────────
+  function shapeAditi(cx, cy, r, seed) {
+    p.beginShape();
+    const pts = 6;
+    for (let i = 0; i <= pts + 5; i++) {
+      const t = (i % pts) / pts;
+      const ang = t * p.TWO_PI - p.HALF_PI;
+      const w = wNoise(seed, ang, 0.09);
+      p.curveVertex(cx + p.cos(ang) * r * 0.88 * w, cy + p.sin(ang) * r * 0.88 * w);
+    }
+    p.endShape(p.CLOSE);
+  }
+
+  function shapeMathura(cx, cy, r, seed) {
+    p.beginShape();
+    const pts = 4;
+    for (let i = 0; i <= pts + 5; i++) {
+      const t = (i % pts) / pts;
+      const ang = t * p.TWO_PI - p.PI / 4;
+      const w = wNoise(seed, ang, 0.1);
+      const cornerPush = 1 + 0.18 * Math.pow(Math.abs(p.cos(ang * 2)), 3);
+      p.curveVertex(cx + p.cos(ang) * r * w * cornerPush, cy + p.sin(ang) * r * w * cornerPush);
+    }
+    p.endShape(p.CLOSE);
+  }
+
+  function shapeSakshi(cx, cy, r, seed) {
+    p.beginShape();
+    const pts = 3;
+    for (let i = 0; i <= pts + 2; i++) {
+      const t = (i % pts) / pts;
+      const ang = t * p.TWO_PI - p.HALF_PI;
+      const w = wNoise(seed, ang, 0.09);
+      const roundness = 1 + 0.22 * (1 - Math.abs(p.cos(ang * 1.5)));
+      p.curveVertex(cx + p.cos(ang) * r * w * roundness, cy + p.sin(ang) * r * w * roundness);
+    }
+    p.endShape(p.CLOSE);
+  }
+
+  function drawCatEars(cx, cy, r, fillColor, seed) {
+    const earH  = r * 0.85;
+    const earW  = r * 0.62;
+    const earCX = r * 0.35;
+    const earTY = cy - r * 0.82;
+    function jit(v, s) { return v + (p.noise(seed + s) - 0.5) * r * 0.1; }
+    for (const side of [-1, 1]) {
+      const ex = cx + side * earCX;
+      p.fill(fillColor);
+      p.beginShape();
+      p.vertex(jit(ex - earW * 0.7, 1.1),         jit(earTY + earH * 0.55, 1.2));
+      p.vertex(jit(ex + earW * 0.7, 1.3),         jit(earTY + earH * 0.55, 1.4));
+      p.vertex(jit(ex + side * earW * 0.55, 1.5), jit(earTY - earH * 0.45, 1.6));
+      p.endShape(p.CLOSE);
+    }
+  }
+
+  function drawNode(cx, cy, r, maker, isCat, fillColor, seed) {
+    p.noStroke();
+    if (isCat) drawCatEars(cx, cy, r, fillColor, seed + 99);
+    p.fill(fillColor);
+    p.noStroke();
+    if (maker === "Aditi")        shapeAditi(cx, cy, r, seed);
+    else if (maker === "Mathura") shapeMathura(cx, cy, r, seed);
+    else                          shapeSakshi(cx, cy, r, seed);
+  }
+
+  function getStreakPairs() {
+    const pairs = [];
+    for (let i = 0; i < 99; i++) {
+      const colA = i % COLS;
+      const colB = (i + 1) % COLS;
+      if (colB < colA) continue;
+      if (days[i].maker === days[i + 1].maker) pairs.push(i);
+    }
+    return pairs;
+  }
+
+  function dayAtPos(mx, my) {
+    for (let i = 0; i < 100; i++) {
+      const {cx, cy} = getXY(i);
+      if (p.dist(mx, my, cx, cy) < R + 8) return i;
+    }
+    return null;
+  }
+
+  // ── FILTER STATE ─────────────────────────────────────────────────────────────
+  let filterMedium = null;
+  let filterMaker  = null;
+  let filterCat    = false;
+  let filterTheme  = null;  // "Hilbert Curve" / "Tessellation" / "Fractal" or null
+
+  const legendHits = [];
+  let pclHit = null; // bounding box of "PCL" in title
+
+  function isVisible(day) {
+    if (filterCat    && !day.isCat)                        return false;
+    if (filterMedium && day.group !== filterMedium)        return false;
+    if (filterMaker  && day.maker !== filterMaker)         return false;
+    if (filterTheme  && !day.themes.includes(filterTheme)) return false;
+    return true;
+  }
+
+  function clearFilters() {
+    filterMedium = null; filterMaker = null; filterCat = false; filterTheme = null;
+  }
+
+  function legendAtPos(mx, my) {
+    for (const h of legendHits) {
+      if (mx >= h.x && mx <= h.x + h.w && my >= h.y && my <= h.y + h.h) return h;
+    }
+    return null;
+  }
+
+  p.setup = function() {
+    const cnv = p.createCanvas(SZ, SZ);
+    cnv.parent('canvas-container');
+    p.noLoop();
+
+    document.fonts.ready.then(() => {
+      p.textFont('Open Sans');
+      p.redraw();
+    });
+
+    function getCanvasPos(e) {
+      const rect = cnv.canvas.getBoundingClientRect();
+      const src  = e.touches ? e.touches[0] : e;
+      return {
+        mx: (src.clientX - rect.left) * (SZ / rect.width),
+        my: (src.clientY - rect.top)  * (SZ / rect.height),
+      };
+    }
+
+    cnv.canvas.addEventListener('mousemove', e => {
+      const {mx, my} = getCanvasPos(e);
+      const idx = dayAtPos(mx, my);
+      const leg = !isMobile ? legendAtPos(mx, my) : null;
+      const onPcl = pclHit && mx >= pclHit.x && mx <= pclHit.x + pclHit.w && my >= pclHit.y && my <= pclHit.y + pclHit.h;
+      if (idx !== null) {
+        const d = days[idx];
+        tooltip.style.display = 'block';
+        tooltip.style.left    = (e.clientX + 14) + 'px';
+        tooltip.style.top     = (e.clientY - 10) + 'px';
+        tooltip.innerHTML     = `<strong>Day ${d.d}</strong> · ${d.maker}<br>${d.thing}<br><em style="opacity:0.6">${d.machine}</em>`;
+        cnv.canvas.style.cursor = LINKS[idx] ? 'pointer' : 'default';
+      } else if (leg || onPcl) {
+        tooltip.style.display = 'none';
+        cnv.canvas.style.cursor = 'pointer';
+      } else {
+        tooltip.style.display = 'none';
+        cnv.canvas.style.cursor = 'default';
+      }
+    });
+
+    cnv.canvas.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+      cnv.canvas.style.cursor = 'default';
+    });
+
+    function handleTap(e) {
+      const {mx, my} = getCanvasPos(e);
+
+      // Check PCL title link
+      if (pclHit && mx >= pclHit.x && mx <= pclHit.x + pclHit.w && my >= pclHit.y && my <= pclHit.y + pclHit.h) {
+        window.open('https://papercranelab.com', '_blank');
+        return;
+      }
+
+      // Check legend first
+      if (!isMobile) {
+        const leg = legendAtPos(mx, my);
+        if (leg) {
+          if (leg.type === 'medium') {
+            filterMedium = (filterMedium === leg.value) ? null : leg.value;
+            filterMaker = null; filterCat = false; filterTheme = null;
+          } else if (leg.type === 'maker') {
+            filterMaker = (filterMaker === leg.value) ? null : leg.value;
+            filterMedium = null; filterCat = false; filterTheme = null;
+          } else if (leg.type === 'cat') {
+            filterCat = !filterCat;
+            filterMedium = null; filterMaker = null; filterTheme = null;
+          } else if (leg.type === 'theme') {
+            filterTheme = (filterTheme === leg.value) ? null : leg.value;
+            filterMedium = null; filterMaker = null; filterCat = false;
+          } else if (leg.type === 'clear') {
+            clearFilters();
+          }
+          p.redraw();
+          return;
+        }
+      }
+
+      // Then check nodes — only open Instagram if not filtered out
+      const idx = dayAtPos(mx, my);
+      if (idx !== null && LINKS[idx] && isVisible(days[idx])) {
+        window.open(LINKS[idx], '_blank');
+      }
+    }
+    cnv.canvas.addEventListener('click',      handleTap);
+    cnv.canvas.addEventListener('touchstart', handleTap, {passive: true});
+  };
+
+  p.draw = function() {
+    p.randomSeed(42);
+    p.noiseSeed(17);
+
+    // Background
+    p.background('#f2ede3');
+    p.noStroke();
+    for (let i = 0; i < 1000; i++) {
+      p.fill(0, 0, 0, p.random(3, 13));
+      p.ellipse(p.random(SZ), p.random(SZ), p.random(0.4, 2.2));
+    }
+
+    // ── Title ─────────────────────────────────────────────────────────────────
+    const titleY = isMobile ? 10 : 12;
+
+    if (isMobile) {
+      p.noStroke(); p.fill(INK);
+      p.textFont('Fraunces'); p.textSize(18);
+      p.textAlign(p.LEFT, p.BASELINE);
+      p.text("100 days of making at PCL", PAD, titleY + 18);
+      p.textFont('Open Sans'); p.textSize(9); p.fill(160);
+      p.textStyle(p.ITALIC);
+      p.textAlign(p.LEFT, p.TOP);
+      p.text("Dec 3, 2025 – Mar 12, 2026  ·  Aditi, Mathura & Sakshi", PAD, titleY + 28);
+      p.textStyle(p.NORMAL);
+    } else {
+      p.noStroke(); p.fill(INK);
+      p.textFont('Fraunces'); p.textSize(40);
+      p.textAlign(p.LEFT, p.BASELINE);
+      p.text("100 days of making at PCL", PAD, titleY + 40);
+
+      // Record PCL hit box — measure where "PCL" sits within the title string
+      const prefixW = p.textWidth("100 days of making at ");
+      const pclW    = p.textWidth("PCL");
+      pclHit = { x: PAD + prefixW, y: titleY, w: pclW, h: 44 };
+
+      // Thin rule
+      const titleW = p.textWidth("100 days of making at PCL");
+      p.stroke(200); p.strokeWeight(0.8);
+      p.line(PAD, titleY + 47, PAD + titleW, titleY + 47);
+      p.noStroke();
+
+      // Date line
+      p.textFont('Open Sans'); p.textStyle(p.ITALIC); p.textSize(11); p.fill(165);
+      p.textAlign(p.LEFT, p.TOP);
+      p.text("December 3, 2025 – March 12, 2026  ·  Aditi, Mathura & Sakshi", PAD, titleY + 53);
+      p.textStyle(p.NORMAL);
+    }
+
+    // Streak lines
+    const streakPairs = getStreakPairs();
+    for (const i of streakPairs) {
+      const a = getXY(i);
+      const b = getXY(i + 1);
+      p.stroke(180, 172, 160, 160);
+      p.strokeWeight(1.3);
+      p.noFill();
+      p.beginShape();
+      for (let s = 0; s <= 6; s++) {
+        const t  = s / 6;
+        const ix = p.lerp(a.cx, b.cx, t);
+        const iy = p.lerp(a.cy, b.cy, t);
+        p.curveVertex(
+          ix + (p.noise(ix * 0.04 + i * 0.3, t * 2) - 0.5) * 5,
+          iy + (p.noise(ix * 0.04, iy * 0.04 + i * 0.3 + 5) - 0.5) * 5
+        );
+      }
+      p.endShape();
+    }
+
+    // Nodes
+    const anyFilter = filterMedium || filterMaker || filterCat || filterTheme;
+    for (let i = 0; i < 100; i++) {
+      const day  = days[i];
+      const {cx, cy} = getXY(i);
+      const col  = MAT[day.group];
+      const seed = i * 4.13 + 2.7;
+      p.randomSeed(i * 23 + 7);
+      p.noiseSeed(i * 13 + 5);
+
+      const visible = isVisible(day);
+      if (anyFilter && !visible) {
+        // Dimmed — draw with low opacity grey
+        p.drawingContext.globalAlpha = 0.13;
+      }
+      drawNode(cx, cy, R, day.maker, day.isCat, col, seed);
+      // Use light number on dark backgrounds
+      const darkGroups = new Set(["Vinyl Cutter","Woodworking"]);
+      const numCol = darkGroups.has(day.group) ? '#f2ede3' : INK;
+      p.noStroke(); p.fill(numCol);
+      p.textStyle(p.NORMAL);
+      p.textSize(isMobile ? 6 : 8);
+      p.textAlign(p.CENTER, p.CENTER);
+      p.text(day.d, cx, cy + 1);
+      p.drawingContext.globalAlpha = 1.0;
+    }
+
+    // Desktop legend only
+    if (!isMobile) {
+      legendHits.length = 0; // reset each draw
+      const lx = SZ - LGND + 12;
+      let   ly = GTOP + 4;
+      const lR = 10;
+      const rowH = 22;
+
+      p.randomSeed(900); p.noiseSeed(900);
+
+      // ── Section: medium ──
+      p.noStroke(); p.fill(INK); p.textSize(13); p.textStyle(p.BOLD);
+      p.textAlign(p.LEFT, p.TOP);
+      p.text("medium", lx, ly); p.textStyle(p.NORMAL);
+      ly += 18;
+
+      const matRows = [
+        ["Creative Coding","Creative Coding"],
+        ["Digital","Digital"],
+        ["Laser Cutter","Laser Cutter"],
+        ["Vinyl Cutter","Sitalakshmi the Vinyl Cutter"],
+        ["Woodworking","Woodworking"],
+        ["3D Printing","SaviTHREE the 3D Printer"],
+        ["Paper","Paper"],
+        ["Electronics","Electronics"],
+        ["Analog Art","Analog Art"],
+      ];
+      matRows.forEach(([grp, label], gi) => {
+        const isActive = filterMedium === grp;
+        const count = days.filter(d => d.group === grp).length;
+        p.randomSeed(900 + gi * 9); p.noiseSeed(900 + gi * 7);
+
+        // Active highlight pill
+        if (isActive) {
+          p.noStroke(); p.fill(INK);
+          p.rect(lx - 4, ly - 1, LGND - 16, rowH - 2, 4);
+        }
+
+        const dotCol = isActive ? '#f2ede3' : MAT[grp];
+        p.fill(dotCol); p.noStroke();
+        const ns = 900 + gi * 4;
+        p.beginShape();
+        for (let k = 0; k <= 16; k++) {
+          const a = (k / 14) * p.TWO_PI;
+          const w = 1 + (p.noise(ns + p.cos(a)*0.4, p.sin(a)*0.4) - 0.5) * 0.13;
+          p.curveVertex(lx + 9 + p.cos(a) * lR * w, ly + 9 + p.sin(a) * lR * w);
+        }
+        p.endShape(p.CLOSE);
+
+        p.noStroke();
+        p.fill(isActive ? '#f2ede3' : INK);
+        p.textSize(10); p.textAlign(p.LEFT, p.TOP);
+        p.text(label, lx + 23, ly + 4);
+
+        // Count — right-aligned, only when active
+        if (isActive) {
+          p.textAlign(p.RIGHT, p.TOP);
+          p.fill('#f2ede3'); p.textSize(10);
+          p.text(count, lx + LGND - 24, ly + 4);
+          p.textAlign(p.LEFT, p.TOP);
+        }
+
+        legendHits.push({type:'medium', value:grp, x:lx-4, y:ly-1, w:LGND-16, h:rowH-2});
+        ly += rowH;
+      });
+
+      ly += 10;
+
+      // ── Section: maker ──
+      p.noStroke(); p.fill(INK); p.textSize(13); p.textStyle(p.BOLD);
+      p.textAlign(p.LEFT, p.TOP);
+      p.text("maker", lx, ly); p.textStyle(p.NORMAL);
+      ly += 18;
+
+      [["Aditi"],["Mathura"],["Sakshi"]].forEach(([name], mi) => {
+        const isActive = filterMaker === name;
+        const count = days.filter(d => d.maker === name).length;
+        p.randomSeed(800 + mi * 11); p.noiseSeed(800 + mi * 7);
+
+        if (isActive) {
+          p.noStroke(); p.fill(INK);
+          p.rect(lx - 4, ly - 1, LGND - 16, rowH - 2, 4);
+        }
+
+        const shapeCol = isActive ? '#f2ede3' : '#b8b0a4';
+        p.fill(shapeCol); p.noStroke();
+        const lns = 800 + mi * 5;
+        const lcy = ly + 9, lcx = lx + 9;
+        if (name === "Aditi")        shapeAditi(lcx, lcy, lR, lns);
+        else if (name === "Mathura") shapeMathura(lcx, lcy, lR, lns);
+        else                         shapeSakshi(lcx, lcy, lR, lns);
+
+        p.noStroke(); p.fill(isActive ? '#f2ede3' : INK);
+        p.textSize(11); p.textAlign(p.LEFT, p.TOP);
+        p.text(name, lx + 23, ly + 4);
+
+        if (isActive) {
+          p.textAlign(p.RIGHT, p.TOP);
+          p.fill('#f2ede3'); p.textSize(10);
+          p.text(count, lx + LGND - 24, ly + 4);
+          p.textAlign(p.LEFT, p.TOP);
+        }
+
+        legendHits.push({type:'maker', value:name, x:lx-4, y:ly-1, w:LGND-16, h:rowH-2});
+        ly += rowH;
+      });
+
+      ly += 10;
+
+      // ── Section: cat day ──
+      p.noStroke(); p.fill(INK); p.textSize(13); p.textStyle(p.BOLD);
+      p.textAlign(p.LEFT, p.TOP);
+      p.text("cat day", lx, ly); p.textStyle(p.NORMAL);
+      ly += 18;
+
+      const catActive = filterCat;
+      const catCount = days.filter(d => d.isCat).length;
+      if (catActive) {
+        p.noStroke(); p.fill(INK);
+        p.rect(lx - 4, ly - 1, LGND - 16, rowH - 2, 4);
+      }
+      p.randomSeed(700); p.noiseSeed(700);
+      const catCol = catActive ? '#f2ede3' : '#b8b0a4';
+      p.fill(catCol); p.noStroke();
+      drawCatEars(lx + 9, ly + 10, lR, catCol, 700);
+      shapeAditi(lx + 9, ly + 10, lR, 700);
+      p.noStroke(); p.fill(catActive ? '#f2ede3' : 110);
+      p.textSize(10); p.textAlign(p.LEFT, p.TOP);
+      p.text("ears behind the shape", lx + 23, ly + 4);
+      if (catActive) {
+        p.textAlign(p.RIGHT, p.TOP);
+        p.fill('#f2ede3'); p.textSize(10);
+        p.text(catCount, lx + LGND - 24, ly + 4);
+        p.textAlign(p.LEFT, p.TOP);
+      }
+      legendHits.push({type:'cat', value:true, x:lx-4, y:ly-1, w:LGND-16, h:rowH-2});
+      ly += rowH;
+
+      ly += 10;
+
+      // ── Section: theme ──
+      p.noStroke(); p.fill(INK); p.textSize(13); p.textStyle(p.BOLD);
+      p.textAlign(p.LEFT, p.TOP);
+      p.text("series", lx, ly); p.textStyle(p.NORMAL);
+      ly += 18;
+
+      const themeRows = [
+        ["Hilbert Curve",        "〰"],
+        ["Tiling",               "⬡"],
+        ["Puzzle",               "⬜"],
+        ["Origami Tessellation", "✦"],
+        ["Hooping Cat",          "🐱"],
+      ];
+      themeRows.forEach(([theme, icon], ti) => {
+        const isActive = filterTheme === theme;
+        const count = days.filter(d => d.themes.includes(theme)).length;
+
+        if (isActive) {
+          p.noStroke(); p.fill(INK);
+          p.rect(lx - 4, ly - 1, LGND - 16, rowH - 2, 4);
+        }
+
+        p.noStroke(); p.fill(isActive ? '#f2ede3' : INK);
+        p.textSize(11); p.textAlign(p.LEFT, p.TOP);
+        p.text(`${icon}  ${theme}`, lx + 4, ly + 4);
+
+        if (isActive) {
+          p.textAlign(p.RIGHT, p.TOP);
+          p.fill('#f2ede3'); p.textSize(10);
+          p.text(count, lx + LGND - 24, ly + 4);
+          p.textAlign(p.LEFT, p.TOP);
+        }
+
+        legendHits.push({type:'theme', value:theme, x:lx-4, y:ly-1, w:LGND-16, h:rowH-2});
+        ly += rowH;
+      });
+
+      // Clear filter hint
+      if (filterMedium || filterMaker || filterCat || filterTheme) {
+        ly += 8;
+        legendHits.push({type:'clear', value:null, x:lx-4, y:ly-1, w:LGND-16, h:18});
+        p.noStroke(); p.fill(200); p.textSize(9.5);
+        p.textAlign(p.LEFT, p.TOP);
+        p.text("✕ clear filter", lx + 2, ly + 2);
+        ly += 20;
+      }
+
+      ly += 12;
+
+      // ── Streak ──
+      p.noStroke(); p.fill(INK); p.textSize(13); p.textStyle(p.BOLD);
+      p.text("streak", lx, ly); p.textStyle(p.NORMAL);
+      ly += 17;
+      p.stroke(180, 172, 160, 180); p.strokeWeight(1.5);
+      p.line(lx, ly + 6, lx + 38, ly + 6);
+      p.noStroke(); p.fill(110); p.textSize(10);
+      p.text("same maker, consecutive days", lx, ly + 14);
+      ly += 32;
+
+      // ── Reading direction ──
+      p.noStroke(); p.fill(150); p.textSize(9.5); p.textStyle(p.NORMAL);
+      p.text("left → right, top → bottom\n(days 1 → 100)", lx, ly);
+
+      // Hint at bottom
+      p.noStroke(); p.fill(170); p.textSize(9);
+      p.textAlign(p.CENTER, p.BOTTOM);
+      p.text("hover · click legend to filter · click shape to open instagram", SZ/2 - LGND/2, SZ - 6);
+    } else {
+      // Mobile hint at bottom of canvas
+      p.noStroke(); p.fill(160); p.textSize(8);
+      p.textAlign(p.CENTER, p.BOTTOM);
+      p.text("tap any shape to open on instagram", SZ / 2, SZ - 5);
+    }
+  };
+
+}, document.getElementById('canvas-container'));
+</script>
+</body>
+</html>
