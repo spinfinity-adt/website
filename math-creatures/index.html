@@ -19,9 +19,7 @@
       --shadow: rgba(60, 40, 20, 0.13);
       --divider: rgba(90, 70, 50, 0.15);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       background-color: var(--cream);
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
@@ -30,23 +28,7 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-
-    /* ── INTRO ── */
-    .intro {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 64px 40px 48px;
-    }
-
-    .intro-eyebrow {
-      font-family: 'Kalam', cursive;
-      font-size: 1rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      margin-bottom: 16px;
-    }
-
+    .intro { max-width: 720px; margin: 0 auto; padding: 64px 40px 48px; }
     .intro-title {
       font-family: 'Kalam', cursive;
       font-size: clamp(2.8rem, 8vw, 5.5rem);
@@ -56,137 +38,50 @@
       letter-spacing: -1px;
       margin-bottom: 32px;
     }
-
     .intro-title span {
       display: block;
       font-size: clamp(1.3rem, 3.5vw, 2rem);
       font-weight: 300;
-      letter-spacing: 0px;
       color: var(--ink-faint);
       margin-bottom: 4px;
     }
-
-    .intro-body {
-      font-size: 1.05rem;
-      line-height: 1.85;
-      color: var(--ink-light);
-    }
-
+    .intro-body { font-size: 1.05rem; line-height: 1.85; color: var(--ink-light); }
     .intro-body p + p { margin-top: 1.2em; }
-
-    .intro-body em {
-      font-style: italic;
-      color: var(--ink);
-    }
-
-    .intro-body strong {
-      font-weight: 600;
-      font-style: normal;
-      color: var(--ink);
-    }
-
-    .intro-sig {
-      margin-top: 28px;
-      font-family: 'Kalam', cursive;
-      font-size: 1.15rem;
-      color: var(--ink-faint);
-    }
-
-    .intro-sig strong {
-      color: var(--ink);
-      font-weight: 600;
-    }
-
+    .intro-body em { font-style: italic; color: var(--ink); }
+    .intro-body strong { font-weight: 600; font-style: normal; color: var(--ink); }
+    .intro-sig { margin-top: 28px; font-family: 'Kalam', cursive; font-size: 1.15rem; color: var(--ink-faint); }
+    .intro-sig strong { color: var(--ink); font-weight: 600; }
     .intro-divider {
       height: 1px;
       background: linear-gradient(to right, transparent, var(--divider) 20%, var(--divider) 80%, transparent);
-      max-width: 720px;
-      margin: 0 auto;
+      max-width: 720px; margin: 0 auto;
     }
-
-    /* ── FILTERS ── */
     .filters-area {
-      padding: 32px 40px 16px;
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: baseline;
-      gap: 16px;
-      flex-wrap: wrap;
+      padding: 32px 40px 16px; max-width: 1400px; margin: 0 auto;
+      display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
     }
-
-    .filter-label {
-      font-family: 'Kalam', cursive;
-      font-size: 1.05rem;
-      color: var(--ink-faint);
-      white-space: nowrap;
-    }
-
-    .filter-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
+    .filter-label { font-family: 'Kalam', cursive; font-size: 1.05rem; color: var(--ink-faint); white-space: nowrap; }
+    .filter-row { display: flex; flex-wrap: wrap; gap: 8px; }
     .filter-btn {
-      font-family: 'Kalam', cursive;
-      font-size: 1rem;
-      padding: 4px 14px;
-      border-radius: 20px;
-      border: 1.5px solid var(--ink-faint);
-      background: transparent;
-      color: var(--ink-light);
-      cursor: pointer;
-      transition: all 0.15s ease;
+      font-family: 'Kalam', cursive; font-size: 1rem; padding: 4px 14px;
+      border-radius: 20px; border: 1.5px solid var(--ink-faint);
+      background: transparent; color: var(--ink-light); cursor: pointer; transition: all 0.15s ease;
     }
-
-    .filter-btn:hover,
-    .filter-btn.active {
-      background: var(--ink);
-      color: var(--cream);
-      border-color: var(--ink);
-    }
-
+    .filter-btn:hover, .filter-btn.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
     .status-line {
-      padding: 4px 40px 0;
-      max-width: 1400px;
-      margin: 0 auto;
-      font-family: 'Kalam', cursive;
-      font-size: 0.9rem;
-      color: var(--ink-faint);
-      min-height: 22px;
+      padding: 4px 40px 0; max-width: 1400px; margin: 0 auto;
+      font-family: 'Kalam', cursive; font-size: 0.9rem; color: var(--ink-faint); min-height: 22px;
     }
-
-    /* ── MASONRY GRID ── */
-    .grid {
-      column-count: 4;
-      column-gap: 18px;
-      padding: 24px 40px 80px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
+    .grid { column-count: 4; column-gap: 18px; padding: 24px 40px 80px; max-width: 1400px; margin: 0 auto; }
     @media (max-width: 1100px) { .grid { column-count: 3; } }
     @media (max-width: 760px)  { .grid { column-count: 2; padding: 20px 20px 60px; } }
     @media (max-width: 480px)  { .grid { column-count: 1; } }
-    @media (max-width: 600px)  {
-      .intro { padding: 40px 20px 36px; }
-      .filters-area { padding: 20px; }
-      .status-line { padding-left: 20px; }
-    }
-
-    /* ── CARD ── */
+    @media (max-width: 600px)  { .intro { padding: 40px 20px 36px; } .filters-area { padding: 20px; } .status-line { padding-left: 20px; } }
     .card {
-      break-inside: avoid;
-      display: inline-block;
-      width: 100%;
-      margin-bottom: 18px;
-      position: relative;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      break-inside: avoid; display: inline-block; width: 100%; margin-bottom: 18px;
+      position: relative; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
       animation: fadeUp 0.35s ease both;
     }
-
     .card:nth-child(5n+1) { transform: rotate(-1.3deg); }
     .card:nth-child(5n+2) { transform: rotate(0.7deg); }
     .card:nth-child(5n+3) { transform: rotate(-0.5deg); }
@@ -194,312 +89,89 @@
     .card:nth-child(5n+5) { transform: rotate(-1.0deg); }
     .card:hover { transform: rotate(0deg) translateY(-5px) scale(1.015) !important; z-index: 10; }
     .card.hidden { display: none; }
-
     .card-inner {
-      background: var(--warm-white);
-      border-radius: 2px;
-      padding: 12px 12px 16px;
-      box-shadow: 3px 5px 16px var(--shadow), 0 1px 3px var(--shadow);
-      position: relative;
+      background: var(--warm-white); border-radius: 2px; padding: 12px 12px 16px;
+      box-shadow: 3px 5px 16px var(--shadow), 0 1px 3px var(--shadow); position: relative;
     }
-
     .card-inner::before {
-      content: '';
-      position: absolute;
-      top: -9px;
-      left: 50%;
-      transform: translateX(-50%) rotate(-1deg);
-      width: 54px;
-      height: 19px;
-      background: var(--tape);
-      border: 1px solid var(--tape-border);
-      border-radius: 1px;
-      z-index: 2;
+      content: ''; position: absolute; top: -9px; left: 50%;
+      transform: translateX(-50%) rotate(-1deg); width: 54px; height: 19px;
+      background: var(--tape); border: 1px solid var(--tape-border); border-radius: 1px; z-index: 2;
     }
     .card:nth-child(3n+1) .card-inner::before { left: 28%; transform: rotate(-2.5deg); width: 46px; }
     .card:nth-child(3n+2) .card-inner::before { left: 62%; transform: rotate(1.8deg); width: 58px; }
-
-    .card-img {
-      width: 100%;
-      display: block;
-      border-radius: 1px;
-      background: #e8e3da;
-    }
-
+    .card-img { width: 100%; display: block; border-radius: 1px; background: #e8e3da; }
     .card-body { padding: 10px 4px 2px; }
-
-    .card-name {
-      font-family: 'Kalam', cursive;
-      font-size: 1.45rem;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1.1;
-      margin-bottom: 2px;
-    }
-
-    .card-meta {
-      font-family: 'Kalam', cursive;
-      font-size: 0.88rem;
-      color: var(--ink-faint);
-      margin-bottom: 8px;
-    }
-
+    .card-name { font-family: 'Kalam', cursive; font-size: 1.45rem; font-weight: 700; color: var(--ink); line-height: 1.1; margin-bottom: 2px; }
+    .card-meta { font-family: 'Kalam', cursive; font-size: 0.88rem; color: var(--ink-faint); margin-bottom: 8px; }
     .card-emotion-tag {
-      display: inline-block;
-      font-family: 'Kalam', cursive;
-      font-size: 0.8rem;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: #ede8de;
-      color: var(--ink-faint);
-      border: 1px solid #ddd6c8;
-      margin-bottom: 6px;
+      display: inline-block; font-family: 'Kalam', cursive; font-size: 0.8rem;
+      padding: 2px 8px; border-radius: 10px; background: #ede8de;
+      color: var(--ink-faint); border: 1px solid #ddd6c8; margin-bottom: 6px;
     }
-
-    .card-description {
-      font-size: 0.82rem;
-      line-height: 1.65;
-      color: var(--ink-light);
-      display: none;
-      margin-top: 6px;
-    }
-
+    .card-description { font-size: 0.82rem; line-height: 1.65; color: var(--ink-light); display: none; margin-top: 6px; }
     .card-questions { margin-top: 8px; display: none; }
-
-    .questions-label {
-      font-family: 'Kalam', cursive;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--ink-faint);
-      margin-bottom: 5px;
-    }
-
-    .question-item {
-      font-family: 'Kalam', cursive;
-      font-size: 1rem;
-      color: var(--accent-red);
-      line-height: 1.5;
-      border-left: 2px solid var(--accent-red);
-      padding-left: 8px;
-      margin-bottom: 3px;
-    }
-
+    .questions-label { font-family: 'Kalam', cursive; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-faint); margin-bottom: 5px; }
+    .question-item { font-family: 'Kalam', cursive; font-size: 1rem; color: var(--accent-red); line-height: 1.5; border-left: 2px solid var(--accent-red); padding-left: 8px; margin-bottom: 3px; }
     .expand-btn {
-      display: block;
-      width: 100%;
-      text-align: center;
-      font-family: 'Kalam', cursive;
-      font-size: 0.88rem;
-      color: var(--ink-faint);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 7px 0 2px;
-      margin-top: 6px;
-      border-top: 1px dashed #d4ccc0;
-      transition: color 0.15s;
+      display: block; width: 100%; text-align: center; font-family: 'Kalam', cursive;
+      font-size: 0.88rem; color: var(--ink-faint); background: none; border: none; cursor: pointer;
+      padding: 7px 0 2px; margin-top: 6px; border-top: 1px dashed #d4ccc0; transition: color 0.15s;
     }
     .expand-btn:hover { color: var(--ink); }
-
-    .card.expanded .card-description,
-    .card.expanded .card-questions { display: block; }
-
-    /* ── LIGHTBOX ── */
+    .card.expanded .card-description, .card.expanded .card-questions { display: block; }
     .lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 10, 5, 0.88);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      backdrop-filter: blur(4px);
+      display: none; position: fixed; inset: 0; background: rgba(15,10,5,0.88);
+      z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
     }
     .lightbox.open { display: flex; }
-
     .lightbox-content {
-      background: var(--warm-white);
-      border-radius: 3px;
-      max-width: 820px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      display: flex;
-      box-shadow: 0 24px 70px rgba(0,0,0,0.45);
-      position: relative;
+      background: var(--warm-white); border-radius: 3px; max-width: 820px; width: 100%;
+      max-height: 90vh; overflow-y: auto; display: flex;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.45); position: relative;
     }
-
-    .lb-img-side {
-      width: 48%;
-      flex-shrink: 0;
-      background: #ede8de;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-    .lb-img-side img {
-      max-width: 100%;
-      max-height: 75vh;
-      object-fit: contain;
-      border-radius: 1px;
-    }
-
-    .lb-text-side {
-      padding: 36px 30px 30px;
-      flex: 1;
-      overflow-y: auto;
-    }
-
-    .lb-name {
-      font-family: 'Kalam', cursive;
-      font-size: 2.4rem;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-
-    .lb-meta {
-      font-family: 'Kalam', cursive;
-      font-size: 1rem;
-      color: var(--ink-faint);
-      margin-bottom: 18px;
-    }
-
-    .lb-description {
-      font-size: 0.9rem;
-      line-height: 1.8;
-      color: var(--ink-light);
-    }
-
-    .lb-questions {
-      margin-top: 18px;
-      padding: 14px 16px;
-      background: #fdf5e8;
-      border-radius: 2px;
-      border-left: 3px solid var(--accent-red);
-    }
-
+    .lb-img-side { width: 48%; flex-shrink: 0; background: #ede8de; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .lb-img-side img { max-width: 100%; max-height: 75vh; object-fit: contain; border-radius: 1px; }
+    .lb-text-side { padding: 36px 30px 30px; flex: 1; overflow-y: auto; }
+    .lb-name { font-family: 'Kalam', cursive; font-size: 2.4rem; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+    .lb-meta { font-family: 'Kalam', cursive; font-size: 1rem; color: var(--ink-faint); margin-bottom: 18px; }
+    .lb-description { font-size: 0.9rem; line-height: 1.8; color: var(--ink-light); }
+    .lb-questions { margin-top: 18px; padding: 14px 16px; background: #fdf5e8; border-radius: 2px; border-left: 3px solid var(--accent-red); }
     .lb-questions .questions-label { margin-bottom: 8px; }
-
-    .lb-q-item {
-      font-family: 'Kalam', cursive;
-      font-size: 1.15rem;
-      color: var(--accent-red);
-      line-height: 1.55;
-      margin-bottom: 4px;
-    }
-
-    .lb-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 18px;
-    }
-
-    .lb-tag {
-      font-family: 'Kalam', cursive;
-      font-size: 0.85rem;
-      padding: 3px 10px;
-      border-radius: 12px;
-      background: #ede8de;
-      color: var(--ink-faint);
-      border: 1px solid #d4ccc0;
-    }
-
-    .lb-close {
-      position: absolute;
-      top: 12px;
-      right: 14px;
-      background: none;
-      border: none;
-      font-family: 'Kalam', cursive;
-      font-size: 1.6rem;
-      cursor: pointer;
-      color: var(--ink-faint);
-      line-height: 1;
-      z-index: 10;
-    }
+    .lb-q-item { font-family: 'Kalam', cursive; font-size: 1.15rem; color: var(--accent-red); line-height: 1.55; margin-bottom: 4px; }
+    .lb-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+    .lb-tag { font-family: 'Kalam', cursive; font-size: 0.85rem; padding: 3px 10px; border-radius: 12px; background: #ede8de; color: var(--ink-faint); border: 1px solid #d4ccc0; }
+    .lb-close { position: absolute; top: 12px; right: 14px; background: none; border: none; font-family: 'Kalam', cursive; font-size: 1.6rem; cursor: pointer; color: var(--ink-faint); line-height: 1; z-index: 10; }
     .lb-close:hover { color: var(--ink); }
-
-    @media (max-width: 620px) {
-      .lightbox-content { flex-direction: column; }
-      .lb-img-side { width: 100%; max-height: 45vh; }
-    }
-
-    /* ── LOADING / EMPTY ── */
-    .loading-state {
-      text-align: center;
-      padding: 80px 40px;
-      font-family: 'Kalam', cursive;
-      font-size: 1.4rem;
-      color: var(--ink-faint);
-    }
-
-    .loading-state .dot {
-      display: inline-block;
-      animation: blink 1.2s infinite;
-    }
+    @media (max-width: 620px) { .lightbox-content { flex-direction: column; } .lb-img-side { width: 100%; max-height: 45vh; } }
+    .loading-state { text-align: center; padding: 80px 40px; font-family: 'Kalam', cursive; font-size: 1.4rem; color: var(--ink-faint); }
+    .loading-state .dot { display: inline-block; animation: blink 1.2s infinite; }
     .loading-state .dot:nth-child(2) { animation-delay: 0.2s; }
     .loading-state .dot:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes blink {
-      0%, 80%, 100% { opacity: 0.2; }
-      40% { opacity: 1; }
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; }
-    }
-
-    /* ── FOOTER ── */
-    .footer {
-      text-align: center;
-      padding: 0 40px 60px;
-      font-family: 'Kalam', cursive;
-      font-size: 1rem;
-      color: var(--ink-faint);
-      line-height: 1.8;
-    }
-    .footer a {
-      color: var(--ink-light);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
+    @keyframes blink { 0%,80%,100% { opacity:0.2; } 40% { opacity:1; } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; } }
+    .footer { text-align: center; padding: 0 40px 60px; font-family: 'Kalam', cursive; font-size: 1rem; color: var(--ink-faint); line-height: 1.8; }
+    .footer a { color: var(--ink-light); text-decoration: underline; text-underline-offset: 3px; }
   </style>
 </head>
 <body>
 
-<!-- INTRO -->
 <section class="intro">
   <h1 class="intro-title">
     <span>Spinfinity's</span>
     Math Creatures
   </h1>
   <div class="intro-body">
-    <p>
-      I asked my students to <em>imagine Math as a person or living being</em> — and to draw it, name it, and ask it whatever they wanted.
-    </p>
-    <p>
-      These math creatures were made by <strong>bold, brilliant girls aged 9–14</strong> at an orphanage where the math trauma is almost generational — and by <strong>4th standard students</strong> at a government school.
-    </p>
-    <p>
-      Learning math is an incredibly emotional experience. In our education system, being good at math means you are smart, and being bad at math means you're not. Over time, these labels shape how children see themselves.
-    </p>
-    <p>
-      Spinfinity is about breaking out of these labels, and exploring math through the body. We use hula hoops as a tool to play and spin math concepts.
-    </p>
+    <p>I asked my students to <em>imagine Math as a person or living being</em> — and to draw it, name it, and ask it whatever they wanted.</p>
+    <p>These math creatures were made by <strong>bold, brilliant girls aged 9–14</strong> at an orphanage where the math trauma is almost generational — and by <strong>4th standard students</strong> at a government school.</p>
+    <p>Learning math is an incredibly emotional experience. In our education system, being good at math means you are smart, and being bad at math means you're not. Over time, these labels shape how children see themselves.</p>
+    <p>Spinfinity is about breaking out of these labels, and exploring math through the body. We use hula hoops as a tool to play and spin math concepts.</p>
   </div>
   <div class="intro-sig">— <strong>Aditi Bhat</strong>, Chief Spinner at Spinfinity</div>
 </section>
 
 <div class="intro-divider"></div>
 
-<!-- FILTERS -->
 <div class="filters-area">
   <span class="filter-label">show me —</span>
   <div class="filter-row" id="filterRow">
@@ -512,20 +184,14 @@
 
 <div class="status-line" id="statusLine"></div>
 
-<!-- GRID -->
 <div class="grid" id="grid">
-  <div class="loading-state">
-    fetching creatures<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
-  </div>
+  <div class="loading-state">fetching creatures<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
 </div>
 
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <div class="lightbox-content">
-    <button class="lb-close" id="lbClose">✕</button>
-    <div class="lb-img-side">
-      <img id="lbImg" src="" alt="">
-    </div>
+    <button class="lb-close" id="lbClose">&#x2715;</button>
+    <div class="lb-img-side"><img id="lbImg" src="" alt=""></div>
     <div class="lb-text-side">
       <div class="lb-name" id="lbName"></div>
       <div class="lb-meta" id="lbMeta"></div>
@@ -536,223 +202,171 @@
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer class="footer">
   <p>
-    To know more, find us at <a href="https://instagram.com/spinfinity.adt" target="_blank">@spinfinity.adt</a> on Instagram,<br>
+    Find us at <a href="https://instagram.com/spinfinity.adt" target="_blank">@spinfinity.adt</a> on Instagram,
     or write to <a href="mailto:spinfinity.in@gmail.com">spinfinity.in@gmail.com</a>
   </p>
 </footer>
 
 <script>
-// ─────────────────────────────────────────────────────────────────
-// CONFIGURATION
-//
-// Paste your published Google Sheet CSV URL here.
-// To get it: in your Sheet → File → Share → Publish to web
-//            → choose Sheet1 → choose CSV → click Publish → copy URL
-// ─────────────────────────────────────────────────────────────────
-// The Google Visualization query API allows cross-origin fetches unlike the CSV export.
-// We fetch as CSV via the gviz endpoint which has proper CORS headers.
-const SHEET_GVIZ_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSI6LsxxrOjecL2-xYydl_MTemNjImNNzS5rKcKRhwMKU5UjZs9r2LJv0zLElB3eQfhr20cT8O13vcy/pub?output=csv&gid=0";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSI6LsxxrOjecL2-xYydl_MTemNjImNNzS5rKcKRhwMKU5UjZs9r2LJv0zLElB3eQfhr20cT8O13vcy/pub?output=csv&gid=0";
 
-// ─────────────────────────────────────────────────────────────────
-// FALLBACK DATA — used when SHEET_CSV_URL is not yet set,
-// or if the sheet fetch fails (offline / CORS / etc.)
-// ─────────────────────────────────────────────────────────────────
-const FALLBACK_DATA = [
-  {"file":"MathCreature_Refuge_1","name":"Maria","center":"Refuge","standard":"6th","gender":"F","description":"This one is from the Refuge group. This is the only mildly positive drawing. She\u2019s drawn a cute little girl and written, \u201cyou are very interesting.\u201d She\u2019s visualized her math person as a girl made of shapes. You can see triangles and other elements of math, very mildly.","emotion":"Neutral, mildly positive","form":"made of shapes","questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_1.png"},
-  {"file":"MathCreature_Refuge_2","name":"Maths Man","center":"Refuge","standard":"9th","gender":"F","description":"She starts by writing an acronym for math: \u201cMental Attack to Hyper students.\u201d Then she says, \u201cI\u2019m not gonna let you go away from me.\u201d Her math human has shapes built into the body, (a triangle for a nose, pencils for hands, and squares for eyes), so you can see mathematical forms in how she\u2019s drawn the person. Next to it, she\u2019s written, \u201cyou actually look great and cute,\u201d and she\u2019s named the character Maths Man.","emotion":"Aggressive, threatening, anger","form":"made of shapes","questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_2.png"},
-  {"file":"MathCreature_Refuge_3","name":"Itachi","center":"Refuge","standard":"10th","gender":"F","description":"This math person is called Itachi. At the top, she\u2019s written, \u201cthis is Itachi.\u201d The math person is made up of shapes: a triangular cone for a hat, a face drawn with this emoji :-|, circles for feet, and rectangles for the rest of the body.\n\nThe conversation is very aggressive. It says, \u201cWhy the hell did you find math, Itachi?\u201d Then, \u201cIs it too much that you found math? No one likes math, Itachi.\u201d She also asks, \u201cIs your home built with numbers, Itachi?\u201d At the end, she writes, \u201cMy mood just goes off because of you, Itachi, because of this math.\u201d","emotion":"aggressive, mood off, existential","form":"made of shapes","questions":"Why the hell did you find math? | Is your home built with numbers?","image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_3.png"},
-  {"file":"MathCreature_Refuge_5","name":"Killer","center":"Refuge","standard":"8th","gender":"F","description":"This math person is named Killer. It has Xs for eyes, an equal sign for a mouth, 3s for ears, a conical hat, and a body made of rectangles. The second half of the image has huge letters: \u201cWHY did you come into this world?\u201d The tone is very aggressive and direct.","emotion":"anger, rage, aggressive, direct, existential","form":"literal, made of shapes, made of numbers","questions":"WHY did you come into this world?","image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_5.png"},
-  {"file":"MathCreature_Refuge_6","name":"torture killer","center":"Refuge","standard":"8th","gender":"F","description":"This math creature is called Torture Killer. It has a 1 for a nose. Parts of the body are colored green: the cap, the hands, a belt, and the shoes. There\u2019s \u201c8288\u201d written on the shirt.\n\nAlong with the drawing, she\u2019s written a letter to Maths. It says: \u201cDear Maths, Hello. Who created you? Because of you, I got scolding from when I was 6 years old, means from 1st standard to 8th standard. Get out of this world. Don\u2019t think that after this people die next generation. I will come next generation also. Don\u2019t ever come back, The next generation\u2019s children will suffer. Yours sincerely, Park Eren.\u201d","emotion":"anger, rage, aggressive, direct, threatening, humiliation, scolded","form":"literal, made of numbers, humanlike, oppressive","questions":"Who created you?","image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_6.png"},
-  {"file":"MathCreature_Refuge_7","name":"numb","center":"Refuge","standard":"8th","gender":"F","description":"This math person is called Numb, because numbers make her feel numb. She\u2019s used 1s for the hair, squares with dots inside for the eyes, and a triangle for the nose. Numb\u2019s shirt is covered in numbers: 1 to 16 across the shirt, 17 and 18 as the collar, and the pants filled with numbers\u201419 to 33 on one leg and 34 to 50 on the other.\n\nShe\u2019s also drawn herself next to Numb and named herself Jasmine. Above Jasmine\u2019s head are multiplication tables, and her face looks sad and confused.\n\nJasmine is asking Numb a series of questions: \u201cWho are you? Why are you created? Why did they keep your name as Maths? In the world, many students hate you. Do you have feelings? Do you cry? You are a very difficult subject for many students. I\u2019m going mad when I learn.\u201d","emotion":"existential, empathetic, going mad","form":"metaphorical, detailed, made of numbers, made of shapes, punny","questions":"Who are you? Why are you created? | Why did they keep your name as Maths? | In the world, many students hate you. Do you have feelings? Do you cry?","image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_7.png"},
-  {"file":"MathCreature_Refuge_8","name":"mary chacko","center":"Refuge","standard":"9th","gender":"F","description":"This math person is named Mary Chacko, which is the student\u2019s math teacher. The face is a clock, and the rest of the body is made of numbers. The torso uses numbers 1 to 5. One arm is numbered 5 to 9, the other arm 6 to 10. One leg is numbered 11 to 14, and the other leg repeats 2, 3, and 4.\n\nOn the side, there\u2019s only one question addressed to her math creature: \u201cWho is your father?\u201d","emotion":"questioning authority, existential","form":"made of shapes, made of numbers","questions":"Who is your father?","image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_8.png"},
-  {"file":"MathCreature_Refuge_9","name":"Chiyaan","center":"Refuge","standard":"7th","gender":"F","description":"This math creature is named Chiyaan. The face is a square. The eyes are made of sixes, the eyebrows are lines, and an X is used for the mouth. The torso is a single line, with eights for arms and nines for legs, giving it a stick-figure form.\n\nThis one has only one question: \u201cWhy are you created?\u201d","emotion":"existential","form":"made of numbers, stick figure, made of shapes","questions":"Why are you created?","image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_9.png"},
-  {"file":"MathCreature_Refuge_10","name":"Mr. Math (R.D. Sharma)","center":"Refuge","standard":"2nd year B. Comm.","gender":"F","description":"This one is written by a volunteer in her second year of college, B.Com. The math person is named Mr. Math (RD Sharma). The character wears a hat. The face is a smiling cube, the torso is a cone, and the lower body is an inverted cone. It\u2019s holding something that looks like a cookie.\n\nIt says, \u201cI\u2019m smiling because tears of kids make me happy.\u201d","emotion":"evil, questioning authority","form":"made of shapes","questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_10.png"},
-  {"file":"MathCreature_RGH_1","name":"Chota Bheem","center":"RGH","standard":"4th","gender":"M","description":"Asif imagines math as Chota Bheem. He\u2019s drawn Chota Bheem holding a bag of laddus, which is Chota Bheem\u2019s signature thing. There\u2019s also something on the side that looks like a launcher.\n\nAsif has written a note: \u201cBheem is putting glass because he\u2019s math\u2019s teacher.\u201d","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_1.png"},
-  {"file":"MathCreature_RGH_2","name":"Joker","center":"RGH","standard":"4th","gender":null,"description":"The next math creature is called Joker. There is a clown who is juggling balls. The balls have motion trails behind them, showing the movement of juggling.","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_2.png"},
-  {"file":"MathCreature_RGH_3","name":"Asim's Math tree","center":"RGH","standard":"4th","gender":"M","description":"This child has drawn a math tree. In the leaves of the tree, there are symbols like plus signs, multiplication signs, division signs, minus signs, and a 1. These symbols are arranged to form a triangular pattern.\n\nThe tree trunk has a smiling face and two separate hands with leaves, making it look like a stick-figure-style humanoid tree.","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_3.png"},
-  {"file":"MathCreature_RGH_4","name":"Math Apple","center":"RGH","standard":"4th","gender":"M","description":"The next child has drawn a math apple. The apple has square eyes and the word \u201cmath\u201d written below them. Around the apple, there are multiplication, division, plus and minus signs.\n\nThe child wrote: \u201cHe is boy, he is a smart person and the math is taking a class. and I gone listen and the apple math is crying because I ate math apple half. It is so sad and the student is laughing.\u201d","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_4.png"},
-  {"file":"MathCreature_RGH_5","name":"Harshita's Math Tree","center":"RGH","standard":"4th","gender":"F","description":"Harshita\u2019s math tree. It starts off like a normal tree, with a trunk, two main branches, and leaves surrounding the branches. Instead of fruits, the leaves contain symbols and numbers.\n\nOn the trunk of the tree, there is an evil smiling face. Below the leaves, there are two additional branches that act like hands reaching outward, almost as if the tree is coming to get you.","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_5.png"},
-  {"file":"MathCreature_RGH_7","name":"Sun Teacher","center":"RGH","standard":"4th","gender":null,"description":"This math creature is a sun that's teaching math. The sun is wearing glasses and holding a sheet with math symbols. In the other hand, it is holding a pen. The sun is smiling and sweating. Behind the sun is a blackboard with different math equations, including long division and a BODMAS equation.","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_7.png"},
-  {"file":"MathCreature_RGH_8","name":"Math Cat","center":"RGH","standard":"4th","gender":"F","description":"This child's math creature looks like a cat, made entirely of mathematical shapes. The face is a circle, the ears are triangles, the eyes are circles, the nose is a triangle, and the mouth is an oval. The torso and arms are rectangles, the palms are triangles with cylinders coming out, and the legs are straight lines with a curve at the end.","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_8.png"},
-  {"file":"MathCreature_RGH_9","name":"Ravi","center":"RGH","standard":"4th","gender":null,"description":"This child's math creature is called Ravi. He has a cap shaped like a whistle. An arrow pointing to the right says \u201caddition,\u201d and an arrow pointing to the left says \u201csubtraction.\u201d On the side, there is text: \u201che like black, C-L-O-C-E-R and B-U-L-E.\u201d","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_9.png"},
-  {"file":"MathCreature_RGH_10","name":"Rocky","center":"RGH","standard":"4th","gender":"F","description":"This math creature looks robot-like. It has a circular face with two antennae and is smiling. The torso is a square, the arms are rectangles with spheres for hands, and the legs and feet are rectangles. The text says \u201cit is look like boy and smart.\u201d","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_10.png"},
-  {"file":"MathCreature_RGH_12","name":"Shabnam's Math Robot","center":"RGH","standard":"4th","gender":"F","description":"This math creature looks like a robot with two antennae and an oval-ish face with a smiling mouth. It has a square torso with circles for buttons, rectangular limbs, rounded arms, and rectangular feet. The text says, \u201cIt look like boy and smart.\u201d","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_12.png"},
-  {"file":"MathCreature_RGH_13","name":"Yamraj","center":"RGH","standard":"4th","gender":null,"description":"This math creature looks like a ghost holding a scythe, like a grim reaper. Behind it are smaller versions of the creature, which look like bodyguards or helpers. The text says, \u201cMy name is Yamraj.\u201d (Yamraj is the god of death in Hindu culture.)","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_13.png"},
-  {"file":"MathCreature_RGH_14","name":"King","center":"RGH","standard":"4th","gender":"M","description":"This math creature is called King. It has a square head with Xs for eyes, a division sign for a nose, and a curved mouth with teeth. The torso is a rectangle with squares containing plus signs as buttons. The text reads, \u201cThis is a boy. He look very smart. Her name is King. King is a mathmatics.\u201d","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_14.png"},
-  {"file":"MathCreature_RGH_15","name":"Hema's Math Tree","center":"RGH","standard":"4th","gender":"F","description":"Hema\u2019s math creature is a tree with math symbols drawn among the leaves, like fruits hanging from the branches. The trunk of the tree has a playful face, with a smiling expression, visible eyelashes and eyebrows, and a tongue sticking out.","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_15.png"},
-  {"file":"MathCreature_RGH_16","name":"Harry","center":"RGH","standard":"4th","gender":"F","description":"This Math creature's name is Harry. It has a playful smile. It has Xs for ears, which almost look like ponytails. It has a circle for the torso, with buttons, rectangles for limbs, and circles for the hands and feet. The text says, \u201cit look like boy and good.\u201d","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_16.png"},
-  {"file":"MathCreature_RGH_17","name":"Pradeep's Math Face","center":"RGH","standard":"4th","gender":"M","description":"This drawing shows just the face of a creature. The eyes are division signs, the nose is a 1, and the face is formed using a minus sign.\n\nThe child wrote: \u201cFirst division is so bad because the sum is so long. Next one is we will demand tables. And then three, then subtraction can do the maths and we can count.\u201d","emotion":null,"form":null,"questions":null,"image":"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_17.png"}
+const FALLBACK = [
+  {file:"MathCreature_Refuge_1",name:"Maria",center:"Refuge",standard:"6th",gender:"F",description:"This is the only mildly positive drawing from the Refuge group. She\u2019s drawn a cute little girl and written, \u201cyou are very interesting.\u201d She\u2019s visualized her math person as a girl made of shapes. You can see triangles and other elements of math, very mildly.",emotion:"Neutral, mildly positive",form:"made of shapes",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_1.png"},
+  {file:"MathCreature_Refuge_2",name:"Maths Man",center:"Refuge",standard:"9th",gender:"F",description:"She starts by writing an acronym for math: \u201cMental Attack to Hyper students.\u201d Then she says, \u201cI\u2019m not gonna let you go away from me.\u201d Her math human has shapes built into the body \u2014 a triangle for a nose, pencils for hands, and squares for eyes. Next to it, she\u2019s written, \u201cyou actually look great and cute.\u201d",emotion:"Aggressive, threatening, anger",form:"made of shapes",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_2.png"},
+  {file:"MathCreature_Refuge_3",name:"Itachi",center:"Refuge",standard:"10th",gender:"F",description:"This math person is called Itachi. The math person is made up of shapes: a triangular cone for a hat, a face drawn with this emoji :-|, circles for feet, and rectangles for the rest of the body.\n\nThe conversation is very aggressive. It says, \u201cWhy the hell did you find math, Itachi?\u201d She also asks, \u201cIs your home built with numbers, Itachi?\u201d At the end, she writes, \u201cMy mood just goes off because of you, Itachi, because of this math.\u201d",emotion:"aggressive, mood off, existential",form:"made of shapes",questions:"Why the hell did you find math? | Is your home built with numbers?",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_3.png"},
+  {file:"MathCreature_Refuge_5",name:"Killer",center:"Refuge",standard:"8th",gender:"F",description:"This math person is named Killer. It has Xs for eyes, an equal sign for a mouth, 3s for ears, a conical hat, and a body made of rectangles. The second half of the image has huge letters: \u201cWHY did you come into this world?\u201d The tone is very aggressive and direct.",emotion:"anger, rage, aggressive, direct, existential",form:"literal, made of shapes, made of numbers",questions:"WHY did you come into this world?",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_5.png"},
+  {file:"MathCreature_Refuge_6",name:"torture killer",center:"Refuge",standard:"8th",gender:"F",description:"This math creature is called Torture Killer. It has a 1 for a nose. Parts of the body are colored green: the cap, the hands, a belt, and the shoes. There\u2019s \u201c8288\u201d written on the shirt.\n\nShe\u2019s written a letter to Maths: \u201cDear Maths, Hello. Who created you? Because of you, I got scolding from when I was 6 years old, means from 1st standard to 8th standard. Get out of this world. Don\u2019t think that after this people die next generation. I will come next generation also. Don\u2019t ever come back, The next generation\u2019s children will suffer. Yours sincerely, Park Eren.\u201d",emotion:"anger, rage, aggressive, direct, threatening, humiliation, scolded",form:"literal, made of numbers, humanlike, oppressive",questions:"Who created you?",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_6.png"},
+  {file:"MathCreature_Refuge_7",name:"numb",center:"Refuge",standard:"8th",gender:"F",description:"This math person is called Numb, because numbers make her feel numb. She\u2019s used 1s for the hair, squares with dots inside for the eyes, and a triangle for the nose. Numb\u2019s shirt is covered in numbers 1 to 16, and the pants filled with numbers 19 to 50.\n\nShe\u2019s also drawn herself next to Numb and named herself Jasmine. Above Jasmine\u2019s head are multiplication tables, and her face looks sad and confused.\n\nJasmine is asking Numb: \u201cWho are you? Why are you created? Why did they keep your name as Maths? In the world, many students hate you. Do you have feelings? Do you cry? You are a very difficult subject for many students. I\u2019m going mad when I learn.\u201d",emotion:"existential, empathetic, going mad",form:"metaphorical, detailed, made of numbers, made of shapes, punny",questions:"Who are you? Why are you created? | Why did they keep your name as Maths? | In the world, many students hate you. Do you have feelings? Do you cry?",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_7.png"},
+  {file:"MathCreature_Refuge_8",name:"mary chacko",center:"Refuge",standard:"9th",gender:"F",description:"This math person is named Mary Chacko, which is the student\u2019s math teacher. The face is a clock, and the rest of the body is made of numbers.\n\nOn the side, there\u2019s only one question: \u201cWho is your father?\u201d",emotion:"questioning authority, existential",form:"made of shapes, made of numbers",questions:"Who is your father?",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_8.png"},
+  {file:"MathCreature_Refuge_9",name:"Chiyaan",center:"Refuge",standard:"7th",gender:"F",description:"This math creature is named Chiyaan. The face is a square. The eyes are made of sixes, the eyebrows are lines, and an X is used for the mouth. The torso is a single line, with eights for arms and nines for legs.\n\nThis one has only one question: \u201cWhy are you created?\u201d",emotion:"existential",form:"made of numbers, stick figure, made of shapes",questions:"Why are you created?",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_9.png"},
+  {file:"MathCreature_Refuge_10",name:"Mr. Math (R.D. Sharma)",center:"Refuge",standard:"2nd year B. Comm.",gender:"F",description:"This one is written by a volunteer in her second year of college. The math person is named Mr. Math (RD Sharma). The character wears a hat. The face is a smiling cube, the torso is a cone, and the lower body is an inverted cone.\n\nIt says, \u201cI\u2019m smiling because tears of kids make me happy.\u201d",emotion:"evil, questioning authority",form:"made of shapes",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_Refuge_10.png"},
+  {file:"MathCreature_RGH_1",name:"Chota Bheem",center:"RGH",standard:"4th",gender:"M",description:"Asif imagines math as Chota Bheem holding a bag of laddus. There\u2019s also something on the side that looks like a launcher. Asif has written: \u201cBheem is putting glass because he\u2019s math\u2019s teacher.\u201d",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_1.png"},
+  {file:"MathCreature_RGH_2",name:"Joker",center:"RGH",standard:"4th",gender:"",description:"A clown who is juggling balls with motion trails behind them.",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_2.png"},
+  {file:"MathCreature_RGH_3",name:"Asim's Math Tree",center:"RGH",standard:"4th",gender:"M",description:"A math tree with symbols like plus signs, multiplication signs, division signs, and minus signs arranged in a triangular pattern in the leaves. The tree trunk has a smiling face and two separate hands with leaves, making it look like a humanoid tree.",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_3.png"},
+  {file:"MathCreature_RGH_4",name:"Math Apple",center:"RGH",standard:"4th",gender:"M",description:"A math apple with square eyes and the word \u201cmath\u201d written below them. Around the apple are multiplication, division, plus and minus signs.\n\nThe child wrote: \u201cHe is boy, he is a smart person and the math is taking a class. The apple math is crying because I ate math apple half. It is so sad and the student is laughing.\u201d",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_4.png"},
+  {file:"MathCreature_RGH_5",name:"Harshita's Math Tree",center:"RGH",standard:"4th",gender:"F",description:"Harshita\u2019s math tree. Instead of fruits, the leaves contain symbols and numbers. On the trunk there is an evil smiling face. Below the leaves, two additional branches act like hands reaching outward, almost as if the tree is coming to get you.",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_5.png"},
+  {file:"MathCreature_RGH_7",name:"Sun Teacher",center:"RGH",standard:"4th",gender:"",description:"A sun that\u2019s teaching math. It\u2019s wearing glasses and holding a sheet with math symbols, smiling and sweating. Behind it is a blackboard with equations including long division and a BODMAS equation.",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_7.png"},
+  {file:"MathCreature_RGH_8",name:"Math Cat",center:"RGH",standard:"4th",gender:"F",description:"A cat made entirely of mathematical shapes. The face is a circle, the ears are triangles, the eyes are circles, the nose is a triangle, and the mouth is an oval. The torso and arms are rectangles.",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_8.png"},
+  {file:"MathCreature_RGH_9",name:"Ravi",center:"RGH",standard:"4th",gender:"",description:"A creature called Ravi with a cap shaped like a whistle. An arrow pointing right says \u201caddition,\u201d and an arrow pointing left says \u201csubtraction.\u201d",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_9.png"},
+  {file:"MathCreature_RGH_10",name:"Rocky",center:"RGH",standard:"4th",gender:"F",description:"A robot-like creature with a circular face and two antennae. The torso is a square, the arms are rectangles with spheres for hands. The text says \u201cit is look like boy and smart.\u201d",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_10.png"},
+  {file:"MathCreature_RGH_12",name:"Shabnam's Math Robot",center:"RGH",standard:"4th",gender:"F",description:"A robot with two antennae and an oval-ish face with a smiling mouth. Square torso with circles for buttons, rectangular limbs, rounded arms, and rectangular feet. The text says, \u201cIt look like boy and smart.\u201d",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_12.png"},
+  {file:"MathCreature_RGH_13",name:"Yamraj",center:"RGH",standard:"4th",gender:"",description:"A ghost-like creature holding a scythe, like a grim reaper. Behind it are smaller versions which look like bodyguards. The text says, \u201cMy name is Yamraj.\u201d (Yamraj is the god of death in Hindu culture.)",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_13.png"},
+  {file:"MathCreature_RGH_14",name:"King",center:"RGH",standard:"4th",gender:"M",description:"A creature called King with a square head, Xs for eyes, a division sign for a nose, and a curved mouth with teeth. The text reads, \u201cThis is a boy. He look very smart. Her name is King. King is a mathmatics.\u201d",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_14.png"},
+  {file:"MathCreature_RGH_15",name:"Hema's Math Tree",center:"RGH",standard:"4th",gender:"F",description:"A tree with math symbols among the leaves. The trunk has a playful face with a smiling expression, visible eyelashes and eyebrows, and a tongue sticking out.",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_15.png"},
+  {file:"MathCreature_RGH_16",name:"Harry",center:"RGH",standard:"4th",gender:"F",description:"A creature named Harry with a playful smile and Xs for ears. A circle for the torso, rectangles for limbs, and circles for the hands and feet. The text says, \u201cit look like boy and good.\u201d",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_16.png"},
+  {file:"MathCreature_RGH_17",name:"Pradeep's Math Face",center:"RGH",standard:"4th",gender:"M",description:"Just the face of a creature. The eyes are division signs, the nose is a 1, and the face is formed using a minus sign.\n\nThe child wrote: \u201cFirst division is so bad because the sum is so long. Next one is we will demand tables. And then three, then subtraction can do the maths and we can count.\u201d",emotion:"",form:"",questions:"",image:"https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/trimmed/MathCreature_RGH_17.png"}
 ];
 
-// ─────────────────────────────────────────────────────────────────
-// CSV PARSER — handles quoted fields, commas inside quotes, etc.
-// ─────────────────────────────────────────────────────────────────
+// ── CSV PARSER ──
+// Parses character-by-character so quoted multiline fields (long descriptions
+// with real newlines) never get split incorrectly.
 function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  if (lines.length < 2) return [];
+  const src = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
-  function splitRow(row) {
-    const result = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < row.length; i++) {
-      const c = row[i];
-      if (c === '"' && !inQ)                        { inQ = true; }
-      else if (c === '"' && inQ && row[i+1] === '"') { cur += '"'; i++; }
-      else if (c === '"' && inQ)                    { inQ = false; }
-      else if (c === ',' && !inQ)                   { result.push(cur.trim()); cur = ''; }
-      else                                          { cur += c; }
+  const rows = [];
+  let row = [], field = '', inQ = false, i = 0;
+  while (i < src.length) {
+    const ch = src[i];
+    if (inQ) {
+      if (ch === '"' && src[i+1] === '"') { field += '"'; i += 2; }
+      else if (ch === '"')                { inQ = false; i++; }
+      else                                { field += ch; i++; }
+    } else {
+      if      (ch === '"')  { inQ = true; i++; }
+      else if (ch === ',')  { row.push(field.trim()); field = ''; i++; }
+      else if (ch === '\n') { row.push(field.trim()); rows.push(row); row = []; field = ''; i++; }
+      else                  { field += ch; i++; }
     }
-    result.push(cur.trim());
-    return result;
   }
+  row.push(field.trim());
+  if (row.some(f => f !== '')) rows.push(row);
 
-  const headers = splitRow(lines[0]);
-  const idx = (name) => headers.indexOf(name);
+  if (rows.length < 2) return [];
 
+  const headers = rows[0];
+  const idx = n => headers.indexOf(n);
   const COL = {
-    file:        idx('File Name'),
-    name:        idx('Math creature name'),
-    center:      idx('Learning Center'),
-    standard:    idx('Standard'),
-    gender:      idx('Gender'),
-    description: idx('Description/Alt Text'),
-    emotion:     idx('emotion'),
-    form:        idx('form'),
-    questions:   idx('Questions'),
-    image:       idx('Link to image'),
+    file: idx('File Name'), name: idx('Math creature name'), center: idx('Learning Center'),
+    standard: idx('Standard'), gender: idx('Gender'), description: idx('Description/Alt Text'),
+    emotion: idx('emotion'), form: idx('form'), questions: idx('Questions'), image: idx('Link to image'),
   };
 
-  return lines.slice(1).map(line => {
-    const row = splitRow(line);
-    const name = COL.name >= 0 ? (row[COL.name] || '').trim() : '';
+  return rows.slice(1).map(r => {
+    const name = COL.name >= 0 ? (r[COL.name] || '').trim() : '';
     if (!name) return null;
-    return {
-      file:        COL.file >= 0        ? (row[COL.file] || '')        : '',
-      name,
-      center:      COL.center >= 0      ? (row[COL.center] || '')      : '',
-      standard:    COL.standard >= 0    ? (row[COL.standard] || '')    : '',
-      gender:      COL.gender >= 0      ? (row[COL.gender] || '')      : '',
-      description: COL.description >= 0 ? (row[COL.description] || '') : '',
-      emotion:     COL.emotion >= 0     ? (row[COL.emotion] || '')     : '',
-      form:        COL.form >= 0        ? (row[COL.form] || '')        : '',
-      questions:   COL.questions >= 0   ? (row[COL.questions] || '')   : '',
-      image:       COL.image >= 0       ? (row[COL.image] || '')       : '',
-    };
+    const get = k => COL[k] >= 0 ? (r[COL[k]] || '') : '';
+    return { file: get('file'), name, center: get('center'), standard: get('standard'),
+             gender: get('gender'), description: get('description'), emotion: get('emotion'),
+             form: get('form'), questions: get('questions'), image: get('image') };
   }).filter(Boolean);
 }
 
-// ─────────────────────────────────────────────────────────────────
-// BUILD CARD
-// ─────────────────────────────────────────────────────────────────
+// ── BUILD CARD ──
 function buildCard(c, i) {
   const card = document.createElement('div');
   card.className = 'card';
   card.dataset.center = c.center;
   card.dataset.hasQuestions = c.questions ? 'true' : 'false';
-  card.style.animationDelay = `${Math.min(i * 35, 700)}ms`;
+  card.style.animationDelay = Math.min(i * 35, 700) + 'ms';
 
   const displayName = c.name.replace(/\b\w/g, l => l.toUpperCase());
-  const metaParts = [c.center, c.standard ? `Std. ${c.standard}` : null].filter(Boolean);
-  const questions = c.questions
-    ? c.questions.split('|').map(q => q.trim()).filter(Boolean)
-    : [];
+  const metaParts = [c.center, c.standard ? 'Std. ' + c.standard : null].filter(Boolean);
+  const questions = c.questions ? c.questions.split('|').map(q => q.trim()).filter(Boolean) : [];
 
-  card.innerHTML = `
-    <div class="card-inner">
-      ${c.image ? `<img class="card-img" src="${c.image}" alt="${displayName}" loading="lazy">` : ''}
-      <div class="card-body">
-        <div class="card-name">${displayName}</div>
-        <div class="card-meta">${metaParts.join(' · ')}</div>
-        ${c.emotion ? `<div class="card-emotion-tag">${c.emotion}</div>` : ''}
-        ${c.description ? `<div class="card-description">${c.description.replace(/\n/g, '<br><br>')}</div>` : ''}
-        ${questions.length ? `
-          <div class="card-questions">
-            <div class="questions-label">asked math —</div>
-            ${questions.map(q => `<div class="question-item">${q}</div>`).join('')}
-          </div>` : ''}
-        <button class="expand-btn">read more ↓</button>
-      </div>
-    </div>`;
+  card.innerHTML =
+    '<div class="card-inner">' +
+    (c.image ? '<img class="card-img" src="' + c.image + '" alt="' + displayName + '" loading="lazy">' : '') +
+    '<div class="card-body">' +
+    '<div class="card-name">' + displayName + '</div>' +
+    '<div class="card-meta">' + metaParts.join(' \u00b7 ') + '</div>' +
+    (c.emotion ? '<div class="card-emotion-tag">' + c.emotion + '</div>' : '') +
+    (c.description ? '<div class="card-description">' + c.description.replace(/\n/g, '<br><br>') + '</div>' : '') +
+    (questions.length ? '<div class="card-questions"><div class="questions-label">asked math \u2014</div>' +
+      questions.map(q => '<div class="question-item">' + q + '</div>').join('') + '</div>' : '') +
+    '<button class="expand-btn">read more \u2193</button>' +
+    '</div></div>';
 
-  card.querySelector('.expand-btn').addEventListener('click', e => {
+  card.querySelector('.expand-btn').addEventListener('click', function(e) {
     e.stopPropagation();
-    const expanded = card.classList.toggle('expanded');
-    e.target.textContent = expanded ? 'show less ↑' : 'read more ↓';
+    var expanded = card.classList.toggle('expanded');
+    e.target.textContent = expanded ? 'show less \u2191' : 'read more \u2193';
   });
-
-  card.querySelector('.card-inner').addEventListener('click', () => openLightbox(c));
+  card.querySelector('.card-inner').addEventListener('click', function() { openLightbox(c); });
   return card;
 }
 
-// ─────────────────────────────────────────────────────────────────
-// RENDER GRID
-// ─────────────────────────────────────────────────────────────────
+// ── RENDER ──
 function renderGrid(data) {
-  const grid = document.getElementById('grid');
+  var grid = document.getElementById('grid');
   grid.innerHTML = '';
-  if (!data.length) {
-    grid.innerHTML = '<div class="loading-state">no creatures found</div>';
-    return;
-  }
-  data.forEach((c, i) => grid.appendChild(buildCard(c, i)));
+  if (!data.length) { grid.innerHTML = '<div class="loading-state">no creatures found</div>'; return; }
+  data.forEach(function(c, i) { grid.appendChild(buildCard(c, i)); });
   updateCount();
 }
 
 function updateCount() {
-  const visible = document.querySelectorAll('.card:not(.hidden)').length;
-  document.getElementById('statusLine').textContent =
-    `${visible} creature${visible !== 1 ? 's' : ''}`;
+  var visible = document.querySelectorAll('.card:not(.hidden)').length;
+  document.getElementById('statusLine').textContent = visible + ' creature' + (visible !== 1 ? 's' : '');
 }
 
-// ─────────────────────────────────────────────────────────────────
-// FILTERS
-// ─────────────────────────────────────────────────────────────────
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+// ── FILTERS ──
+document.querySelectorAll('.filter-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
     btn.classList.add('active');
-    const filter = btn.dataset.filter;
-
-    document.querySelectorAll('.card').forEach(card => {
-      let visible = true;
-      if (filter === 'center:Refuge')  visible = card.dataset.center === 'Refuge';
-      else if (filter === 'center:RGH') visible = card.dataset.center === 'RGH';
-      else if (filter === 'has-questions') visible = card.dataset.hasQuestions === 'true';
+    var filter = btn.dataset.filter;
+    document.querySelectorAll('.card').forEach(function(card) {
+      var visible = true;
+      if      (filter === 'center:Refuge')    visible = card.dataset.center === 'Refuge';
+      else if (filter === 'center:RGH')       visible = card.dataset.center === 'RGH';
+      else if (filter === 'has-questions')    visible = card.dataset.hasQuestions === 'true';
       card.classList.toggle('hidden', !visible);
     });
-
     updateCount();
   });
 });
 
-// ─────────────────────────────────────────────────────────────────
-// LIGHTBOX
-// ─────────────────────────────────────────────────────────────────
+// ── LIGHTBOX ──
 function openLightbox(c) {
-  const displayName = c.name.replace(/\b\w/g, l => l.toUpperCase());
-  const metaParts = [c.center, c.standard ? `Std. ${c.standard}` : null].filter(Boolean);
-  const questions = c.questions
-    ? c.questions.split('|').map(q => q.trim()).filter(Boolean)
-    : [];
+  var displayName = c.name.replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+  var metaParts = [c.center, c.standard ? 'Std. ' + c.standard : null].filter(Boolean);
+  var questions = c.questions ? c.questions.split('|').map(function(q) { return q.trim(); }).filter(Boolean) : [];
 
   document.getElementById('lbImg').src = c.image || '';
   document.getElementById('lbImg').alt = displayName;
   document.getElementById('lbName').textContent = displayName;
-  document.getElementById('lbMeta').textContent = metaParts.join(' · ');
+  document.getElementById('lbMeta').textContent = metaParts.join(' \u00b7 ');
   document.getElementById('lbDesc').innerHTML = (c.description || '').replace(/\n/g, '<br><br>');
 
   document.getElementById('lbQuestions').innerHTML = questions.length
-    ? `<div class="lb-questions">
-         <span class="questions-label">asked math —</span>
-         ${questions.map(q => `<div class="lb-q-item">${q}</div>`).join('')}
-       </div>`
+    ? '<div class="lb-questions"><span class="questions-label">asked math \u2014</span>' +
+      questions.map(function(q) { return '<div class="lb-q-item">' + q + '</div>'; }).join('') + '</div>'
     : '';
 
-  const tags = [c.emotion, c.form].filter(Boolean);
-  document.getElementById('lbTags').innerHTML = tags.map(t => `<span class="lb-tag">${t}</span>`).join('');
+  var tags = [c.emotion, c.form].filter(Boolean);
+  document.getElementById('lbTags').innerHTML = tags.map(function(t) { return '<span class="lb-tag">' + t + '</span>'; }).join('');
 
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -762,28 +376,34 @@ function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
-
 document.getElementById('lbClose').addEventListener('click', closeLightbox);
-document.getElementById('lightbox').addEventListener('click', e => {
-  if (e.target === document.getElementById('lightbox')) closeLightbox();
-});
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+document.getElementById('lightbox').addEventListener('click', function(e) { if (e.target === document.getElementById('lightbox')) closeLightbox(); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
 
-// ─────────────────────────────────────────────────────────────────
-// INIT — fetch from sheet, fall back to hardcoded data
-// ─────────────────────────────────────────────────────────────────
+// ── INIT ──
+// Uses localStorage to cache last-good sheet data — loads instantly on repeat visits.
 async function init() {
+  // Show cached data immediately if we have it
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('mathCreaturesData')); } catch(e) {}
+  if (cached && cached.length) {
+    renderGrid(cached);
+  }
+
+  // Then try to fetch fresh data in background
   try {
-    document.getElementById('statusLine').textContent = 'loading…';
-    const res = await fetch(SHEET_GVIZ_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-    const data = parseCSV(text);
+    var res = await fetch(SHEET_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var text = await res.text();
+    var data = parseCSV(text);
     if (data.length === 0) throw new Error('empty');
+    localStorage.setItem('mathCreaturesData', JSON.stringify(data));
     renderGrid(data);
-  } catch (err) {
-    console.warn('Sheet fetch failed, using fallback:', err);
-    renderGrid(FALLBACK_DATA);
+  } catch(err) {
+    console.warn('Sheet fetch failed:', err);
+    if (!cached || !cached.length) {
+      renderGrid(FALLBACK);
+    }
   }
 }
 
