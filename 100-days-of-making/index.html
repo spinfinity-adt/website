@@ -19,6 +19,7 @@
     min-height: 100vh;
     font-family: 'Open Sans', sans-serif;
     padding-top: 56px;
+    padding-bottom: 56px;
   }
 
   #canvas-container {
@@ -83,9 +84,11 @@
 
   /* ── Banner ── */
   #banner {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
     width: 100%;
     background: #2a2520;
-    margin-top: auto;
+    z-index: 999;
   }
 
   #banner-link {
