@@ -16,6 +16,7 @@
     align-items: center;
     min-height: 100vh;
     font-family: 'Open Sans', sans-serif;
+    padding-top: 56px;
   }
 
   #canvas-container {
@@ -129,6 +130,12 @@
 </style>
 </head>
 <body>
+<div id="sf-nav-mount"></div>
+<script>
+  fetch('/nav.html')
+    .then(function(r){ return r.text() })
+    .then(function(html){ document.getElementById('sf-nav-mount').innerHTML = html });
+</script>
 
 <div id="canvas-container"></div>
 <div id="tooltip"></div>
