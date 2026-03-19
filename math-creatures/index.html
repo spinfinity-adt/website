@@ -27,6 +27,7 @@
       color: var(--ink);
       min-height: 100vh;
       overflow-x: hidden;
+      padding-top: 56px;
     }
     .intro { max-width: 720px; margin: 0 auto; padding: 64px 40px 48px; }
     .intro-title {
@@ -155,6 +156,16 @@
   </style>
 </head>
 <body>
+  <div id="sf-nav-mount"></div>
+<script src="/nav.js"></script>
+<script>
+  fetch('/nav.html')
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+      document.getElementById('sf-nav-mount').innerHTML = html;
+      initNav();
+    });
+</script>
 
 <section class="intro">
   <h1 class="intro-title">

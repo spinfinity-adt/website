@@ -28,6 +28,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      padding-top: 56px;
     }
 
     /* floating math bg */
@@ -356,7 +357,16 @@
   </style>
 </head>
 <body>
-
+<div id="sf-nav-mount"></div>
+<script src="/nav.js"></script>
+<script>
+  fetch('/nav.html')
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+      document.getElementById('sf-nav-mount').innerHTML = html;
+      initNav();
+    });
+</script>
   <!-- TOP BAR -->
   <div class="topbar">
     <div class="title"><span class="wiggle">🐱</span> Hilbert Curve Cat</div>

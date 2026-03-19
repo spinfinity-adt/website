@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +18,7 @@
             color: #e0e0e0;
             padding: 20px;
             line-height: 1.6;
+            padding-top: 56px;
         }
 
         .header {
@@ -260,7 +262,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 1000;
             overflow: auto;
         }
@@ -377,7 +379,18 @@
         }
     </style>
 </head>
+
 <body>
+    <div id="sf-nav-mount"></div>
+    <script src="/nav.js"></script>
+    <script>
+        fetch('/nav.html')
+            .then(function (r) { return r.text(); })
+            .then(function (html) {
+                document.getElementById('sf-nav-mount').innerHTML = html;
+                initNav();
+            });
+    </script>
     <div class="container">
         <div class="header">
             <h1>generative data portraits</h1>
@@ -392,7 +405,7 @@
 
         <div class="submission-section">
             <h2>submit your portrait</h2>
-            
+
             <div class="instructions">
                 <h3>how to submit:</h3>
                 <ol>
@@ -424,7 +437,8 @@
 
                 <div class="form-group">
                     <label for="prompt">your prompt / data description:</label>
-                    <textarea id="prompt" required placeholder="e.g., 'create a constellation portrait. I'm an ambivert, I've lived in 4 cities, I love rainy days...'"></textarea>
+                    <textarea id="prompt" required
+                        placeholder="e.g., 'create a constellation portrait. I'm an ambivert, I've lived in 4 cities, I love rainy days...'"></textarea>
                     <div class="hint">what did you tell Claude? what data did you encode?</div>
                 </div>
 
@@ -454,7 +468,7 @@
         // Supabase configuration
         const SUPABASE_URL = 'https://vkbyfcjhumwcqdybkeek.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrYnlmY2podW13Y3FkeWJrZWVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMTUzNjUsImV4cCI6MjA4Njc5MTM2NX0.iFta4s56D8Y0NWloM8ziFvfi4xx-fJxbLuPCCsYyhXQ';
-        
+
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Cloudinary config (for image hosting)
@@ -473,11 +487,11 @@
         // Form submission
         document.getElementById('submission-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const errorMsg = document.getElementById('error-message');
             const successMsg = document.getElementById('success-message');
             const submitBtn = document.getElementById('submit-btn');
-            
+
             errorMsg.style.display = 'none';
             successMsg.style.display = 'none';
 
@@ -562,9 +576,9 @@
         async function loadGallery() {
             const loading = document.getElementById('loading');
             const grid = document.getElementById('gallery-grid');
-            
+
             loading.style.display = 'block';
-            
+
             try {
                 const { data, error } = await supabase
                     .from('portraits')
@@ -604,16 +618,16 @@
 
                 const info = document.createElement('div');
                 info.className = 'portrait-info';
-                
+
                 const header = document.createElement('div');
                 header.className = 'portrait-header';
-                
+
                 const nameDiv = document.createElement('div');
                 nameDiv.className = 'portrait-name';
                 nameDiv.textContent = portrait.name;
-                
+
                 header.appendChild(nameDiv);
-                
+
                 // Add event tag if event exists
                 if (portrait.event) {
                     const eventTag = document.createElement('div');
@@ -666,7 +680,7 @@
         }
 
         document.getElementById('close-modal').onclick = closeModal;
-        
+
         window.onclick = (event) => {
             const modal = document.getElementById('modal');
             if (event.target === modal) {
@@ -679,4 +693,5 @@
         window.closeModal = closeModal;
     </script>
 </body>
+
 </html>

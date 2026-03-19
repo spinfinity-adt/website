@@ -18,6 +18,7 @@
       align-items: center;
       min-height: 100vh;
       overflow-x: hidden;
+      padding-top: 56px;
     }
     
     main {
@@ -198,6 +199,16 @@
   </style>
 </head>
 <body>
+  <div id="sf-nav-mount"></div>
+<script src="/nav.js"></script>
+<script>
+  fetch('/nav.html')
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+      document.getElementById('sf-nav-mount').innerHTML = html;
+      initNav();
+    });
+</script>
   <main>
     <h1>MOSAIC Data Selfie</h1>
     <div class="subtitle">Participatory Data Viz</div>
