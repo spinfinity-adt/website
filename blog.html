@@ -56,10 +56,14 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <body>
 
 <div id="sf-nav-mount"></div>
+<script src="/nav.js"></script>
 <script>
   fetch('/nav.html')
-    .then(function(r){return r.text()})
-    .then(function(html){document.getElementById('sf-nav-mount').innerHTML=html});
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+      document.getElementById('sf-nav-mount').innerHTML = html;
+      initNav();
+    });
 </script>
 
 <canvas id="spiral-canvas"></canvas><div class="vignette"></div>
