@@ -854,10 +854,14 @@
     }
     .talk-card-label span { display: block; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
 
-    .instagram-embed-wrap {
+    .linkedin-embed-wrap {
       margin: 2rem 0;
       max-width: 540px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
     }
+    .linkedin-embed-wrap iframe { display: block; }
 
     /* LIGHTBOX MODAL */
     .lightbox {
@@ -964,20 +968,6 @@
 
   <div class="page">
     <div class="container">
-
-      <!-- NOTEBOOK MARGIN NOTES -->
-      <div class="margin-note right" style="top: 120px;">
-        Hans Zimmer saved this project tbh
-        <span class="arrow">⤶</span>
-      </div>
-      <div class="margin-note left" style="top: 800px;">
-        done in ~1.5 months, between jobs
-        <span class="arrow"></span>
-      </div>
-      <div class="margin-note right" style="top: 1500px;">
-        300 people in one AC room, unplanned data sonification!
-        <span class="arrow">⤷</span>
-      </div>
 
       <!-- META ROW -->
       <div class="hero">
@@ -1117,14 +1107,16 @@
         <p>300 of us heated up the room with our palms — in an attempt to experience the rise in heat the earth has gone through in the last 160 years.</p>
         <p>I panned the stripes on the screen, and as it went from dark blue to dark red, I asked participants to rub their hands faster. We generated heat in our palms and data sonification also happened, exactly as I'd hoped! The AC was also particularly effective in the room, so folks enjoyed this exercise a little extra!</p>
 
-        <!-- Instagram embed -->
-        <div class="instagram-embed-wrap">
-          <blockquote 
-            class="instagram-media" 
-            data-instgrm-permalink="https://www.instagram.com/spinfinity.adt/reel/DZNELmZhq1B/"
-            data-instgrm-version="14"
-            style="background:#000;border:1px solid var(--border);border-radius:6px;margin:2rem 0;max-width:540px;width:100%;">
-          </blockquote>
+        <!-- LINKEDIN EMBED -->
+        <div class="linkedin-embed-wrap">
+          <iframe 
+            src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7468538299029143553" 
+            height="668" 
+            width="100%" 
+            frameborder="0" 
+            allowfullscreen="" 
+            title="Embedded post — Climate Stripes audience interaction at VizChitra 2025">
+          </iframe>
         </div>
       </section>
 
@@ -1162,8 +1154,6 @@
         <div class="pullquote">
           Raw data doesn't exist. It's always processed — sometimes by our sensors, often by our guts.
         </div>
-
-        <p>Data visceralization is making data felt in the body, not just seen with the eyes. Visual things are for the eyes. Visceralizations are for the whole body — data you see, hear, feel, breathe. Term coined by Kelly Dobson at RISD (2010), via Data Feminism.</p>
       </section>
 
       <!-- SECTION 4: MAKING IT -->
@@ -1348,21 +1338,6 @@
       if (nextBtn) nextBtn.addEventListener('click', () => {
         track.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
       });
-    })();
-
-    /* Instagram embed: load script once, explicitly process after load
-       (needed because nav is injected dynamically via fetch, which can
-       interfere with Instagram's automatic DOMContentLoaded init) */
-    (function() {
-      const script = document.createElement('script');
-      script.src = 'https://www.instagram.com/embed.js';
-      script.async = true;
-      script.onload = function() {
-        if (window.instgrm) {
-          window.instgrm.Embeds.process();
-        }
-      };
-      document.body.appendChild(script);
     })();
   </script>
 </body>
