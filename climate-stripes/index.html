@@ -1125,7 +1125,6 @@
             data-instgrm-version="14"
             style="background:#000;border:1px solid var(--border);border-radius:6px;margin:2rem 0;max-width:540px;width:100%;">
           </blockquote>
-          <script async src="//www.instagram.com/embed.js"></script>
         </div>
       </section>
 
@@ -1349,6 +1348,21 @@
       if (nextBtn) nextBtn.addEventListener('click', () => {
         track.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
       });
+    })();
+
+    /* Instagram embed: load script once, explicitly process after load
+       (needed because nav is injected dynamically via fetch, which can
+       interfere with Instagram's automatic DOMContentLoaded init) */
+    (function() {
+      const script = document.createElement('script');
+      script.src = 'https://www.instagram.com/embed.js';
+      script.async = true;
+      script.onload = function() {
+        if (window.instgrm) {
+          window.instgrm.Embeds.process();
+        }
+      };
+      document.body.appendChild(script);
     })();
   </script>
 </body>
