@@ -35,8 +35,8 @@
       --accent3: #c97fff; /* purple */
       --accent4: #ffe34e; /* yellow */
       --red: #ff5572;
-      --muted: #6a6a8a;
-      --text-muted: rgba(238, 234, 248, 0.6);
+      --muted: #8a8aac;
+      --text-muted: rgba(238, 234, 248, 0.82);
       --border: rgba(255, 255, 255, 0.06);
       --nav-h: 56px;
       --hand: 'Kalam', cursive;
@@ -341,8 +341,8 @@
 
     p {
       color: var(--text-muted);
-      font-size: clamp(1rem, 1.8vw, 1.18rem);
-      line-height: 1.7;
+      font-size: clamp(1.05rem, 1.9vw, 1.25rem);
+      line-height: 1.75;
       margin-bottom: 1rem;
     }
 
@@ -458,9 +458,9 @@
     }
 
     .etym-origin {
-      font-size: 0.85rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
-      line-height: 1.6;
+      line-height: 1.7;
       border-top: 1px dashed var(--border);
       padding-top: 1rem;
     }
@@ -543,9 +543,9 @@
     }
 
     .step-content p {
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       margin-bottom: 0;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
     /* IMAGE GRID */
@@ -1067,6 +1067,18 @@
             <div class="step-content">
               <h4>The prototype</h4>
               <p>Initially I wanted to program one color per second into the poi. That was way too much work. My partner Jagrut, who works at the Science Gallery Bengaluru, had a simpler idea: just upload segments of the stripes as images instead of changing colors every single second. At least for a prototype, that would work. We found a dark room at the gallery, he took some long-exposure photos, and we had a 30-second demo ready.</p>
+
+              <div class="video-container" style="margin-top: 1.2rem;">
+                <div class="video-wrapper">
+                  <iframe
+                    src="https://player.vimeo.com/video/1075105467?badge=0&autopause=0&player_id=0&app_id=58479"
+                    title="Climate Stripes — 20 second prototype"
+                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
+                    allowfullscreen>
+                  </iframe>
+                </div>
+                <div class="video-caption">The 20-second prototype — where it all started.</div>
+              </div>
             </div>
           </div>
           <div class="step-item">
@@ -1156,11 +1168,19 @@
         </div>
       </section>
 
-      <!-- SECTION 4: MAKING IT -->
-      <section id="process">
+      <!-- ACKNOWLEDGEMENTS -->
+      <section id="acknowledgements">
+        <div class="section-label">04 — Acknowledgements</div>
+        <h2>Thank you</h2>
+        <p>Ed Hawkins and the University of Reading, for the Warming Stripes visualization.</p>
+        <p>Catherine D'Ignazio and Lauren Klein, for the term "data visceralization" — the idea that led to this being possible at all.</p>
+        <p>The VizChitra team, for the trust, support, and platform.</p>
+        <p>My partner Jagrut, for all the brainstorming and panic-absorbing.</p>
+      </section>
+
       <!-- LINKS -->
       <section id="links">
-        <div class="section-label">04 — Links</div>
+        <div class="section-label">05 — Links</div>
         <h2>Watch & read</h2>
         <div class="link-row">
           <a class="link-btn primary" href="https://www.youtube.com/watch?v=6jTHeM0KQO4" target="_blank">↗ Full talk — VizChitra</a>
