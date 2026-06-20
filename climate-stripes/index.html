@@ -4,6 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visceralizing Data: Climate Stripes in Motion and Emotion — Spinfinity</title>
+  <meta name="description" content="A data performance using programmable LED poi, synced to 165 years of climate stripes data. Plus an audience interaction where 300 people felt the warming in their own hands. From a performance talk at VizChitra 2025." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Visceralizing Data: Climate Stripes in Motion and Emotion" />
+  <meta property="og:description" content="A data performance using programmable LED poi, synced to 165 years of climate stripes data. Plus an audience interaction where 300 people felt the warming in their own hands. From a performance talk at VizChitra 2025." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_182.JPG" />
+  <meta property="og:url" content="https://spinfinity.in/climate-stripes/" />
+  <meta property="og:site_name" content="Spinfinity" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Visceralizing Data: Climate Stripes in Motion and Emotion" />
+  <meta name="twitter:description" content="A data performance using programmable LED poi, synced to 165 years of climate stripes data. From a performance talk at VizChitra 2025." />
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_182.JPG" />
+
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -725,7 +741,11 @@
     }
 
     /* CAROUSEL */
-    .carousel { position: relative; margin: 2rem 0; }
+    .carousel {
+      position: relative;
+      margin: 2rem 0;
+      padding: 0 2.8rem;
+    }
 
     .carousel-track {
       display: flex;
@@ -736,9 +756,38 @@
       -ms-overflow-style: none;
       padding-bottom: 0.5rem;
       cursor: grab;
+      scroll-behavior: smooth;
     }
     .carousel-track::-webkit-scrollbar { display: none; }
     .carousel-track:active { cursor: grabbing; }
+
+    .carousel-arrow {
+      position: absolute;
+      top: 40%;
+      transform: translateY(-50%);
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: 50%;
+      background: rgba(22, 22, 26, 0.85);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      font-size: 1.4rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .carousel-arrow:hover { border-color: var(--accent2); background: rgba(61, 232, 255, 0.1); }
+    .carousel-arrow-left { left: 0; }
+    .carousel-arrow-right { right: 0; }
+
+    @media (max-width: 600px) {
+      .carousel { padding: 0 2.2rem; }
+      .carousel-arrow { width: 2rem; height: 2rem; font-size: 1.1rem; }
+    }
 
     .carousel-item {
       flex: 0 0 calc(33.333% - 0.67rem);
@@ -804,6 +853,11 @@
       padding: 0 1rem;
     }
     .talk-card-label span { display: block; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    .instagram-embed-wrap {
+      margin: 2rem 0;
+      max-width: 540px;
+    }
 
     /* LIGHTBOX MODAL */
     .lightbox {
@@ -903,7 +957,7 @@
     <div class="video-hero-text">
       <div class="tag">Data Visceralization · VizChitra 2025</div>
       <h1>Visceralizing Data<br>Climate Stripes in <em>Motion and Emotion</em></h1>
-      <p class="subtitle">What happens when data moves — and moves you back?</p>
+      <p class="subtitle">What happens when data moves — can it move you back?</p>
       <span class="video-hero-play">↓ scroll to explore</span>
     </div>
   </div>
@@ -914,14 +968,14 @@
       <!-- NOTEBOOK MARGIN NOTES -->
       <div class="margin-note right" style="top: 120px;">
         Hans Zimmer saved this project tbh
-        <span class="arrow">⤷</span>
+        <span class="arrow">⤶</span>
       </div>
       <div class="margin-note left" style="top: 800px;">
         done in ~1.5 months, between jobs
-        <span class="arrow">⤶</span>
+        <span class="arrow"></span>
       </div>
       <div class="margin-note right" style="top: 1500px;">
-        300 people. one AC room. unplanned sonification.
+        300 people in one AC room, unplanned data sonification!
         <span class="arrow">⤷</span>
       </div>
 
@@ -935,12 +989,18 @@
         </div>
       </div>
 
+      <!-- INTRO -->
+      <section id="intro" style="border-top: none; padding-top: 1rem;">
+        <p>Climate Stripes: A Data Performance was a project I did as part of a performance talk at VizChitra 2025, India's first DataViz Conference. A lot of fun mini artifacts led to the creation of this piece, so I made this page to house them all!</p>
+        <p>The dataset used here is the climate stripes: Ed Hawkins' visualization from the University of Reading — 165 years of global average temperature anomalies rendered as colored stripes, blue to red. People have adopted it into all kinds of forms: pottery, glass, it's on Greta Thunberg's book cover. I used that dataset.</p>
+        <p>My outputs were a data performance and an audience interaction where we experienced the warming stripes at our fingertips (literally!).</p>
+      </section>
+
       <!-- SECTION 1: THE PERFORMANCE -->
       <section id="performance">
         <div class="section-label">01 — The Performance</div>
         <h2>Climate Stripes: <em>a data performance</em></h2>
-        <p>165 years of global temperature data, programmed into LED poi and spun in the air. The prop is synced to data showing how Earth's temperature has changed from 1860 to 2025. As the stripes travel through time, the movement shifts: slow, sustained, and light in the cool blues of the 1800s — urgent, forceful, and sudden in the deep reds of today.</p>
-
+        <p>I broke the full 165 years of warming stripes into decades, and in the live performance, each decade played for about thirty seconds. The video couldn't capture the long exposure trails created, so I recreated it in TouchDesigner — this time, with each year getting a second, and a data overlay showing the year and temperature. You can check out the long exposure photographs below to get a sense of the stripes. I used bits of the Laban Movement framework to choreograph this - the blues were slow and light, and as we moved to the reds, it became fast, strong and sustained.</p>
         <!-- PLAYABLE TD VIDEO with controls -->
         <div class="video-container">
           <div class="video-wrapper">
@@ -951,13 +1011,14 @@
               allowfullscreen>
             </iframe>
           </div>
-          <div class="video-caption">TouchDesigner version — data overlay shows year + temperature anomaly in real time, synced to the performance.</div>
+          <div class="video-caption">TouchDesigner version — data overlay shows year + temperature anomaly (one second per year)</div>
         </div>
 
         <!-- LONG EXPOSURE CAROUSEL -->
-        <p style="margin-top: 2rem;">Long exposure photographs from the prototype session at Science Gallery Bengaluru. What video can't capture, a long-exposure photograph can.</p>
+        <p style="margin-top: 2rem;">Long exposure photographs from the performance! Credits: Last Theorem Studio, Media Partner at VizChitra 2025</p>
 
         <div class="carousel">
+          <button class="carousel-arrow carousel-arrow-left" id="carousel-prev" aria-label="Scroll left">‹</button>
           <div class="carousel-track" id="carousel-track">
             <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_177.JPG', '')">
               <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_177.JPG" alt="Long exposure poi performance" loading="lazy" />
@@ -990,6 +1051,7 @@
               <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_186.JPG" alt="Long exposure poi performance" loading="lazy" />
             </div>
           </div>
+          <button class="carousel-arrow carousel-arrow-right" id="carousel-next" aria-label="Scroll right">›</button>
         </div>
 
         <!-- VIZCHITRA TALK THUMBNAIL -->
@@ -1006,26 +1068,64 @@
           </div>
         </a>
 
-        <p>The performance ends at <strong>2030?</strong> Not with false hope. Not with a burning earth. With a question mark and spinning colors. What will the next stripe be?</p>
+        <p>The performance ends with a question <strong>"2030?"</strong> What will the stripe at 2030 be? </p>
+
+        <!-- MAKING IT (folded in from old section 04) -->
+        <div class="process-timeline" style="margin-top: 2.5rem;">
+          <div class="step-item">
+            <div class="step-badge">01</div>
+            <div class="step-content">
+              <h4>The prototype</h4>
+              <p>Initially I wanted to program one color per second into the poi. That was way too much work. My partner Jagrut, who works at the Science Gallery Bengaluru, had a simpler idea: just upload segments of the stripes as images instead of changing colors every single second. At least for a prototype, that would work. We found a dark room at the gallery, he took some long-exposure photos, and we had a 30-second demo ready.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-badge">02</div>
+            <div class="step-content">
+              <h4>The data</h4>
+              <p>Getting the actual hex codes wasn't super simple, to be honest. I found a blog by someone crocheting a climate stripes blanket — they'd mapped out all the colors as hex codes. I fed those into Pillow (Python) to generate the poi images. In between the color segments, I kept inserting the year as text, so the audience could track where in time we were.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-badge">03</div>
+            <div class="step-content">
+              <h4>The music</h4>
+              <p>After a couple of tries, Hans Zimmer's <em>Time</em> turned out to be perfect. It has these natural 30-second segments and a crescendo that builds and builds. Two and a half minutes of climate history, synced to the music. For the proposal teaser, I'd used Tool's <em>Lateralus</em> — I liked how the music progressed, mirroring how the stripes progress. But <em>Time</em> was the one for the full performance.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-badge">04</div>
+            <div class="step-content">
+              <h4>The choreography</h4>
+              <p>Using the Laban movement framework from Shabari's workshop, I mapped temperature values to physical expression. As the years progress and the anomaly rises, the spinning moves from slow and light to fast, heavy, and sudden.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-badge">05</div>
+            <div class="step-content">
+              <h4>The ending</h4>
+              <p>This was the hardest part. Jagrut suggested reversing the slides — ending on a note of hope, showing the blues returning. But I didn't want false hope. I thought about uploading a burning earth image to the poi, but that would've been tacky. And I didn't have enough time to prototype it anyway — I also had to put together the talk itself, and the whole thing came together in about a month and a half. What we finally landed on: <strong>2030?</strong> A question mark. Different colors spinning all at once. What will the next stripe be? That's up to us.</p>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- SECTION 2: THE AUDIENCE -->
       <section id="audience">
-        <div class="section-label">02 — The Audience</div>
-        <h2>When the audience <em>becomes</em> the instrument</h2>
-        <p>The second visceralization happened not with my body, but with 300 people in an air-conditioned room. I asked everyone to rub their palms together — slowly at first, then faster and faster as the climate stripes progressed through time.</p>
-        <p>By the time we reached the present, the room was warm. They <strong>felt the warming in their own hands</strong>. An unplanned data sonification emerged — 300 pairs of palms, same data, completely different register.</p>
+        <div class="section-label">02 — Audience Interaction</div>
+        <h2>Surprise Community <em>Data Sonification!</em></h2>
+        <p>300 of us heated up the room with our palms — in an attempt to experience the rise in heat the earth has gone through in the last 160 years.</p>
+        <p>I panned the stripes on the screen, and as it went from dark blue to dark red, I asked participants to rub their hands faster. We generated heat in our palms and data sonification also happened, exactly as I'd hoped! The AC was also particularly effective in the room, so folks enjoyed this exercise a little extra!</p>
 
-        <div class="video-container">
-          <div class="video-wrapper">
-            <iframe
-              src="https://player.vimeo.com/video/1075105467?badge=0&autopause=0&player_id=0&app_id=58479"
-              title="Climate Stripes Early Prototype"
-              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-              allowfullscreen>
-            </iframe>
-          </div>
-          <div class="video-caption">Early prototype of the performance — where the idea started taking shape.</div>
+        <!-- Instagram embed -->
+        <div class="instagram-embed-wrap">
+          <blockquote 
+            class="instagram-media" 
+            data-instgrm-permalink="https://www.instagram.com/spinfinity.adt/reel/DZNELmZhq1B/"
+            data-instgrm-version="14"
+            style="background:#000;border:1px solid var(--border);border-radius:6px;margin:2rem 0;max-width:540px;width:100%;">
+          </blockquote>
+          <script async src="//www.instagram.com/embed.js"></script>
         </div>
       </section>
 
@@ -1069,53 +1169,9 @@
 
       <!-- SECTION 4: MAKING IT -->
       <section id="process">
-        <div class="section-label">04 — Making It</div>
-        <h2>How it came together</h2>
-
-        <p>The climate stripes are Ed Hawkins' visualization from the University of Reading — 165 years of global average temperature anomalies rendered as colored stripes, blue to red. People have adopted it into all kinds of forms: pottery, glass, it's on Greta Thunberg's book cover. I used that dataset.</p>
-
-        <div class="process-timeline">
-          <div class="step-item">
-            <div class="step-badge">01</div>
-            <div class="step-content">
-              <h4>The prototype</h4>
-              <p>Initially I wanted to program one color per second into the poi. That was way too much work. My partner Jagrut, who works at the Science Gallery Bengaluru, had a simpler idea: just upload segments of the stripes as images instead of changing colors every single second. At least for a prototype, that would work. We found a dark room at the gallery, he took some long-exposure photos, and we had a 30-second demo ready.</p>
-            </div>
-          </div>
-          <div class="step-item">
-            <div class="step-badge">02</div>
-            <div class="step-content">
-              <h4>The data</h4>
-              <p>Getting the actual hex codes wasn't super simple, to be honest. I found a blog by someone crocheting a climate stripes blanket — they'd mapped out all the colors as hex codes. I fed those into Pillow (Python) to generate the poi images. In between the color segments, I kept inserting the year as text, so the audience could track where in time we were.</p>
-            </div>
-          </div>
-          <div class="step-item">
-            <div class="step-badge">03</div>
-            <div class="step-content">
-              <h4>The music</h4>
-              <p>After a couple of tries, Hans Zimmer's <em>Time</em> turned out to be perfect. It has these natural 30-second segments and a crescendo that builds and builds. Two and a half minutes of climate history, synced to the music. For the proposal teaser, I'd used Tool's <em>Lateralus</em> — I liked how the music progressed, mirroring how the stripes progress. But <em>Time</em> was the one for the full performance.</p>
-            </div>
-          </div>
-          <div class="step-item">
-            <div class="step-badge">04</div>
-            <div class="step-content">
-              <h4>The choreography</h4>
-              <p>Using the Laban movement framework from Shabari's workshop, I mapped temperature values to physical expression. As the years progress and the anomaly rises, the spinning moves from slow and light to fast, heavy, and sudden.</p>
-            </div>
-          </div>
-          <div class="step-item">
-            <div class="step-badge">05</div>
-            <div class="step-content">
-              <h4>The ending</h4>
-              <p>This was the hardest part. Jagrut suggested reversing the slides — ending on a note of hope, showing the blues returning. But I didn't want false hope. I thought about uploading a burning earth image to the poi, but that would've been tacky. And I didn't have enough time to prototype it anyway — I also had to put together the talk itself, and the whole thing came together in about a month and a half. What we finally landed on: <strong>2030?</strong> A question mark. Different colors spinning all at once. What will the next stripe be? That's up to us.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- LINKS -->
       <section id="links">
-        <div class="section-label">05 — Links</div>
+        <div class="section-label">04 — Links</div>
         <h2>Watch & read</h2>
         <div class="link-row">
           <a class="link-btn primary" href="https://www.youtube.com/watch?v=6jTHeM0KQO4" target="_blank">↗ Full talk — VizChitra</a>
@@ -1281,6 +1337,18 @@
         const diff = touchStartX - e.touches[0].pageX;
         track.scrollLeft = touchScrollLeft + diff;
       }, { passive: true });
+
+      // Arrow buttons
+      const prevBtn = document.getElementById('carousel-prev');
+      const nextBtn = document.getElementById('carousel-next');
+      const scrollAmount = () => track.querySelector('.carousel-item').offsetWidth + 16;
+
+      if (prevBtn) prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+      });
+      if (nextBtn) nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+      });
     })();
   </script>
 </body>
