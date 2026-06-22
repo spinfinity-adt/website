@@ -18,7 +18,7 @@
 .proj-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.2rem}
 .proj-name{font-family:var(--hand);font-size:1.45rem;font-weight:700;line-height:1.1;transition:color .2s}
 .proj-card:hover .proj-name{color:var(--card-accent,var(--accent2))}
-.proj-desc{font-family:'Instrument Serif',serif;font-size:.93rem;color:rgba(238,234,248,.65);line-height:1.55;flex:1}
+.proj-desc{font-family:'Instrument Serif',serif;font-size:.93rem;color:var(--muted);line-height:1.55;flex:1}
 .proj-link-label{font-family:var(--hand);font-size:1rem;color:var(--card-accent,var(--accent2));margin-top:.6rem;display:flex;align-items:center;gap:.3rem;transition:gap .2s}
 .proj-card:hover .proj-link-label{gap:.6rem}
 .proj-card.featured{grid-column:1/-1;flex-direction:row}
@@ -26,7 +26,7 @@
 @media(max-width:640px){.proj-card.featured{flex-direction:column}.proj-card.featured .proj-thumb{width:100%;aspect-ratio:16/9}.projects-grid{grid-template-columns:1fr}}
 </style>
 </head>
-<body>
+<body class="theme-dusk">
 
 <div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>

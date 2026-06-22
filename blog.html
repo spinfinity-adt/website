@@ -11,7 +11,7 @@
 .blog-header{margin-bottom:3.5rem;display:flex;flex-direction:column;gap:1.2rem;max-width:560px}
 .blog-title{font-family:var(--hand);font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:.95}
 .blog-title .inf{color:var(--accent3);text-shadow:0 0 30px rgba(201,127,255,.5)}
-.blog-intro{font-family:'Instrument Serif',serif;font-size:clamp(1rem,1.9vw,1.15rem);line-height:1.75;color:rgba(238,234,248,.7)}
+.blog-intro{font-family:'Instrument Serif',serif;font-size:clamp(1rem,1.9vw,1.15rem);line-height:1.75;color:var(--muted)}
 .sub-follow-btn{font-family:var(--hand);font-size:1.1rem;font-weight:700;text-decoration:none;padding:.5rem 1.3rem;border-radius:2px;background:var(--accent3);color:var(--bg);display:inline-block;transition:all .22s ease;align-self:flex-start}
 .sub-follow-btn:hover{box-shadow:0 0 24px rgba(201,127,255,.55);transform:translateY(-2px) scale(1.03)}
 
@@ -25,7 +25,7 @@
 .blog-card-title{font-family:var(--hand);font-size:1.35rem;font-weight:700;line-height:1.2;transition:color .2s}
 .blog-card:hover .blog-card-title{color:var(--accent3)}
 .blog-card-sub{font-family:'Instrument Serif',serif;font-size:.9rem;color:var(--accent4);font-style:italic;line-height:1.4}
-.blog-card-blurb{font-family:'Instrument Serif',serif;font-size:.93rem;color:rgba(238,234,248,.6);line-height:1.6;flex:1}
+.blog-card-blurb{font-family:'Instrument Serif',serif;font-size:.93rem;color:var(--muted);line-height:1.6;flex:1}
 .blog-read-link{font-family:var(--hand);font-size:.95rem;color:var(--accent3);margin-top:.4rem;transition:letter-spacing .2s}
 
 .topics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:1.5rem}
@@ -33,10 +33,10 @@
 .topic-card:hover{border-color:var(--tc,var(--accent2));transform:translateY(-3px)}
 .topic-icon{font-size:1.6rem;display:block;margin-bottom:.4rem}
 .topic-name{font-family:var(--hand);font-size:1.1rem;font-weight:700;display:block;color:var(--tc,var(--accent2))}
-.topic-desc{font-family:'Instrument Serif',serif;font-size:.9rem;color:rgba(238,234,248,.55);margin-top:.3rem;line-height:1.5}
+.topic-desc{font-family:'Instrument Serif',serif;font-size:.9rem;color:var(--muted);margin-top:.3rem;line-height:1.5}
 @media(max-width:480px){.topics-grid{grid-template-columns:1fr 1fr}}
 .substack-cta{display:flex;flex-direction:column;align-items:flex-start;gap:1.2rem;background:var(--card-bg);border:1px solid var(--border);border-left:3px solid var(--accent3);border-radius:4px;padding:2rem;margin-top:3rem}.substack-cta p{font-family:var(--hand);font-size:1.2rem;line-height:1.5;color:var(--fg);font-weight:400}.substack-cta p span{color:var(--accent3)}.sub-follow-btn{font-family:var(--hand);font-size:1.1rem;font-weight:700;text-decoration:none;padding:.5rem 1.3rem;border-radius:2px;background:var(--accent3);color:var(--bg);display:inline-block;transition:all .22s ease}.sub-follow-btn:hover{box-shadow:0 0 24px rgba(201,127,255,.55);transform:translateY(-2px) scale(1.03)}.manifesto{margin:3.5rem 0;padding:2rem 2.2rem;border-left:3px solid var(--accent4);background:var(--card-bg);border-radius:0 4px 4px 0;max-width:680px}
-.manifesto p{font-family:'Instrument Serif',serif;font-size:clamp(1.05rem,2vw,1.25rem);line-height:1.8;color:rgba(238,234,248,.88)}
+.manifesto p{font-family:'Instrument Serif',serif;font-size:clamp(1.05rem,2vw,1.25rem);line-height:1.8;color:var(--text)}
 .manifesto p em{color:var(--accent4);font-style:italic}
 
 .blog-card:hover .blog-read-link{letter-spacing:.04em}
@@ -44,7 +44,7 @@
 @media(max-width:480px){.blog-grid{grid-template-columns:1fr}}
 </style>
 </head>
-<body>
+<body class="theme-dusk">
 
 <div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>
