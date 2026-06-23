@@ -1,10 +1,10 @@
 /* ============================================================
    styles.css — shared design system for spinfinity.in
-   Type:   Rozha One (display) · Spectral (body) · Kalam (hand)
+   Type:   Rozha One (display) · Spectral (body) · Nunito (hand)
    Themes: .theme-light · .theme-dusk · .theme-studio  (set on <body>)
    Edit tokens below to restyle the whole site from one place.
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Rozha+One&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Kalam:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rozha+One&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Nunito:wght@400;600;700;800&display=swap');
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -12,14 +12,14 @@
 :root{
   --display:'Rozha One',serif;
   --serif:'Spectral',serif;
-  --hand:'Kalam',cursive;
+  --hand:'Nunito',sans-serif;
   --nav-h:56px;
   --radius:11px;
   --fg:var(--text); /* alias: pages still reference --fg */
 
   /* default palette = dusk (so a page with no theme class still renders) */
   --bg:#123f4a; --text:#f0f6f5; --muted:#9fc4c6;
-  --accent1:#ff8a5c; --accent2:#2fd4e0; --accent3:#b388ff; --accent4:#ffd24a;
+  --accent1:#ff8a5c; --accent2:#38e6df; --accent3:#b388ff; --accent4:#ffd24a;
   --card-bg:rgba(255,255,255,0.05); --border:rgba(180,235,240,0.14);
   --nav-bg:rgba(18,63,74,0.9);
 }
@@ -29,7 +29,7 @@
 /* light · educator pages (about, math creatures, tracks) — airy daytime sky */
 .theme-light{
   --bg:#f1f3f3; --text:#1d2b30; --muted:#566663;
-  --accent1:#d8663b; --accent2:#0f8a99; --accent3:#7b54c4; --accent4:#c98a12;
+  --accent1:#d8663b; --accent2:#0f9aac; --accent3:#7b54c4; --accent4:#c98a12;
   --card-bg:#fbfcfb; --border:#dde4e3;
   --nav-bg:rgba(241,243,243,0.9);
 }
@@ -38,7 +38,7 @@ body.theme-light{background:radial-gradient(circle at 84% -12%,rgba(15,138,153,0
 /* dusk · neutral hub (home, blog, projects) — teal twilight nebula */
 .theme-dusk{
   --bg:#123f4a; --text:#f0f6f5; --muted:#9fc4c6;
-  --accent1:#ff8a5c; --accent2:#2fd4e0; --accent3:#b388ff; --accent4:#ffd24a;
+  --accent1:#ff8a5c; --accent2:#38e6df; --accent3:#b388ff; --accent4:#ffd24a;
   --card-bg:rgba(255,255,255,0.05); --border:rgba(180,235,240,0.14);
   --nav-bg:rgba(18,63,74,0.9);
 }
@@ -47,7 +47,7 @@ body.theme-dusk{background:radial-gradient(circle at 22% 14%,rgba(47,212,224,0.1
 /* studio · creative work (art × data × tech) — deep space */
 .theme-studio{
   --bg:#0b1622; --text:#eef4f5; --muted:#9aa6bf;
-  --accent1:#ff8a5c; --accent2:#2fd4e0; --accent3:#b388ff; --accent4:#ffd24a;
+  --accent1:#ff8a5c; --accent2:#38e6df; --accent3:#b388ff; --accent4:#ffd24a;
   --card-bg:rgba(255,255,255,0.04); --border:rgba(180,235,240,0.12);
   --nav-bg:rgba(11,22,34,0.92);
 }
