@@ -6,74 +6,59 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Math Creatures — Spinfinity</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
   <style>
     :root {
-      --cream: #f5f0e8;
-      --warm-white: #faf7f2;
-      --ink: #1a1410;
-      --ink-light: #4a3f35;
-      --ink-faint: #7a6e65;
-      --tape: rgba(255, 220, 100, 0.55);
-      --tape-border: rgba(200, 170, 60, 0.3);
-      --accent-red: #b03020;
-      --shadow: rgba(60, 40, 20, 0.13);
-      --divider: rgba(90, 70, 50, 0.15);
+      --cream: #eef1f3;
+      --warm-white: #ffffff;
+      --ink: #1f2b30;
+      --ink-light: #3f4d52;
+      --ink-faint: #6a7a7f;
+      --tape: #0c8294;
+      --tape-border: rgba(0,0,0,0.18);
+      --accent-red: #7a52c4;
+      --shadow: rgba(30,50,60,0.13);
+      --divider: rgba(90,110,120,0.16);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body.theme-light {
+      background-color: #eef1f3;
+      background-image: radial-gradient(#d2d9df 1.3px, transparent 1.4px);
+      background-size: 22px 22px;
+      background-position: -1px -1px;
+    }
     body {
-      background-color: var(--cream);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-      font-family: 'Lora', serif;
       color: var(--ink);
       min-height: 100vh;
       overflow-x: hidden;
-      padding-top: 56px;
     }
-    .intro { max-width: 720px; margin: 0 auto; padding: 64px 40px 48px; }
-    .intro-title {
-      font-family: 'Kalam', cursive;
-      font-size: clamp(2.8rem, 8vw, 5.5rem);
-      font-weight: 700;
-      line-height: 1;
-      color: var(--ink);
-      letter-spacing: -1px;
-      margin-bottom: 32px;
-    }
-    .intro-title span {
-      display: block;
-      font-size: clamp(1.3rem, 3.5vw, 2rem);
-      font-weight: 300;
-      color: var(--ink-faint);
-      margin-bottom: 4px;
-    }
-    .intro-body { font-size: 1.05rem; line-height: 1.85; color: var(--ink-light); }
-    .intro-body p + p { margin-top: 1.2em; }
-    .intro-body em { font-style: italic; color: var(--ink); }
-    .intro-body strong { font-weight: 600; font-style: normal; color: var(--ink); }
-    .intro-sig { margin-top: 28px; font-family: 'Kalam', cursive; font-size: 1.15rem; color: var(--ink-faint); }
-    .intro-sig strong { color: var(--ink); font-weight: 600; }
-    .intro-divider {
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--divider) 20%, var(--divider) 80%, transparent);
-      max-width: 720px; margin: 0 auto;
-    }
+    header { max-width: 1400px; margin: 0 auto; padding: 1.6rem 40px 1rem; }
+    header h1 { font-family: var(--display); font-weight: 400; font-size: 1.95rem; line-height: 1.05; color: var(--ink); margin: 0; }
+    header h1 span { font-family: var(--hand); font-weight: 700; font-size: .92rem; color: var(--accent2); display: block; margin-bottom: 2px; }
+    .note-tile { break-inside: avoid; display: inline-block; width: 100%; margin-bottom: 18px; position: relative; transform: rotate(-1deg); }
+    .note-tile-inner { background:#fff; border:1px solid #e6ebee; border-radius:4px; padding:18px 16px 16px; box-shadow:3px 5px 16px var(--shadow),0 1px 3px var(--shadow); position:relative; }
+    .note-tile-inner::before { content:''; position:absolute; top:-8px; left:50%; transform:translateX(-50%); width:15px; height:15px; border-radius:50%; background:var(--accent2); box-shadow:inset -2px -2px 3px rgba(0,0,0,.28),0 2px 4px rgba(0,0,0,.3); z-index:3; }
+    .note-title { font-family: var(--display); font-size: 1.4rem; color: var(--ink); margin-bottom: 8px; line-height: 1; }
+    .note-body { font-family: var(--serif); font-size: .92rem; line-height: 1.6; color: var(--ink-light); }
+    .note-body p + p { margin-top: .7em; }
+    .note-body strong { font-weight: 600; color: var(--ink); }
+    .note-body em { font-style: italic; color: var(--ink); }
+    .note-sig { font-family: var(--hand); font-size: .82rem; font-weight: 700; color: var(--ink-faint); margin-top: 10px; }
     .filters-area {
       padding: 32px 40px 16px; max-width: 1400px; margin: 0 auto;
       display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
     }
-    .filter-label { font-family: 'Kalam', cursive; font-size: 1.05rem; color: var(--ink-faint); white-space: nowrap; }
+    .filter-label { font-family: var(--hand); font-size: 1.05rem; color: var(--ink-faint); white-space: nowrap; }
     .filter-row { display: flex; flex-wrap: wrap; gap: 8px; }
     .filter-btn {
-      font-family: 'Kalam', cursive; font-size: 1rem; padding: 4px 14px;
+      font-family: var(--hand); font-size: 1rem; padding: 4px 14px;
       border-radius: 20px; border: 1.5px solid var(--ink-faint);
       background: transparent; color: var(--ink-light); cursor: pointer; transition: all 0.15s ease;
     }
     .filter-btn:hover, .filter-btn.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
     .status-line {
       padding: 4px 40px 0; max-width: 1400px; margin: 0 auto;
-      font-family: 'Kalam', cursive; font-size: 0.9rem; color: var(--ink-faint); min-height: 22px;
+      font-family: var(--hand); font-size: 0.9rem; color: var(--ink-faint); min-height: 22px;
     }
     .grid { column-count: 4; column-gap: 18px; padding: 24px 40px 80px; max-width: 1400px; margin: 0 auto; }
     @media (max-width: 1100px) { .grid { column-count: 3; } }
@@ -96,35 +81,34 @@
       background: var(--warm-white); border-radius: 2px; padding: 12px 12px 16px;
       box-shadow: 3px 5px 16px var(--shadow), 0 1px 3px var(--shadow); position: relative;
     }
-    .card-inner::before {
-      content: ''; position: absolute; top: -9px; left: 50%;
-      transform: translateX(-50%) rotate(-1deg); width: 54px; height: 19px;
-      background: var(--tape); border: 1px solid var(--tape-border); border-radius: 1px; z-index: 2;
-    }
-    .card:nth-child(3n+1) .card-inner::before { left: 28%; transform: rotate(-2.5deg); width: 46px; }
-    .card:nth-child(3n+2) .card-inner::before { left: 62%; transform: rotate(1.8deg); width: 58px; }
-    .card-img { width: 100%; display: block; border-radius: 1px; background: #e8e3da; }
+    .card-inner::before { content:''; position:absolute; top:-8px; left:50%; transform:translateX(-50%); width:15px; height:15px; border-radius:50%; background:var(--pin,#0c8294); box-shadow:inset -2px -2px 3px rgba(0,0,0,.28),0 2px 4px rgba(0,0,0,.3); z-index:3; }
+    .card:nth-child(5n+1) .card-inner::before { --pin:#0c8294; }
+    .card:nth-child(5n+2) .card-inner::before { --pin:#3a66c8; }
+    .card:nth-child(5n+3) .card-inner::before { --pin:#7a52c4; }
+    .card:nth-child(5n+4) .card-inner::before { --pin:#c9971f; }
+    .card:nth-child(5n+5) .card-inner::before { --pin:#1f9e80; }
+    .card-img { width: 100%; display: block; border-radius: 1px; background: #e7eeee; }
     .card-body { padding: 10px 4px 2px; }
-    .card-name { font-family: 'Kalam', cursive; font-size: 1.45rem; font-weight: 700; color: var(--ink); line-height: 1.1; margin-bottom: 2px; }
-    .card-meta { font-family: 'Kalam', cursive; font-size: 0.88rem; color: var(--ink-faint); margin-bottom: 8px; }
+    .card-name { font-family: var(--hand); font-size: 1.45rem; font-weight: 700; color: var(--ink); line-height: 1.1; margin-bottom: 2px; }
+    .card-meta { font-family: var(--hand); font-size: 0.88rem; color: var(--ink-faint); margin-bottom: 8px; }
     .card-emotion-tag {
-      display: inline-block; font-family: 'Kalam', cursive; font-size: 0.8rem;
-      padding: 2px 8px; border-radius: 10px; background: #ede8de;
-      color: var(--ink-faint); border: 1px solid #ddd6c8; margin-bottom: 6px;
+      display: inline-block; font-family: var(--hand); font-size: 0.8rem;
+      padding: 2px 8px; border-radius: 10px; background: #eef2f3;
+      color: var(--ink-faint); border: 1px solid #dde6e6; margin-bottom: 6px;
     }
     .card-description { font-size: 0.82rem; line-height: 1.65; color: var(--ink-light); display: none; margin-top: 6px; }
     .card-questions { margin-top: 8px; display: none; }
-    .questions-label { font-family: 'Kalam', cursive; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-faint); margin-bottom: 5px; }
-    .question-item { font-family: 'Kalam', cursive; font-size: 1rem; color: var(--accent-red); line-height: 1.5; border-left: 2px solid var(--accent-red); padding-left: 8px; margin-bottom: 3px; }
+    .questions-label { font-family: var(--hand); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-faint); margin-bottom: 5px; }
+    .question-item { font-family: var(--hand); font-size: 1rem; color: var(--accent-red); line-height: 1.5; border-left: 2px solid var(--accent-red); padding-left: 8px; margin-bottom: 3px; }
     .expand-btn {
-      display: block; width: 100%; text-align: center; font-family: 'Kalam', cursive;
+      display: block; width: 100%; text-align: center; font-family: var(--hand);
       font-size: 0.88rem; color: var(--ink-faint); background: none; border: none; cursor: pointer;
-      padding: 7px 0 2px; margin-top: 6px; border-top: 1px dashed #d4ccc0; transition: color 0.15s;
+      padding: 7px 0 2px; margin-top: 6px; border-top: 1px dashed #d7e0e0; transition: color 0.15s;
     }
     .expand-btn:hover { color: var(--ink); }
     .card.expanded .card-description, .card.expanded .card-questions { display: block; }
     .lightbox {
-      display: none; position: fixed; inset: 0; background: rgba(15,10,5,0.88);
+      display: none; position: fixed; inset: 0; background: rgba(20,35,40,0.85);
       z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
     }
     .lightbox.open { display: flex; }
@@ -133,57 +117,38 @@
       max-height: 90vh; overflow-y: auto; display: flex;
       box-shadow: 0 24px 70px rgba(0,0,0,0.45); position: relative;
     }
-    .lb-img-side { width: 48%; flex-shrink: 0; background: #ede8de; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .lb-img-side { width: 48%; flex-shrink: 0; background: #eef2f3; display: flex; align-items: center; justify-content: center; padding: 24px; }
     .lb-img-side img { max-width: 100%; max-height: 75vh; object-fit: contain; border-radius: 1px; }
     .lb-text-side { padding: 36px 30px 30px; flex: 1; overflow-y: auto; }
-    .lb-name { font-family: 'Kalam', cursive; font-size: 2.4rem; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 4px; }
-    .lb-meta { font-family: 'Kalam', cursive; font-size: 1rem; color: var(--ink-faint); margin-bottom: 18px; }
+    .lb-name { font-family: var(--hand); font-size: 2.4rem; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+    .lb-meta { font-family: var(--hand); font-size: 1rem; color: var(--ink-faint); margin-bottom: 18px; }
     .lb-description { font-size: 0.9rem; line-height: 1.8; color: var(--ink-light); }
-    .lb-questions { margin-top: 18px; padding: 14px 16px; background: #fdf5e8; border-radius: 2px; border-left: 3px solid var(--accent-red); }
+    .lb-questions { margin-top: 18px; padding: 14px 16px; background: #eef4f4; border-radius: 2px; border-left: 3px solid var(--accent-red); }
     .lb-questions .questions-label { margin-bottom: 8px; }
-    .lb-q-item { font-family: 'Kalam', cursive; font-size: 1.15rem; color: var(--accent-red); line-height: 1.55; margin-bottom: 4px; }
+    .lb-q-item { font-family: var(--hand); font-size: 1.15rem; color: var(--accent-red); line-height: 1.55; margin-bottom: 4px; }
     .lb-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
-    .lb-tag { font-family: 'Kalam', cursive; font-size: 0.85rem; padding: 3px 10px; border-radius: 12px; background: #ede8de; color: var(--ink-faint); border: 1px solid #d4ccc0; }
-    .lb-close { position: absolute; top: 12px; right: 14px; background: none; border: none; font-family: 'Kalam', cursive; font-size: 1.6rem; cursor: pointer; color: var(--ink-faint); line-height: 1; z-index: 10; }
+    .lb-tag { font-family: var(--hand); font-size: 0.85rem; padding: 3px 10px; border-radius: 12px; background: #eef2f3; color: var(--ink-faint); border: 1px solid #d7e0e0; }
+    .lb-close { position: absolute; top: 12px; right: 14px; background: none; border: none; font-family: var(--hand); font-size: 1.6rem; cursor: pointer; color: var(--ink-faint); line-height: 1; z-index: 10; }
     .lb-close:hover { color: var(--ink); }
     @media (max-width: 620px) { .lightbox-content { flex-direction: column; } .lb-img-side { width: 100%; max-height: 45vh; } }
-    .loading-state { text-align: center; padding: 80px 40px; font-family: 'Kalam', cursive; font-size: 1.4rem; color: var(--ink-faint); }
+    .loading-state { text-align: center; padding: 80px 40px; font-family: var(--hand); font-size: 1.4rem; color: var(--ink-faint); }
     .loading-state .dot { display: inline-block; animation: blink 1.2s infinite; }
     .loading-state .dot:nth-child(2) { animation-delay: 0.2s; }
     .loading-state .dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes blink { 0%,80%,100% { opacity:0.2; } 40% { opacity:1; } }
     @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; } }
-    .footer { text-align: center; padding: 0 40px 60px; font-family: 'Kalam', cursive; font-size: 1rem; color: var(--ink-faint); line-height: 1.8; }
+    .footer { text-align: center; padding: 0 40px 60px; font-family: var(--hand); font-size: 1rem; color: var(--ink-faint); line-height: 1.8; }
     .footer a { color: var(--ink-light); text-decoration: underline; text-underline-offset: 3px; }
   </style>
 </head>
-<body>
+<body class="theme-light">
   <div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>
-<script>
-  fetch('/nav.html')
-    .then(function(r) { return r.text(); })
-    .then(function(html) {
-      document.getElementById('sf-nav-mount').innerHTML = html;
-      initNav();
-    });
-</script>
 
-<section class="intro">
-  <h1 class="intro-title">
-    <span>Spinfinity's</span>
-    Math Creatures
-  </h1>
-  <div class="intro-body">
-    <p>I asked my students to <em>imagine Math as a person or living being</em> — and to draw it, name it, and ask it whatever they wanted.</p>
-    <p>These math creatures were made by <strong>bold, brilliant girls aged 9–14</strong> at an orphanage where the math trauma is almost generational — and by <strong>4th standard students</strong> at a government school.</p>
-    <p>Learning math is an incredibly emotional experience. In our education system, being good at math means you are smart, and being bad at math means you're not. Over time, these labels shape how children see themselves.</p>
-    <p>Spinfinity is about breaking out of these labels, and exploring math through the body. We use hula hoops as a tool to play and spin math concepts.</p>
-  </div>
-  <div class="intro-sig">— <strong>Aditi Bhat</strong>, Chief Spinner at Spinfinity</div>
-</section>
 
-<div class="intro-divider"></div>
+<header>
+  <h1><span>Spinfinity's</span> Math Creatures</h1>
+</header>
 
 <div class="filters-area">
   <span class="filter-label">show me —</span>
@@ -215,12 +180,7 @@
   </div>
 </div>
 
-<footer class="footer">
-  <p>
-    Find us at <a href="https://instagram.com/spinfinity.adt" target="_blank">@spinfinity.adt</a> on Instagram,
-    or write to <a href="mailto:spinfinity.in@gmail.com">spinfinity.in@gmail.com</a>
-  </p>
-</footer>
+<div id="sf-footer-mount"></div>
 
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSI6LsxxrOjecL2-xYydl_MTemNjImNNzS5rKcKRhwMKU5UjZs9r2LJv0zLElB3eQfhr20cT8O13vcy/pub?output=csv&gid=0";
@@ -331,10 +291,25 @@ function buildCard(c, i) {
 }
 
 // ── RENDER ──
+function buildNote() {
+  var n = document.createElement('div');
+  n.className = 'note-tile';
+  n.innerHTML = '<div class="note-tile-inner">' +
+    '<div class="note-body">' +
+    '<p>I asked my students to <em>imagine Math as a person or living being</em> \u2014 and to draw it, name it, and ask it whatever they wanted.</p>' +
+    '<p>These math creatures were made by <strong>bold, brilliant girls aged 9\u201314</strong> at an orphanage where the math trauma is almost generational \u2014 and by <strong>4th standard students</strong> at a government school.</p>' +
+    '<p>Learning math is an incredibly emotional experience. In our education system, being good at math means you are smart, and being bad at math means you\'re not. Over time, these labels shape how children see themselves.</p>' +
+    '<p>Spinfinity is about breaking out of these labels, and exploring math through the body. We use hula hoops as a tool to play and spin math concepts.</p>' +
+    '</div>' +
+    '<div class="note-sig">\u2014 <strong>Aditi Bhat</strong>, Chief Spinner at Spinfinity</div>' +
+    '</div>';
+  return n;
+}
 function renderGrid(data) {
   var grid = document.getElementById('grid');
   grid.innerHTML = '';
   if (!data.length) { grid.innerHTML = '<div class="loading-state">no creatures found</div>'; return; }
+  grid.appendChild(buildNote());
   data.forEach(function(c, i) { grid.appendChild(buildCard(c, i)); });
   updateCount();
 }
