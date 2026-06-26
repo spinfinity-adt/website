@@ -11,12 +11,13 @@
   <style>
     
     body.theme-studio { background: radial-gradient(circle at 82% -10%, rgba(56,230,223,0.06), transparent 55%), radial-gradient(circle at 4% 106%, rgba(179,136,255,0.06), transparent 55%), var(--bg); }
-    body { margin:0; padding:0; font-family: var(--hand); display:flex; justify-content:center; align-items:flex-start; min-height:100vh; overflow-x:hidden; padding-top: var(--nav-h, 56px); }
+    body { margin:0; padding:0; font-family: var(--hand); min-height:100vh; overflow-x:hidden; padding-top: var(--nav-h, 56px); }
     
     main {
       padding: 40px 20px;
       max-width: 1200px;
       width: 100%;
+      margin: 0 auto;
     }
     
     h1 {
@@ -358,7 +359,7 @@ function shuffleArray(array) {
 function setup() {
   let canvas = createCanvas(1000, 600);
   canvas.parent('canvas-container');
-  textFont('IBM Plex Mono');
+  textFont('Nunito');
   TRIANGLE_WIDTH = 200;
   TRIANGLE_HEIGHT = 150;
   buildTriangles();
