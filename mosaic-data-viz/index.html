@@ -7,21 +7,11 @@
 <link rel="icon" type="image/png" href="/favicon.png">
   <title>MOSAIC Data Selfie - Participatory Data Viz</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <link rel="stylesheet" href="/styles.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=IBM+Plex+Mono:wght@400;600&display=swap');
     
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'IBM Plex Mono', monospace;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      overflow-x: hidden;
-      padding-top: 56px;
-    }
+    body.theme-studio { background: radial-gradient(circle at 82% -10%, rgba(56,230,223,0.06), transparent 55%), radial-gradient(circle at 4% 106%, rgba(179,136,255,0.06), transparent 55%), var(--bg); }
+    body { margin:0; padding:0; font-family: var(--hand); display:flex; justify-content:center; align-items:flex-start; min-height:100vh; overflow-x:hidden; padding-top: var(--nav-h, 56px); }
     
     main {
       padding: 40px 20px;
@@ -30,18 +20,18 @@
     }
     
     h1 {
-      font-family: 'Playfair Display', serif;
-      color: #e94560;
+      font-family: var(--display);
+      color: #38e6df;
       text-align: center;
       font-size: 3em;
       margin-bottom: 10px;
-      text-shadow: 0 0 20px rgba(233, 69, 96, 0.3);
+      text-shadow: 0 0 20px rgba(56, 230, 223, 0.3);
       letter-spacing: 2px;
     }
     
     .subtitle {
       text-align: center;
-      color: #94a3b8;
+      color: #9aa6bf;
       font-size: 0.9em;
       margin-bottom: 30px;
       letter-spacing: 3px;
@@ -71,10 +61,10 @@
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 20px;
       padding: 30px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
       border-radius: 12px;
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(180, 235, 240, 0.12);
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -103,8 +93,8 @@
     }
     
     .legend-title {
-      font-family: 'Playfair Display', serif;
-      color: #e94560;
+      font-family: var(--display);
+      color: #38e6df;
       font-size: 1.1em;
       margin-bottom: 12px;
       letter-spacing: 1px;
@@ -114,7 +104,7 @@
       display: flex;
       align-items: center;
       margin: 8px 0;
-      color: #cbd5e1;
+      color: #eef4f5;
       font-size: 0.85em;
     }
     
@@ -123,7 +113,7 @@
       height: 20px;
       margin-right: 10px;
       border-radius: 3px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(180, 235, 240, 0.18);
     }
     
     .legend-star {
@@ -135,10 +125,10 @@
       text-align: center;
       margin: 30px 0 40px 0;
       padding: 30px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
       border-radius: 12px;
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(180, 235, 240, 0.12);
     }
     
     .photos-container {
@@ -156,15 +146,15 @@
       width: auto;
       height: auto;
       border-radius: 8px;
-      border: 2px solid rgba(233, 69, 96, 0.3);
-      box-shadow: 0 8px 32px rgba(233, 69, 96, 0.2);
+      border: 2px solid rgba(56, 230, 223, 0.3);
+      box-shadow: 0 8px 32px rgba(56, 230, 223, 0.2);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       object-fit: contain;
     }
     
     .analog-photo:hover {
       transform: scale(1.02);
-      box-shadow: 0 12px 40px rgba(233, 69, 96, 0.3);
+      box-shadow: 0 12px 40px rgba(56, 230, 223, 0.3);
     }
     
     @media (max-width: 768px) {
@@ -174,7 +164,7 @@
     }
     
     .analog-caption {
-      color: #94a3b8;
+      color: #9aa6bf;
       font-size: 0.9em;
       margin-bottom: 15px;
       font-style: italic;
@@ -183,35 +173,27 @@
     .read-more-link {
       display: inline-block;
       padding: 12px 30px;
-      background: linear-gradient(135deg, #e94560 0%, #c23454 100%);
-      color: white;
+      background: linear-gradient(135deg, #38e6df 0%, #1aa39b 100%);
+      color: #0b1622;
       text-decoration: none;
       border-radius: 25px;
       font-weight: 600;
       letter-spacing: 1px;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+      box-shadow: 0 4px 15px rgba(56, 230, 223, 0.3);
     }
     
     .read-more-link:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(233, 69, 96, 0.5);
-      background: linear-gradient(135deg, #ff4d6d 0%, #e94560 100%);
+      box-shadow: 0 6px 25px rgba(56, 230, 223, 0.5);
+      background: linear-gradient(135deg, #5cf0e8 0%, #38e6df 100%);
     }
   </style>
 </head>
-<body>
+<body class="theme-studio">
   <div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>
-<script>
-  fetch('/nav.html')
-    .then(function(r) { return r.text(); })
-    .then(function(html) {
-      document.getElementById('sf-nav-mount').innerHTML = html;
-      initNav();
-    });
-</script>
-  <main>
+<main>
     <h1>MOSAIC Data Selfie</h1>
     <div class="subtitle">Participatory Data Viz</div>
     
@@ -709,5 +691,6 @@ function isPointInTriangle(px, py, p) {
   return abs(area-(a1+a2+a3)) < 1;
 }
   </script>
+  <div id="sf-footer-mount"></div>
 </body>
 </html>
