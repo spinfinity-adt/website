@@ -24,7 +24,7 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Instrument+Serif:ital@0;1&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
   
   <style>
     :root {
@@ -39,9 +39,6 @@
       --text-muted: rgba(238, 234, 248, 0.82);
       --border: rgba(255, 255, 255, 0.06);
       --nav-h: 56px;
-      --hand: 'Kalam', cursive;
-      --serif: 'Instrument Serif', serif;
-      --display: 'Fraunces', serif;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -931,7 +928,7 @@
     }
   </style>
 </head>
-<body>
+<body class="theme-studio">
 
   <!-- Background Ambient Glow -->
   <div id="ambient-glow"></div>
@@ -940,15 +937,6 @@
   <!-- Navigation Mounting point -->
   <div id="sf-nav-mount"></div>
   <script src="/nav.js"></script>
-  <script>
-    fetch('/nav.html')
-      .then(function(r) { return r.text(); })
-      .then(function(html) {
-        document.getElementById('sf-nav-mount').innerHTML = html;
-        initNav();
-      });
-  </script>
-
   <!-- FULLSCREEN VIDEO HERO (outside container, full bleed) -->
   <div class="video-hero">
     <iframe
@@ -1007,41 +995,10 @@
         <!-- LONG EXPOSURE CAROUSEL -->
         <p style="margin-top: 2rem;">Long exposure photographs from the performance! Credits: Last Theorem Studio, Media Partner at VizChitra 2025</p>
 
-        <div class="carousel">
-          <button class="carousel-arrow carousel-arrow-left" id="carousel-prev" aria-label="Scroll left">‹</button>
-          <div class="carousel-track" id="carousel-track">
-            <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_177.JPG', '')">
-              <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_177.JPG" alt="Long exposure poi performance" loading="lazy" />
-            </div>
-            <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_178.JPG', '')">
-              <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_178.JPG" alt="Long exposure poi performance" loading="lazy" />
-            </div>
-            <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_179.JPG', '')">
-              <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_179.JPG" alt="Long exposure poi performance" loading="lazy" />
-            </div>
-            <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_180.JPG', '')">
-              <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_180.JPG" alt="Long exposure poi performance" loading="lazy" />
-            </div>
-            <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_181.JPG', '')">
-              <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_181.JPG" alt="Long exposure poi performance" loading="lazy" />
-            </div>
-            <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_182.JPG', '')">
-              <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_182.JPG" alt="Long exposure poi performance" loading="lazy" />
-            </div>
-            <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_183.JPG', '')">
-              <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_183.JPG" alt="Long exposure poi performance" loading="lazy" />
-            </div>
-            <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_184.JPG', '')">
-              <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_184.JPG" alt="Long exposure poi performance" loading="lazy" />
-            </div>
-            <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_185.JPG', '')">
-              <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_185.JPG" alt="Long exposure poi performance" loading="lazy" />
-            </div>
-            <div class="carousel-item" onclick="openLightbox('https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_186.JPG', '')">
-              <img src="https://raw.githubusercontent.com/spinfinity-adt/website/main/climate-stripes/long-exposures/VizChitra_25.06.25_LTS_186.JPG" alt="Long exposure poi performance" loading="lazy" />
-            </div>
-          </div>
-          <button class="carousel-arrow carousel-arrow-right" id="carousel-next" aria-label="Scroll right">›</button>
+        <div style="max-width:680px;margin:1.5rem auto 0;">
+          <img src="/images/climate-stripes.png" alt="Climate Stripes postcard"
+               style="width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--border);box-shadow:0 12px 44px rgba(0,0,0,0.5);cursor:zoom-in;"
+               onclick="openLightbox('/images/climate-stripes.png','')" loading="lazy" />
         </div>
 
         <!-- VIZCHITRA TALK THUMBNAIL -->
@@ -1360,5 +1317,6 @@
       });
     })();
   </script>
+  <div id="sf-footer-mount"></div>
 </body>
 </html>
