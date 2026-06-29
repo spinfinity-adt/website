@@ -37,75 +37,7 @@
 <div class="page">
   <div class="container">
     <p class="section-label anim-0">the experiments</p>
-            <div class="projects-grid">
-
-      <!-- 1. Math Creatures — featured -->
-      <a class="proj-card featured anim-1" href="https://spinfinity.in/math-creatures" style="--card-accent:var(--accent4)">
-        <div class="proj-thumb"><img src="images/math-creatures.jpg" alt="Math Creatures"/></div>
-        <div class="proj-body">
-          <div class="proj-tags"><span class="tag" style="color:var(--accent4)">education</span><span class="tag" style="color:var(--accent4)">community</span></div>
-          <span class="proj-name">Math Creatures</span>
-          <p class="proj-desc">Kids were asked: what does math look like to you? This gallery is their answer — hand-drawn creatures with personalities, fears, and superpowers.</p>
-          <span class="proj-link-label">open project →</span>
-        </div>
-      </a>
-
-      <!-- 2. 100 Days of Making -->
-      <a class="proj-card anim-2" href="https://spinfinity.in/100-days-of-making/" style="--card-accent:var(--accent2)">
-        <div class="proj-thumb"><img src="images/100-days-of-making.jpg" alt="100 Days of Making"/></div>
-        <div class="proj-body">
-          <div class="proj-tags"><span class="tag" style="color:var(--accent2)">making</span><span class="tag" style="color:var(--accent2)">process</span></div>
-          <span class="proj-name">100 Days of Making</span>
-          <p class="proj-desc">One hundred days. One small thing made each day. A log of experiments, failures, sketches and surprises — proof that the practice matters more than the output.</p>
-          <span class="proj-link-label">open project →</span>
-        </div>
-      </a>
-
-      <!-- 3. Mosaic Data Viz -->
-      <a class="proj-card anim-2" href="https://spinfinity.in/mosaic-data-viz" style="--card-accent:var(--accent1)">
-        <div class="proj-thumb"><img src="images/mosaic-data-viz.jpg" alt="Mosaic Data Viz"/></div>
-        <div class="proj-body">
-          <div class="proj-tags"><span class="tag" style="color:var(--accent1)">data viz</span><span class="tag" style="color:var(--accent1)">creative coding</span></div>
-          <span class="proj-name">Mosaic Data Viz</span>
-          <p class="proj-desc">A creative coding recreation of a community data selfie — collecting and visualising people's data at Mosaic, a live community event.</p>
-          <span class="proj-link-label">open project →</span>
-        </div>
-      </a>
-
-      <!-- 4. Hilbert Curve Cat -->
-      <a class="proj-card anim-3" href="https://spinfinity.in/hilbert-curve-cat/" style="--card-accent:var(--accent2)">
-        <div class="proj-thumb"><img src="images/hilbert-curve-cat.jpg" alt="Hilbert Curve Cat"/></div>
-        <div class="proj-body">
-          <div class="proj-tags"><span class="tag" style="color:var(--accent2)">math</span><span class="tag" style="color:var(--accent2)">generative</span></div>
-          <span class="proj-name">Hilbert Curve Cat</span>
-          <p class="proj-desc">An unlimited cat generator — every cat rendered in the style of a Hilbert curve, the space-filling mathematical path that never quite repeats itself.</p>
-          <span class="proj-link-label">open project →</span>
-        </div>
-      </a>
-
-      <!-- 5. Hoop Trick Shapes -->
-      <a class="proj-card anim-3" href="https://spinfinity.in/hoop-trick-shapes/" style="--card-accent:var(--accent1)">
-        <div class="proj-thumb"><img src="images/hoop-trick-shapes.jpg" alt="Hoop Trick Shapes"/></div>
-        <div class="proj-body">
-          <div class="proj-tags"><span class="tag" style="color:var(--accent1)">education</span><span class="tag" style="color:var(--accent1)">student art</span></div>
-          <span class="proj-name">Hoop Trick Shapes</span>
-          <p class="proj-desc">Students drew the shapes they saw the hoop make after learning each trick — Barrel Roll, Cylinder, Sphere, Weave. A gallery of motion interpreted by hand.</p>
-          <span class="proj-link-label">open project →</span>
-        </div>
-      </a>
-
-      <!-- 6. Vibe Shift -->
-      <a class="proj-card anim-4" href="https://spinfinity.in/vibe-shift/" style="--card-accent:var(--accent3)">
-        <div class="proj-thumb"><img src="images/vibe-shift.jpg" alt="Vibe Shift"/></div>
-        <div class="proj-body">
-          <div class="proj-tags"><span class="tag" style="color:var(--accent3)">generative art</span><span class="tag" style="color:var(--accent3)">AI</span><span class="tag" style="color:var(--accent3)">data portrait</span></div>
-          <span class="proj-name">Vibe Shift</span>
-          <p class="proj-desc">A generative data portrait gallery made with Claude. Tell it who you are — your loves, your chaos, your aesthetics — and it translates you into a living p5.js sketch.</p>
-          <span class="proj-link-label">open project →</span>
-        </div>
-      </a>
-
-    </div>
+            <div class="projects-grid" id="projects-grid"></div>
   </div>
 </div>
 
@@ -131,6 +63,61 @@
   function drawGlow(th,gt){const[r,g,b]=th.color;ctx.beginPath();for(let i=0;i<=STEPS;i++){const a=(i/STEPS)*Math.PI*2;const px=CX()+th.a*Math.sin(th.kx*a+gt*th.speed*1000+th.phase);const py=CY()+th.b*Math.sin(th.ky*a+th.phase*1.3);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py)}ctx.strokeStyle=`rgba(${r},${g},${b},0.07)`;ctx.lineWidth=th.weight*7;ctx.shadowColor=`rgba(${r},${g},${b},0.3)`;ctx.shadowBlur=22;ctx.stroke();ctx.shadowBlur=0;}
   function animate(ts){const dt=ts-lastTime;lastTime=ts;t+=dt*0.001;ctx.clearRect(0,0,W,H);threads.forEach(th=>drawGlow(th,t));threads.forEach(th=>drawThread(th,t));requestAnimationFrame(animate)}
   requestAnimationFrame(animate);
+})();
+</script>
+
+<script>
+(function(){
+  // ADD A PROJECT = add one object here. Fields: name, url, img, tags[], desc.
+  // Optional: featured:true (large card), accent:"accent1"|"accent2"|"accent3"|"accent4" (else auto).
+  const projects = [
+    { name:"Math Creatures", url:"https://spinfinity.in/math-creatures", img:"images/math-creatures.jpg",
+      tags:["education","community"], featured:true,
+      desc:"Kids were asked: what does math look like to you? This gallery is their answer — hand-drawn creatures with personalities, fears, and superpowers." },
+
+    { name:"Climate Stripes", url:"https://spinfinity.in/climate-stripes", img:"images/climate-stripes.png",
+      tags:["data viz","performance"],
+      desc:"A data performance turning 175 years of global temperature into a wall of colour — Ed Hawkins' climate stripes brought to life with long-exposure photography." },
+
+    { name:"100 Days of Making", url:"https://spinfinity.in/100-days-of-making/", img:"images/100-days-of-making.jpg",
+      tags:["making","process"],
+      desc:"One hundred days. One small thing made each day. A log of experiments, failures, sketches and surprises — proof that the practice matters more than the output." },
+
+    { name:"Mosaic Data Viz", url:"https://spinfinity.in/mosaic-data-viz", img:"images/mosaic-data-viz.jpg",
+      tags:["data viz","creative coding"],
+      desc:"A creative coding recreation of a community data selfie — collecting and visualising people's data at Mosaic, a live community event." },
+
+    { name:"Hilbert Curve Cat", url:"https://spinfinity.in/hilbert-curve-cat/", img:"images/hilbert-curve-cat.jpg",
+      tags:["math","generative"],
+      desc:"An unlimited cat generator — every cat rendered in the style of a Hilbert curve, the space-filling mathematical path that never quite repeats itself." },
+
+    { name:"Hoop Trick Shapes", url:"https://spinfinity.in/hoop-trick-shapes/", img:"images/hoop-trick-shapes.jpg",
+      tags:["education","student art"],
+      desc:"Students drew the shapes they saw the hoop make after learning each trick — Barrel Roll, Cylinder, Sphere, Weave. A gallery of motion interpreted by hand." },
+
+    { name:"Vibe Shift", url:"https://spinfinity.in/vibe-shift/", img:"images/vibe-shift.jpg",
+      tags:["generative art","AI","data portrait"],
+      desc:"A generative data portrait gallery made with Claude. Tell it who you are — your loves, your chaos, your aesthetics — and it translates you into a living p5.js sketch." }
+  ];
+
+  const PALETTE = ["--accent2","--accent1","--accent3","--accent4"];
+  const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const accentOf = (p,i) => "var(" + (p.accent ? "--"+p.accent : (p.featured ? "--accent4" : PALETTE[i % PALETTE.length])) + ")";
+
+  const grid = document.getElementById("projects-grid");
+  if (grid) grid.innerHTML = projects.map((p,i) => {
+    const accent = accentOf(p,i);
+    const anim = "anim-" + (p.featured ? 1 : Math.min(i+1, 4));
+    const tags = (p.tags||[]).map(tg => '<span class="tag" style="color:'+accent+'">'+esc(tg)+'</span>').join("");
+    return '<a class="proj-card '+(p.featured?"featured ":"")+anim+'" href="'+esc(p.url)+'" style="--card-accent:'+accent+'">'
+      + '<div class="proj-thumb"><img src="'+esc(p.img)+'" alt="'+esc(p.name)+'" loading="lazy"/></div>'
+      + '<div class="proj-body">'
+      + '<div class="proj-tags">'+tags+'</div>'
+      + '<span class="proj-name">'+esc(p.name)+'</span>'
+      + '<p class="proj-desc">'+esc(p.desc)+'</p>'
+      + '<span class="proj-link-label">open project →</span>'
+      + '</div></a>';
+  }).join("");
 })();
 </script>
 </body>
