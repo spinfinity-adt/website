@@ -10,10 +10,10 @@
 <style>
 .blog-header{margin-bottom:3.5rem;display:flex;flex-direction:column;gap:1.2rem;max-width:560px}
 .blog-title{font-family:var(--hand);font-size:clamp(2.5rem,8vw,5rem);font-weight:700;line-height:.95}
-.blog-title .inf{color:var(--accent3);text-shadow:0 0 30px rgba(107,68,168,.5)}
+.blog-title .inf{color:var(--accent1-text);text-shadow:0 0 30px rgba(63,167,150,.3)}
 .blog-intro{font-family:'Instrument Serif',serif;font-size:clamp(1rem,1.9vw,1.15rem);line-height:1.75;color:var(--muted)}
-.sub-follow-btn{font-family:var(--hand);font-size:1.1rem;font-weight:700;text-decoration:none;padding:.5rem 1.3rem;border-radius:2px;background:var(--accent3);color:var(--bg);display:inline-block;transition:all .22s ease;align-self:flex-start}
-.sub-follow-btn:hover{box-shadow:0 0 24px rgba(107,68,168,.55);transform:translateY(-2px) scale(1.03)}
+.sub-follow-btn{font-family:var(--hand);font-size:1.1rem;font-weight:700;text-decoration:none;padding:.5rem 1.3rem;border-radius:2px;background:var(--accent2);color:var(--bg);display:inline-block;transition:all .22s ease;align-self:flex-start}
+.sub-follow-btn:hover{box-shadow:0 0 24px rgba(80,32,100,.4);transform:translateY(-2px) scale(1.03)}
 
 .blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem}
 
@@ -23,10 +23,10 @@
 .blog-card-top{display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
 .blog-date{font-family:var(--hand);font-size:.82rem;color:var(--muted);font-weight:300}
 .blog-card-title{font-family:var(--hand);font-size:1.35rem;font-weight:700;line-height:1.2;transition:color .2s}
-.blog-card:hover .blog-card-title{color:var(--accent3)}
+.blog-card:hover .blog-card-title{color:var(--accent2)}
 .blog-card-sub{font-family:'Instrument Serif',serif;font-size:.9rem;color:var(--accent4);font-style:italic;line-height:1.4}
 .blog-card-blurb{font-family:'Instrument Serif',serif;font-size:.93rem;color:var(--muted);line-height:1.6;flex:1}
-.blog-read-link{font-family:var(--hand);font-size:.95rem;color:var(--accent3);margin-top:.4rem;transition:letter-spacing .2s}
+.blog-read-link{font-family:var(--hand);font-size:.95rem;color:var(--accent2);margin-top:.4rem;transition:letter-spacing .2s}
 
 .topics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:1.5rem}
 .topic-card{background:var(--card-bg);border:1px solid var(--border);border-radius:3px;padding:1.2rem;transition:border-color .2s,transform .2s}
@@ -35,7 +35,7 @@
 .topic-name{font-family:var(--hand);font-size:1.1rem;font-weight:700;display:block;color:var(--tc,var(--accent2))}
 .topic-desc{font-family:'Instrument Serif',serif;font-size:.9rem;color:var(--muted);margin-top:.3rem;line-height:1.5}
 @media(max-width:480px){.topics-grid{grid-template-columns:1fr 1fr}}
-.substack-cta{display:flex;flex-direction:column;align-items:flex-start;gap:1.2rem;background:var(--card-bg);border:1px solid var(--border);border-left:3px solid var(--accent3);border-radius:4px;padding:2rem;margin-top:3rem}.substack-cta p{font-family:var(--hand);font-size:1.2rem;line-height:1.5;color:var(--fg);font-weight:400}.substack-cta p span{color:var(--accent3)}.sub-follow-btn{font-family:var(--hand);font-size:1.1rem;font-weight:700;text-decoration:none;padding:.5rem 1.3rem;border-radius:2px;background:var(--accent3);color:var(--bg);display:inline-block;transition:all .22s ease}.sub-follow-btn:hover{box-shadow:0 0 24px rgba(107,68,168,.55);transform:translateY(-2px) scale(1.03)}.manifesto{margin:3.5rem 0;padding:2rem 2.2rem;border-left:3px solid var(--accent4);background:var(--card-bg);border-radius:0 4px 4px 0;max-width:680px}
+.substack-cta{display:flex;flex-direction:column;align-items:flex-start;gap:1.2rem;background:var(--card-bg);border:1px solid var(--border);border-left:3px solid var(--accent3);border-radius:4px;padding:2rem;margin-top:3rem}.substack-cta p{font-family:var(--hand);font-size:1.2rem;line-height:1.5;color:var(--fg);font-weight:400}.substack-cta p span{color:var(--accent2)}.sub-follow-btn{font-family:var(--hand);font-size:1.1rem;font-weight:700;text-decoration:none;padding:.5rem 1.3rem;border-radius:2px;background:var(--accent2);color:var(--bg);display:inline-block;transition:all .22s ease}.sub-follow-btn:hover{box-shadow:0 0 24px rgba(80,32,100,.4);transform:translateY(-2px) scale(1.03)}.manifesto{margin:3.5rem 0;padding:2rem 2.2rem;border-left:3px solid var(--accent4);background:var(--card-bg);border-radius:0 4px 4px 0;max-width:680px}
 .manifesto p{font-family:'Instrument Serif',serif;font-size:clamp(1.05rem,2vw,1.25rem);line-height:1.8;color:var(--text)}
 .manifesto p em{color:var(--accent4);font-style:italic}
 
@@ -66,11 +66,11 @@
 
     <div class="topics-grid anim-2">
       <div class="topic-card" style="--tc:var(--accent2)"><span class="topic-icon">∞</span><span class="topic-name">Math in Motion</span><p class="topic-desc">seeing topology, geometry and symmetry through a spinning hoop</p></div>
-      <div class="topic-card" style="--tc:var(--accent3)"><span class="topic-icon">〇</span><span class="topic-name">Flow & the Body</span><p class="topic-desc">embodied learning, proprioception, what movement reveals</p></div>
-      <div class="topic-card" style="--tc:var(--accent1)"><span class="topic-icon">⌘</span><span class="topic-name">Making Things</span><p class="topic-desc">creative coding, data viz, experiments that may or may not work</p></div>
+      <div class="topic-card" style="--tc:var(--accent1-text)"><span class="topic-icon">〇</span><span class="topic-name">Flow & the Body</span><p class="topic-desc">embodied learning, proprioception, what movement reveals</p></div>
+      <div class="topic-card" style="--tc:var(--accent1-text)"><span class="topic-icon">⌘</span><span class="topic-name">Making Things</span><p class="topic-desc">creative coding, data viz, experiments that may or may not work</p></div>
       <div class="topic-card" style="--tc:var(--accent4)"><span class="topic-icon">◎</span><span class="topic-name">Learning Design</span><p class="topic-desc">stories from workshops with kids, schools, and neurodivergent learners</p></div>
       <div class="topic-card" style="--tc:var(--accent2)"><span class="topic-icon">✦</span><span class="topic-name">Sparks</span><p class="topic-desc">people, books, ideas that opened new portals</p></div>
-      <div class="topic-card" style="--tc:var(--accent3)"><span class="topic-icon">♾</span><span class="topic-name">Big Questions</span><p class="topic-desc">why 2D math? what can the body discover that the mind alone cannot?</p></div>
+      <div class="topic-card" style="--tc:var(--accent1-text)"><span class="topic-icon">♾</span><span class="topic-name">Big Questions</span><p class="topic-desc">why 2D math? what can the body discover that the mind alone cannot?</p></div>
     </div>
 
     <div class="manifesto anim-3">
@@ -90,7 +90,7 @@
       </a>
       <a class="blog-card anim-3" href="https://spinfinity.substack.com/p/mosaic-data-selfie" target="_blank" rel="noopener">
         <div class="blog-card-inner">
-          <div class="blog-card-top"><span class="tag" style="color:var(--accent1)">data + making</span><span class="blog-date">Feb 11, 2026</span></div>
+          <div class="blog-card-top"><span class="tag" style="color:var(--accent1-text)">data + making</span><span class="blog-date">Feb 11, 2026</span></div>
           <h2 class="blog-card-title">Mosaic Data Selfie!</h2>
           <p class="blog-card-sub">A creative-tech, analog/digital, participatory process journey</p>
           <p class="blog-card-blurb">Designing a community data selfie for a science event → cleaning the data → recreating it in p5.js → writing about the whole chaotic, joyful process.</p>
@@ -107,7 +107,7 @@
       </a>
       <a class="blog-card anim-4" href="https://spinfinity.substack.com/p/spinning-triangles-with-a-hula-hoop" target="_blank" rel="noopener">
         <div class="blog-card-inner">
-          <div class="blog-card-top"><span class="tag" style="color:var(--accent3)">embodied cognition</span><span class="blog-date">Nov 1, 2025</span></div>
+          <div class="blog-card-top"><span class="tag" style="color:var(--accent1-text)">embodied cognition</span><span class="blog-date">Nov 1, 2025</span></div>
           <h2 class="blog-card-title">Spinning triangles with a hula hoop and fire</h2>
           <p class="blog-card-sub">Appreciating the body's intelligence!</p>
           <p class="blog-card-blurb">At a fire jam, I heard "Triangles are my favourite shape" and my body just... made one with the hoop. An investigation into embodied cognition, trefoil knots and rose curves.</p>

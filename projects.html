@@ -78,7 +78,9 @@
       desc:"A generative data portrait gallery made with Claude. Tell it who you are — your loves, your chaos, your aesthetics — and it translates you into a living p5.js sketch." }
   ];
 
-  const PALETTE = ["--accent2","--accent1","--accent3","--accent4"];
+  // card accent drives tag text, link label + hover name (all text) as well as the
+  // hover border, so it must stay off yellow and use the AA-safe teal text variant.
+  const PALETTE = ["--accent2","--accent1-text","--accent4","--accent1-text"];
   const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const accentOf = (p,i) => "var(" + (p.accent ? "--"+p.accent : (p.featured ? "--accent4" : PALETTE[i % PALETTE.length])) + ")";
 
