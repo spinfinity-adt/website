@@ -1,18 +1,16 @@
 /* ============================================================
    styles.css — shared design system for spinfinity.in
-   Type:   Bricolage Grotesque (display) · Nunito (body + UI)
-           Spectral (--serif) retained for legacy project pages only
+   Type:   Bricolage Grotesque (--display, headings) · Nunito (--hand, everything else)
    Themes: .theme-light · .theme-dusk · .theme-studio · .theme-paper  (set on <body>)
    Edit tokens below to restyle the whole site from one place.
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Nunito:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&display=swap');
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 /* ---- theme-independent tokens ---- */
 :root{
   --display:'Bricolage Grotesque',sans-serif;
-  --serif:'Spectral',serif;
   --hand:'Nunito',sans-serif;
   --nav-h:56px;
   --radius:11px;
@@ -59,7 +57,7 @@ body.theme-studio{background:radial-gradient(circle at 72% 24%,rgba(160,110,230,
 
 /* ===== BASE ===== */
 html{scroll-behavior:smooth}
-body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--serif);overflow-x:hidden;padding-top:var(--nav-h)}
+body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--hand);overflow-x:hidden;padding-top:var(--nav-h)}
 
 /* faint paper/star grain — sits BEHIND content (readability fix) */
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");background-size:220px;pointer-events:none;z-index:0;opacity:.35}

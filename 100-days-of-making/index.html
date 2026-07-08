@@ -6,7 +6,6 @@
 <title>100 Days of Making at PCL · Paper Crane Lab</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Serif+Display&family=Fraunces:opsz,wght@9..144,500&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 <link rel="stylesheet" href="/styles.css"/>
 <style>
@@ -18,7 +17,7 @@
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    font-family: 'Open Sans', sans-serif;
+    font-family: var(--hand);
     padding-top: 56px;
     padding-bottom: 56px;
   }
@@ -117,7 +116,7 @@
     position: fixed;
     background: #1c1c1c;
     color: #f2ede3;
-    font-family: 'Open Sans', sans-serif;
+    font-family: var(--hand);
     font-size: 13px;
     padding: 8px 13px;
     border-radius: 4px;
@@ -609,7 +608,7 @@ new p5(function(p) {
     p.noLoop();
 
     document.fonts.ready.then(() => {
-      p.textFont('Open Sans');
+      p.textFont('Nunito');
       p.redraw();
     });
 
@@ -711,17 +710,17 @@ new p5(function(p) {
 
     if (isMobile) {
       p.noStroke(); p.fill(INK);
-      p.textFont('Fraunces'); p.textSize(18);
+      p.textFont('Bricolage Grotesque'); p.textSize(18);
       p.textAlign(p.LEFT, p.BASELINE);
       p.text("100 days of making at PCL", PAD, titleY + 18);
-      p.textFont('Open Sans'); p.textSize(9); p.fill(160);
+      p.textFont('Nunito'); p.textSize(9); p.fill(160);
       p.textStyle(p.ITALIC);
       p.textAlign(p.LEFT, p.TOP);
       p.text("Dec 3, 2025 – Mar 12, 2026  ·  Aditi, Mathura & Sakshi", PAD, titleY + 28);
       p.textStyle(p.NORMAL);
     } else {
       p.noStroke(); p.fill(INK);
-      p.textFont('Fraunces'); p.textSize(40);
+      p.textFont('Bricolage Grotesque'); p.textSize(40);
       p.textAlign(p.LEFT, p.BASELINE);
       p.text("100 days of making at PCL", PAD, titleY + 40);
 
@@ -737,7 +736,7 @@ new p5(function(p) {
       p.noStroke();
 
       // Date line
-      p.textFont('Open Sans'); p.textStyle(p.ITALIC); p.textSize(11); p.fill(165);
+      p.textFont('Nunito'); p.textStyle(p.ITALIC); p.textSize(11); p.fill(165);
       p.textAlign(p.LEFT, p.TOP);
       p.text("December 3, 2025 – March 12, 2026  ·  Aditi, Mathura & Sakshi", PAD, titleY + 53);
       p.textStyle(p.NORMAL);
