@@ -137,15 +137,16 @@ body.theme-paper .social-btn.insta:hover{background:var(--accent1);color:#fff}
 .logo .tit{position:absolute;left:50%;transform:translateX(-50%);top:-.13em;width:.30em;height:.30em}
 
 /* ================================================================
-   nav bar — standardized site-wide. The shared nav (nav.html) reads
-   its colours from theme tokens; scoping the paper palette onto
-   .sf-nav pins it to the brand look on EVERY page, regardless of the
-   page's body theme (project pages stay on their own themes).
+   nav bar — one gradient bar, theme-independent (identical on light +
+   dark pages). Edit these tokens to restyle the nav across the whole
+   site from here.
    ================================================================ */
 .sf-nav{
-  --nav-bg:rgba(251,251,248,0.92);
-  --text:#232730;
-  --muted:#5d616b;
-  --accent2:#502064;
-  --border:#e5e3db;
+  --nav-bg:linear-gradient(90deg,#502064 0%,#2E7A6E 100%); /* plum -> deep teal */
+  --nav-drop:#502064;         /* mobile dropdown fill */
+  --nav-spin:#FFBD35;         /* wordmark "spin" — yellow */
+  --nav-finity:#c9adf5;       /* wordmark "finity" — lifted lilac (legible on plum) */
+  --nav-link:rgba(255,255,255,.82);
+  --nav-link-on:#ffffff;
+  --border:rgba(255,255,255,0.22);
 }
