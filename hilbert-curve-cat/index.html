@@ -26,8 +26,8 @@
       background: var(--bg);
       color: #e2e8f0;
       font-family: var(--hand);
-      height: 100dvh;
-      overflow: hidden;
+      min-height: 100dvh;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       padding-top: 56px;
@@ -85,7 +85,7 @@
       z-index: 1;
       display: flex;
       flex: 1;
-      overflow: hidden;
+      overflow: visible;
       gap: 0;
     }
 
@@ -147,7 +147,7 @@
       flex-direction: column;
       gap: 0.75rem;
       padding: 1rem 1rem 1rem 0;
-      overflow-y: auto;
+      overflow-y: visible;
     }
 
     /* hide sidebar on tiny screens, show below instead */
