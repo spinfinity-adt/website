@@ -12,14 +12,14 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --pink:   #ff6eb4;
-      --purple: #a855f7;
-      --cyan:   #22d3ee;
-      --yellow: #fde68a;
-      --bg:     #0d0d1a;
-      --card:   #13132b;
-      --border: #2a2a4a;
+    /* page palette aliased to the shared brand tokens — edit colours in
+       styles.css (.theme-studio). --bg/--border come from the theme. */
+    body {
+      --pink:   var(--accent2);
+      --purple: var(--accent4);
+      --cyan:   var(--accent1);
+      --yellow: var(--accent3);
+      --card:   var(--card-bg);
     }
 
     body {
@@ -358,7 +358,7 @@
     .wiggle { display: inline-block; animation: wiggle 1.2s ease-in-out infinite; }
   </style>
 </head>
-<body>
+<body class="theme-studio">
 <div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>
   <!-- TOP BAR -->
