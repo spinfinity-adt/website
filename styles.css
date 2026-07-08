@@ -25,15 +25,15 @@
 
 /* ===== THEMES ===== */
 
-/* light · educator pages (about, math creatures, tracks) — airy daytime sky */
+/* light · educator + light project pages — brand paper (matches the hub) */
 .theme-light{
-  --fg:var(--text); /* re-alias per theme: fixes washed-out text (e.g. About name) */
-  --bg:#eef4f5; --text:#162d34; --muted:#52696a;
-  --accent1:#9b6ab0; --accent2:#0c8294; --accent3:#6a4fb0; --accent4:#bb8b1a;
-  --card-bg:#ffffff; --border:#dbe7e7;
-  --nav-bg:rgba(233,241,242,0.92);
+  --fg:var(--text);
+  --bg:#FBFBF8; --text:#232730; --muted:#5d616b;
+  --accent1:#3FA796; --accent1-text:#2E7A6E; --accent2:#502064; --accent3:#FFBD35; --accent4:#8267BE;
+  --card-bg:#ffffff; --border:#e5e3db;
+  --nav-bg:rgba(251,251,248,0.92);
 }
-body.theme-light{background:radial-gradient(circle at 88% -8%,rgba(12,130,148,0.12),transparent 60%),radial-gradient(circle at 4% 108%,rgba(106,79,176,0.10),transparent 60%),var(--bg);background-attachment:fixed;}
+body.theme-light{background:var(--bg)}
 
 /* dusk · neutral hub (home, blog, projects) — teal twilight nebula */
 .theme-dusk{
@@ -45,15 +45,17 @@ body.theme-light{background:radial-gradient(circle at 88% -8%,rgba(12,130,148,0.
 }
 body.theme-dusk{background:radial-gradient(circle at 22% 14%,rgba(47,212,224,0.15),transparent 55%),radial-gradient(circle at 86% 90%,rgba(160,110,230,0.16),transparent 55%),var(--bg);background-attachment:fixed;}
 
-/* studio · creative work (art × data × tech) — deep space */
+/* studio · dark project pages (art × data × tech) — brand dark
+   Accents are tuned for legibility on dark: teal + lilac lead, deep purple
+   is too dark for text here so --accent2 is a lifted purple. */
 .theme-studio{
-  --fg:var(--text); /* re-alias per theme: fixes washed-out text (e.g. About name) */
-  --bg:#0b1622; --text:#eef4f5; --muted:#9aa6bf;
-  --accent1:#ff8a5c; --accent2:#38e6df; --accent3:#b388ff; --accent4:#ffd24a;
-  --card-bg:rgba(255,255,255,0.04); --border:rgba(180,235,240,0.12);
-  --nav-bg:rgba(11,22,34,0.92);
+  --fg:var(--text);
+  --bg:#181320; --text:#f2eef8; --muted:#a99fb8;
+  --accent1:#3FA796; --accent1-text:#54c7ba; --accent2:#a582e6; --accent3:#FFBD35; --accent4:#8267BE;
+  --card-bg:rgba(255,255,255,0.05); --border:rgba(255,255,255,0.14);
+  --nav-bg:rgba(24,19,32,0.92);
 }
-body.theme-studio{background:radial-gradient(circle at 72% 24%,rgba(160,110,230,0.22),transparent 58%),radial-gradient(circle at 18% 84%,rgba(47,212,224,0.16),transparent 55%),var(--bg);background-attachment:fixed;}
+body.theme-studio{background:var(--bg)}
 
 /* ===== BASE ===== */
 html{scroll-behavior:smooth}
