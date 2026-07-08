@@ -121,7 +121,7 @@ body.theme-paper{background:var(--bg);font-family:var(--hand)}
 body.theme-paper .vignette{display:none}
 body.theme-paper .logo{color:var(--accent2);text-shadow:none;font-family:var(--display)!important;font-weight:700}
 body.theme-paper .logo .inf{color:var(--accent1-text);text-shadow:none}
-body.theme-paper .logo-area::after{box-shadow:none;height:4px;background:linear-gradient(90deg,var(--accent1),var(--accent2))}
+body.theme-paper .logo-area::after{box-shadow:none;height:4px;background:var(--accent3)}
 body.theme-paper .hoop{color:var(--accent2)}
 body.theme-paper .math{color:var(--accent1-text)}
 body.theme-paper ::selection{background:rgba(255,189,53,.35)}
@@ -135,6 +135,7 @@ body.theme-paper .social-btn.insta:hover{background:var(--accent1);color:#fff}
 .sf-mark{width:clamp(56px,8vw,84px);flex:0 0 auto;display:block;margin-bottom:.8rem}
 .logo .it{position:relative;display:inline-block}
 .logo .tit{position:absolute;left:50%;transform:translateX(-50%);top:-.13em;width:.30em;height:.30em}
+.logo .tit path{stroke:var(--tit,var(--accent4))} /* knot-tittles: lilac (override per-tittle with --tit on the .it span) */
 
 /* ================================================================
    nav bar — one gradient bar, theme-independent (identical on light +

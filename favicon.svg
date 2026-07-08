@@ -7,7 +7,7 @@
   </defs>
   <rect width="120" height="120" rx="27" fill="url(#sf-fav)"/>
   <g transform="translate(60 60) scale(0.66) translate(-60 -60)"
-     fill="none" stroke="#FBFBF8" stroke-width="8" stroke-linecap="round">
+     fill="none" stroke="#FFBD35" stroke-width="8" stroke-linecap="round">
     <g transform="rotate(0 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54"/></g>
     <g transform="rotate(90 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54"/></g>
     <g transform="rotate(180 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54"/></g>

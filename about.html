@@ -11,12 +11,11 @@
 .about-hero{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;margin-bottom:4rem}
 @media(max-width:700px){.about-hero{grid-template-columns:1fr;gap:2.5rem}}
 .about-photo-wrap{position:relative}
-.about-photo{width:100%;border-radius:3px;display:block;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.about-photo-wrap::before{content:'';position:absolute;inset:-3px;border-radius:5px;background:linear-gradient(135deg,var(--accent2),var(--accent3),var(--accent1));z-index:-1;opacity:.5;filter:blur(6px)}
+.about-photo{width:100%;border-radius:3px;display:block;border:1px solid var(--border)}
 .photo-caption{font-family:var(--hand);font-size:.88rem;color:var(--muted);margin-top:.8rem;font-style:italic;text-align:center;font-weight:300}
 .about-text{display:flex;flex-direction:column;gap:1.5rem}
 .about-name{font-family:var(--display);font-size:clamp(2.5rem,7vw,4.5rem);font-weight:400;line-height:.95;color:var(--fg)}
-.about-name .highlight{color:var(--accent2);text-shadow:0 0 20px rgba(63,167,150,.4)}
+.about-name .highlight{color:var(--accent2)}
 .roles{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.3rem}
 p.body{font-family:var(--hand);font-size:clamp(1rem,1.8vw,1.13rem);line-height:1.8;color:var(--text)}
 p.body em{color:var(--accent2);font-style:italic}
