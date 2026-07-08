@@ -137,14 +137,6 @@
 <body>
 <div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>
-<script>
-  fetch('/nav.html')
-    .then(function(r) { return r.text(); })
-    .then(function(html) {
-      document.getElementById('sf-nav-mount').innerHTML = html;
-      initNav();
-    });
-</script>
 
 <div id="canvas-container"></div>
 <div id="tooltip"></div>

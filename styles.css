@@ -1,6 +1,7 @@
 /* ============================================================
    styles.css — shared design system for spinfinity.in
-   Type:   Bricolage Grotesque (display) · Spectral (body) · Nunito (hand)
+   Type:   Bricolage Grotesque (display) · Nunito (body + UI)
+           Spectral (--serif) retained for legacy project pages only
    Themes: .theme-light · .theme-dusk · .theme-studio · .theme-paper  (set on <body>)
    Edit tokens below to restyle the whole site from one place.
    ============================================================ */
@@ -72,7 +73,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 /* ---- type roles (override page-specific font choices in one place) ---- */
 .logo,.sf-logo,.blog-title,.blog-card-title,.about-name,.proj-name{font-family:var(--display)!important;font-weight:400}
-.tagline,p.body,.blog-intro,.blog-card-sub,.blog-card-blurb,.manifesto p,.proj-desc{font-family:var(--serif)!important}
+.tagline,p.body,.blog-intro,.blog-card-sub,.blog-card-blurb,.manifesto p,.proj-desc{font-family:var(--hand)!important}
 
 /* ---- shared components (all token-driven, so they recolour per theme) ---- */
 .tag{display:inline-block;font-family:var(--hand);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .7rem;border-radius:30px;border:1px solid currentColor;opacity:.85}
@@ -116,7 +117,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   --mk-main:var(--accent2);   /* inspin-knot main strokes — deep purple */
   --mk-shadow:var(--accent1); /* inspin-knot drop shadow — teal */
 }
-body.theme-paper{background:var(--bg)}
+body.theme-paper{background:var(--bg);font-family:var(--hand)}
 body.theme-paper .vignette{display:none}
 body.theme-paper .logo{color:var(--accent2);text-shadow:none;font-family:var(--display)!important;font-weight:700}
 body.theme-paper .logo .inf{color:var(--accent1-text);text-shadow:none}
@@ -133,4 +134,18 @@ body.theme-paper .social-btn.insta:hover{background:var(--accent1);color:#fff}
 /* inspin-knot mark + i-dot tittles (homepage hero) */
 .sf-mark{width:clamp(56px,8vw,84px);flex:0 0 auto;display:block;margin-bottom:.8rem}
 .logo .it{position:relative;display:inline-block}
-.logo .tit{position:absolute;left:50%;transform:translateX(-50%);top:.01em;width:.30em;height:.30em}
+.logo .tit{position:absolute;left:50%;transform:translateX(-50%);top:-.13em;width:.30em;height:.30em}
+
+/* ================================================================
+   nav bar — standardized site-wide. The shared nav (nav.html) reads
+   its colours from theme tokens; scoping the paper palette onto
+   .sf-nav pins it to the brand look on EVERY page, regardless of the
+   page's body theme (project pages stay on their own themes).
+   ================================================================ */
+.sf-nav{
+  --nav-bg:rgba(251,251,248,0.92);
+  --text:#232730;
+  --muted:#5d616b;
+  --accent2:#502064;
+  --border:#e5e3db;
+}
