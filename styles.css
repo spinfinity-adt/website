@@ -1,7 +1,7 @@
 /* ============================================================
    styles.css — shared design system for spinfinity.in
-   Type:   Rozha One (display) · Spectral (body) · Nunito (hand)
-   Themes: .theme-light · .theme-dusk · .theme-studio  (set on <body>)
+   Type:   Bricolage Grotesque (display) · Spectral (body) · Nunito (hand)
+   Themes: .theme-light · .theme-dusk · .theme-studio · .theme-paper  (set on <body>)
    Edit tokens below to restyle the whole site from one place.
    ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Nunito:wght@400;600;700;800&display=swap');
@@ -34,8 +34,7 @@
   --card-bg:#ffffff; --border:#dbe7e7;
   --nav-bg:rgba(233,241,242,0.92);
 }
-body.theme-light{
-  --fg:var(--text); /* re-alias per theme: fixes washed-out text (e.g. About name) */background:radial-gradient(circle at 88% -8%,rgba(12,130,148,0.12),transparent 60%),radial-gradient(circle at 4% 108%,rgba(106,79,176,0.10),transparent 60%),var(--bg);background-attachment:fixed;}
+body.theme-light{background:radial-gradient(circle at 88% -8%,rgba(12,130,148,0.12),transparent 60%),radial-gradient(circle at 4% 108%,rgba(106,79,176,0.10),transparent 60%),var(--bg);background-attachment:fixed;}
 
 /* dusk · neutral hub (home, blog, projects) — teal twilight nebula */
 .theme-dusk{
@@ -45,8 +44,7 @@ body.theme-light{
   --card-bg:rgba(255,255,255,0.05); --border:rgba(180,235,240,0.14);
   --nav-bg:rgba(18,63,74,0.9);
 }
-body.theme-dusk{
-  --fg:var(--text); /* re-alias per theme: fixes washed-out text (e.g. About name) */background:radial-gradient(circle at 22% 14%,rgba(47,212,224,0.15),transparent 55%),radial-gradient(circle at 86% 90%,rgba(160,110,230,0.16),transparent 55%),var(--bg);background-attachment:fixed;}
+body.theme-dusk{background:radial-gradient(circle at 22% 14%,rgba(47,212,224,0.15),transparent 55%),radial-gradient(circle at 86% 90%,rgba(160,110,230,0.16),transparent 55%),var(--bg);background-attachment:fixed;}
 
 /* studio · creative work (art × data × tech) — deep space */
 .theme-studio{
@@ -56,8 +54,7 @@ body.theme-dusk{
   --card-bg:rgba(255,255,255,0.04); --border:rgba(180,235,240,0.12);
   --nav-bg:rgba(11,22,34,0.92);
 }
-body.theme-studio{
-  --fg:var(--text); /* re-alias per theme: fixes washed-out text (e.g. About name) */background:radial-gradient(circle at 72% 24%,rgba(160,110,230,0.22),transparent 58%),radial-gradient(circle at 18% 84%,rgba(47,212,224,0.16),transparent 55%),var(--bg);background-attachment:fixed;}
+body.theme-studio{background:radial-gradient(circle at 72% 24%,rgba(160,110,230,0.22),transparent 58%),radial-gradient(circle at 18% 84%,rgba(47,212,224,0.16),transparent 55%),var(--bg);background-attachment:fixed;}
 
 /* ===== BASE ===== */
 html{scroll-behavior:smooth}
@@ -103,30 +100,34 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 /* ================================================================
    theme-paper — the redesigned hub theme (replaces theme-dusk on
-   index/blog/projects/about). Decided 6 Jul 2026.
-   Leads: plum primary, teal secondary. Honey = accent only, never text.
+   index/blog/projects/about). Palette: Color Hunt FFBD35-3FA796-8267BE-502064.
+   Leads: deep purple primary, teal secondary. Yellow = accent only, never text.
+   Lilac = supporting accent (pills/borders/decoration), avoid as body text.
    ================================================================ */
 .theme-paper{
   --fg:var(--text);
   --bg:#FBFBF8; --text:#232730; --muted:#5d616b;
-  --accent1:#23756C; /* teal — secondary */
-  --accent2:#6B44A8; /* plum — primary */
-  --accent3:#D9950F; /* honey — ACCENT ONLY, never on text */
-  --accent4:#2A2440; /* aubergine ink — structure */
+  --accent1:#3FA796;       /* teal — secondary (graphics/fills) */
+  --accent1-text:#2E7A6E;  /* teal, darkened to pass AA as text */
+  --accent2:#502064;       /* deep purple — PRIMARY */
+  --accent3:#FFBD35;       /* yellow — ACCENT ONLY, never on text */
+  --accent4:#8267BE;       /* lilac — supporting accent */
   --card-bg:#ffffff; --border:#e5e3db; --nav-bg:rgba(251,251,248,0.92);
+  --mk-main:var(--accent2);   /* inspin-knot main strokes — deep purple */
+  --mk-shadow:var(--accent1); /* inspin-knot drop shadow — teal */
 }
 body.theme-paper{background:var(--bg)}
 body.theme-paper .vignette{display:none}
 body.theme-paper .logo{color:var(--accent2);text-shadow:none;font-family:var(--display)!important;font-weight:700}
-body.theme-paper .logo .inf{color:var(--accent1);text-shadow:none}
+body.theme-paper .logo .inf{color:var(--accent1-text);text-shadow:none}
 body.theme-paper .logo-area::after{box-shadow:none;height:4px;background:linear-gradient(90deg,var(--accent1),var(--accent2))}
 body.theme-paper .hoop{color:var(--accent2)}
-body.theme-paper .math{color:var(--accent1)}
-body.theme-paper ::selection{background:rgba(217,149,15,.35)}
+body.theme-paper .math{color:var(--accent1-text)}
+body.theme-paper ::selection{background:rgba(255,189,53,.35)}
 body.theme-paper .cta-primary{color:#fff}
 body.theme-paper .cta-ghost{border-color:var(--border);color:var(--text)}
 body.theme-paper .cta-ghost:hover{border-color:var(--accent2);color:var(--accent2)}
-body.theme-paper .social-btn.insta{color:var(--accent1);border-color:var(--accent1)}
+body.theme-paper .social-btn.insta{color:var(--accent1-text);border-color:var(--accent1-text)}
 body.theme-paper .social-btn.insta:hover{background:var(--accent1);color:#fff}
 
 /* inspin-knot mark + i-dot tittles (homepage hero) */
