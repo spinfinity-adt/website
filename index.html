@@ -22,13 +22,7 @@
 .cta-primary:hover{box-shadow:0 0 24px rgba(63,167,150,.55);transform:translateY(-2px) scale(1.03)}
 .cta-ghost{color:var(--fg);border:2px solid rgba(255,255,255,.18)}
 .cta-ghost:hover{border-color:var(--accent2);color:var(--accent2);transform:translateY(-2px)}
-.portal-strip{position:relative;z-index:10;border-top:1px solid var(--border);padding:2.5rem clamp(1.2rem,5vw,3.5rem);display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.5rem}
-.portal-item{display:flex;flex-direction:column;gap:.4rem}
-.portal-icon{font-size:1.8rem;line-height:1}
-.portal-title{font-family:var(--hand);font-size:1.1rem;font-weight:700}
-.portal-desc{font-family:var(--hand);font-size:.88rem;color:var(--muted);line-height:1.45;font-weight:300}
 @media(max-width:480px){
-  .portal-strip{grid-template-columns:1fr 1fr}
   .hero-cta{gap:.7rem}
   .cta-btn{font-size:1rem;padding:.5rem 1.1rem}
 }
@@ -59,12 +53,6 @@
       <a href="https://spinfinity.substack.com" target="_blank" rel="noopener" class="social-btn sub">substack</a>
     </div>
   </section>
-  <div class="portal-strip anim-5">
-    <div class="portal-item"><span class="portal-icon">∞</span><span class="portal-title">Mathematics</span><span class="portal-desc">topology, geometry in motion, symmetry, rhythm</span></div>
-    <div class="portal-item"><span class="portal-icon">〇</span><span class="portal-title">Movement</span><span class="portal-desc">flow arts, hula hoops, poi, embodied problem-solving</span></div>
-    <div class="portal-item"><span class="portal-icon">⌘</span><span class="portal-title">Creative Code</span><span class="portal-desc">generative art, data viz, playful experiments</span></div>
-    <div class="portal-item"><span class="portal-icon">◎</span><span class="portal-title">Learning</span><span class="portal-desc">embodied education, making, community sense-making</span></div>
-  </div>
 </div>
 
 <div id="sf-footer-mount"></div>
