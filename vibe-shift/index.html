@@ -125,123 +125,6 @@
             border-color: var(--accent1);
         }
 
-        .submission-section {
-            background: var(--card-bg);
-            padding: 50px;
-            border-radius: 4px;
-            margin-bottom: 60px;
-            border: 1px solid var(--border);
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .submission-section h2 {
-            font-family: var(--display);
-            margin-bottom: 35px;
-            color: var(--text);
-            font-weight: normal;
-            font-size: 1.4em;
-        }
-
-        .instructions {
-            background: var(--bg);
-            padding: 25px;
-            border-radius: 3px;
-            margin-bottom: 35px;
-            border-left: 3px solid var(--accent4);
-        }
-
-        .instructions h3 {
-            margin-bottom: 15px;
-            color: var(--text);
-            font-weight: normal;
-            font-size: 1em;
-        }
-
-        .instructions ol {
-            margin-left: 25px;
-            line-height: 1.9;
-            color: var(--muted);
-        }
-
-        .form-group {
-            margin-bottom: 30px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: normal;
-            color: var(--muted);
-            font-size: 0.95em;
-        }
-
-        input[type="text"],
-        input[type="file"],
-        textarea {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            font-family: var(--hand);
-            font-size: 14px;
-            background: var(--bg);
-            color: var(--text);
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent1);
-            background: var(--bg);
-        }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-            line-height: 1.6;
-        }
-
-        input[type="file"] {
-            padding: 12px;
-            cursor: pointer;
-        }
-
-        .hint {
-            font-size: 0.8em;
-            color: var(--muted);
-            margin-top: 8px;
-            line-height: 1.4;
-        }
-
-        button {
-            background: var(--card-bg);
-            color: var(--text);
-            padding: 14px 35px;
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            font-size: 1em;
-            cursor: pointer;
-            font-family: var(--hand);
-            transition: all 0.2s;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background: var(--border);
-            border-color: var(--accent1);
-        }
-
-        button:disabled {
-            background: var(--card-bg);
-            border-color: var(--border);
-            cursor: not-allowed;
-            color: var(--muted);
-            opacity: 0.6;
-        }
-
         .modal {
             display: none;
             position: fixed;
@@ -335,32 +218,6 @@
             font-size: 1.1em;
         }
 
-        .error-message {
-            background: color-mix(in srgb, var(--error) 10%, var(--bg));
-            border: 1px solid color-mix(in srgb, var(--error) 35%, transparent);
-            color: var(--error);
-            padding: 12px;
-            border-radius: 3px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .success-message {
-            background: color-mix(in srgb, var(--success) 10%, var(--bg));
-            border: 1px solid color-mix(in srgb, var(--success) 35%, transparent);
-            color: var(--success);
-            padding: 12px;
-            border-radius: 3px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .loading-spinner {
-            text-align: center;
-            padding: 40px;
-            color: var(--muted);
-        }
-
         a {
             color: inherit;
         }
@@ -378,53 +235,7 @@
 
         <div class="gallery-section">
             <h2>gallery wall 🖼️</h2>
-            <div id="loading" class="loading-spinner">loading gallery...</div>
             <div class="gallery-grid" id="gallery-grid"></div>
-        </div>
-
-        <div class="submission-section">
-            <h2>submit your portrait</h2>
-
-            <div class="instructions">
-                <h3>how to submit:</h3>
-                <ol>
-                    <li>create your portrait in the p5.js editor</li>
-                    <li>save a screenshot or GIF of your portrait</li>
-                    <li>copy your p5.js editor share link (File → Share)</li>
-                    <li>fill out the form below and upload!</li>
-                </ol>
-            </div>
-
-            <form id="submission-form">
-                <div class="form-group">
-                    <label for="name">your name (optional):</label>
-                    <input type="text" id="name" placeholder="anonymous">
-                    <div class="hint">leave blank to remain anonymous</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="image">portrait image (PNG/JPG/GIF):</label>
-                    <input type="file" id="image" accept="image/*" required>
-                    <div class="hint">upload a screenshot or GIF of your portrait</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="link">p5.js editor link:</label>
-                    <input type="text" id="link" placeholder="https://editor.p5js.org/username/sketches/..." required>
-                    <div class="hint">share your sketch: File → Share → Copy link</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="prompt">your prompt / data description:</label>
-                    <textarea id="prompt" required
-                        placeholder="e.g., 'create a constellation portrait. I'm an ambivert, I've lived in 4 cities, I love rainy days...'"></textarea>
-                    <div class="hint">what did you tell Claude? what data did you encode?</div>
-                </div>
-
-                <button type="submit" id="submit-btn">add to gallery</button>
-                <div class="error-message" id="error-message"></div>
-                <div class="success-message" id="success-message">portrait added to gallery! ✨</div>
-            </form>
         </div>
     </div>
 
@@ -441,145 +252,85 @@
         </div>
     </div>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-        // Supabase configuration
-        const SUPABASE_URL = 'https://vkbyfcjhumwcqdybkeek.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrYnlmY2podW13Y3FkeWJrZWVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMTUzNjUsImV4cCI6MjA4Njc5MTM2NX0.iFta4s56D8Y0NWloM8ziFvfi4xx-fJxbLuPCCsYyhXQ';
-
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // Cloudinary config (for image hosting)
-        const CLOUDINARY_CLOUD_NAME = 'dygkrkgni';
-        const CLOUDINARY_UPLOAD_PRESET = 'vibe-shift';
-
-        // Load gallery on page load
-        window.addEventListener('DOMContentLoaded', loadGallery);
-
-        // Set up real-time subscription
-        supabase
-            .channel('portraits')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'portraits' }, loadGallery)
-            .subscribe();
-
-        // Form submission
-        document.getElementById('submission-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const errorMsg = document.getElementById('error-message');
-            const successMsg = document.getElementById('success-message');
-            const submitBtn = document.getElementById('submit-btn');
-
-            errorMsg.style.display = 'none';
-            successMsg.style.display = 'none';
-
-            const name = document.getElementById('name').value.trim() || 'Anonymous';
-            const imageFile = document.getElementById('image').files[0];
-            const link = document.getElementById('link').value.trim();
-            const prompt = document.getElementById('prompt').value.trim();
-
-            if (!imageFile || !link || !prompt) {
-                errorMsg.textContent = 'Please fill in all required fields.';
-                errorMsg.style.display = 'block';
-                return;
+    <script>
+        // Static gallery — exported from the Supabase `portraits` table on 2026-07-10,
+        // newest first. The live Supabase + Cloudinary upload flow (and the submission
+        // form) was removed in the same commit as this data; `git revert` that commit
+        // to bring uploads back with an active Supabase project.
+        const portraits = [
+            {
+                name: "Hokusai ramen cat fan",
+                p5js_link: "https://editor.p5js.org/spinfinity.in/sketches/tYK1M3Fxg",
+                prompt: "Create a generative data portrait in p5.js for me. \n\nI [love tea, Ramen, and cats].\n\n On the [chaos/order] scale, I feel 43% [chaotic] today. Make this a slider I can adjust \n\nTake inspiration from Hokusai. Let the form be metaphorical and inspired by his great wave painting\n\nGive me code I can paste directly into the p5.js editor. Canvas 600x600, no external libraries.",
+                image_url: "https://res.cloudinary.com/dygkrkgni/image/upload/v1773228819/cuw70od5lypxn2gvko7i.gif",
+                event: "example"
+            },
+            {
+                name: "jagrut",
+                p5js_link: "https://editor.p5js.org/movelike.jags/sketches/cpxyMtUsW",
+                prompt: "Create a generative data portrait in p5.js for me.\n\nI love spirals and nature, fractals and natural intelligence. I was a national level swimmer and I love trekking and cycling. Im 27 years old and I love sunrises and cold water. Im a teacher and an origami artist. I love driving my car and helping the people I love. I get jealous and envious and I lie sometimes. I also want the entire structure to be 3d and rotate. Also add elements of H. R. Giger\n\nOn the order/chaos scale, I feel 50 % [chaotic] today.\n\nTake inspiration from [MC Escher and Ernst Haeckel ]. Let the form be [abstract and naturalist]",
+                image_url: "https://res.cloudinary.com/dygkrkgni/image/upload/v1771423120/e69k61mldcfsoywz97w0.gif",
+                event: "vibe shift"
+            },
+            {
+                name: "mohit",
+                p5js_link: "https://editor.p5js.org/axsdjkghalskdjfgh/sketches/KAYetGuQn",
+                prompt: "i need you to make a generative portrait using p5js for me -- i like cats, i like post rock and idm, i like the art of brakhage, schiele, klimt, and i want my portrait to be breathing, organic, sun-kist, green, reminiscent of tam-dao by diptyque, and for the movement aspects i'd like you to incorporate some organic leaf growth behaviour, add some generative music effects with the blossoming of the leaves",
+                image_url: "https://res.cloudinary.com/dygkrkgni/image/upload/v1771331850/zphajomsns4ghihcf4jx.png",
+                event: "vibe shift"
+            },
+            {
+                name: "Anonymous",
+                p5js_link: "https://editor.p5js.org/aditya222behera/full/a0_9eCeT7",
+                prompt: "Create a generative data portrait in p5.js for me.\n\nI love cars and driving on empty roads, pixelated art, neon themed things. \n\nOn the chaos scale I feel 18% today.\n\nTake inspiration from 90's sci-fi movie posters. Let the form be image reveal.\n\nGive me code I can paste directly into the p5.js editor Canvas 600x600, no external libraries.\n\nadd a forest on the sides of the road where all the trees are neon-themed and lit up. add sign boards here and there among the trees. add a way to save the gif the animation creates.",
+                image_url: "https://res.cloudinary.com/dygkrkgni/image/upload/v1771331675/pzj8lx8mk9xwswmr0ejz.gif",
+                event: "vibe shift"
+            },
+            {
+                name: "Nico",
+                p5js_link: "https://editor.p5js.org/NiharikaHari/sketches/jgK27WHOk",
+                prompt: "I want to make a digital self portrait for a generate data portrait workshop. Rn i'm obsessed with sudoku, i love giving up, im always tired, i love coding and 3d printing and crocheting . I want something weird that feels like me, that involves movement, and adds some kind of control through a slider. Take inspiration from absurdist art. Focus on the generative art aspect. Lean into the sudoku vibes. don't use a human face. Make it 3d, and that I can drag to look at the artwork from different angles. give me code i can paste directly into the p5.js editor. Canvas 600x600, no external libraries.",
+                image_url: "https://res.cloudinary.com/dygkrkgni/image/upload/v1771331456/yoydojizmfyh6iv0pfcu.gif",
+                event: "vibe shift"
+            },
+            {
+                name: "Saksham",
+                p5js_link: "https://editor.p5js.org/1sakshm/full/4L5wYLv9j",
+                prompt: "i need to generate a chaos self portrait for myself in p5.js, i need a generative data portrait, i would love to\n  see how you generate and simulate the abstraction between life and death, i wanna see what people feel in the\n  place between life and death personally. i love sunshine and thunder + chaos. i am an extrovert who loves\n  talking. i feel 80% chaotic today and ive lived in 6 different cities. give me the code i can paste directly into\n   p5.js editor. canvas 600x600. no external libraries.",
+                image_url: "https://res.cloudinary.com/dygkrkgni/image/upload/v1771331425/e03yd3gunr9mz4dyhdgp.gif",
+                event: "vibe shift"
+            },
+            {
+                name: "Netsu :)",
+                p5js_link: "https://editor.p5js.org/https.netra/sketches/fKUwPWfoz",
+                prompt: "generative data portrait in p5.js for me. i love pink, books, my family and friends. i am an ambivert. someone who  overthinks a lot. generate something in the form of impressionism painting that reveals itself slowly. give me a code i can paste directly into the p5.js editor. canvas 400*400, no external libraries.",
+                image_url: "https://res.cloudinary.com/dygkrkgni/image/upload/v1771331381/qvnmklt48bjgwiqb8yze.jpg",
+                event: "vibe shift"
+            },
+            {
+                name: "spinfinity.adt",
+                p5js_link: "https://editor.p5js.org/spinfinity.in/sketches/kdorGxLdV",
+                prompt: "Create a hula hoop themed generative portrait in p5.js for me. I love flow arts, cats and math. Canvas 600x600, no external libraries. give me code that I can paste into p5.js. add an option to save as gif and image using the saveGif function",
+                image_url: "https://res.cloudinary.com/dygkrkgni/image/upload/v1771311792/rwlkcduxij0564o7xehg.gif",
+                event: "example"
+            },
+            {
+                name: "Bangalorean Bharatnatyam Dancer",
+                p5js_link: "https://editor.p5js.org/spinfinity.in/sketches/1ElK9yMc_",
+                prompt: "Create a generative data portrait in p5.js for me.\n\nI [love Bangalore, I love filter coffee, I love the intersection of science and art whatever feels relevant].\n\nOn the [chaos/order] scale, I feel 67%% [chaotic] today.\n\nI have lived in 4 cities.\nTake inspiration from Bharatnatyam aesthetics.\n\nGive me code I can paste directly into the p5.js editor. Canvas 600x600, no external libraries.",
+                image_url: "https://res.cloudinary.com/dygkrkgni/image/upload/v1771311214/n9os9idglkm3slocrsmn.gif",
+                event: "example"
+            },
+            {
+                name: "Aditi",
+                p5js_link: "https://editor.p5js.org/spinfinity.in/sketches/aVxvfs1eT",
+                prompt: "Create a typography poem generative portrait in p5js. A poem text in spiral form/lines that reveals an image",
+                image_url: "https://res.cloudinary.com/dygkrkgni/image/upload/v1771305297/kwwrn9jowgyerh1joypu.gif",
+                event: "example"
             }
+        ];
 
-            // Validate p5.js link
-            if (!link.includes('editor.p5js.org')) {
-                errorMsg.textContent = 'Please enter a valid p5.js editor link.';
-                errorMsg.style.display = 'block';
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'uploading...';
-
-            try {
-                // Upload image to Cloudinary
-                const formData = new FormData();
-                formData.append('file', imageFile);
-                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-                const cloudinaryResponse = await fetch(
-                    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-                    {
-                        method: 'POST',
-                        body: formData
-                    }
-                );
-
-                if (!cloudinaryResponse.ok) {
-                    throw new Error('Failed to upload image');
-                }
-
-                const cloudinaryData = await cloudinaryResponse.json();
-                const imageURL = cloudinaryData.secure_url;
-
-                // Save to Supabase
-                const { error } = await supabase
-                    .from('portraits')
-                    .insert([
-                        {
-                            name: name,
-                            image_url: imageURL,
-                            p5js_link: link,
-                            prompt: prompt
-                        }
-                    ]);
-
-                if (error) throw error;
-
-                // Clear form
-                document.getElementById('name').value = '';
-                document.getElementById('image').value = '';
-                document.getElementById('link').value = '';
-                document.getElementById('prompt').value = '';
-
-                successMsg.style.display = 'block';
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 3000);
-
-                document.getElementById('gallery-grid').scrollIntoView({ behavior: 'smooth' });
-            } catch (error) {
-                console.error('Error uploading portrait:', error);
-                errorMsg.textContent = 'Error uploading portrait. Please try again.';
-                errorMsg.style.display = 'block';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'add to gallery';
-            }
-        });
-
-        async function loadGallery() {
-            const loading = document.getElementById('loading');
-            const grid = document.getElementById('gallery-grid');
-
-            loading.style.display = 'block';
-
-            try {
-                const { data, error } = await supabase
-                    .from('portraits')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                loading.style.display = 'none';
-
-                if (error) throw error;
-
-                if (!data || data.length === 0) {
-                    grid.innerHTML = '<div class="empty-gallery">no portraits yet. be the first to add yours!</div>';
-                    return;
-                }
-
-                renderGallery(data);
-            } catch (error) {
-                console.error('Error loading gallery:', error);
-                loading.style.display = 'none';
-                grid.innerHTML = '<div class="empty-gallery">error loading gallery. please refresh the page.</div>';
-            }
-        }
+        window.addEventListener('DOMContentLoaded', () => renderGallery(portraits));
 
         function renderGallery(portraits) {
             const grid = document.getElementById('gallery-grid');
