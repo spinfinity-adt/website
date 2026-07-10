@@ -35,3 +35,26 @@ footer.html, nav.js, and all project sub-pages (math-creatures, climate-stripes,
 ## Note
 about.html is set to theme-light. If you'd rather it match the hub, change its
 body class to theme-dusk — one word.
+
+## Standard structure for dark project pages (July 2026)
+Any new project page that wants the dark look follows this recipe
+(mosaic-data-viz, hilbert-curve-cat and vibe-shift are the references):
+
+1. `<body class="theme-studio">` and `<link rel="stylesheet" href="/styles.css">`.
+2. Open the page with the shared header component (defined in styles.css):
+   ```html
+   <header class="proj-header">
+     <h1>Project Title</h1>
+     <p class="proj-sub">one-line subtitle</p>
+   </header>
+   ```
+   Centered; title in the one brand teal, subtitle in muted small caps.
+3. Every chrome/UI colour comes from the theme tokens — no hardcoded hex:
+   --bg, --text, --muted, --card-bg, --border, --accent1..4, --error, --success.
+   For translucent tints, use `color-mix(in srgb, var(--accentN) X%, transparent)`.
+4. One teal only for text: `--accent1-text` (#54c7ba on studio). `--accent1` is for
+   teal fills/borders. Yellow (--accent3) is accent/graphic only — never text.
+   Purple --accent2 and lilac --accent4 are the secondary accents.
+5. Cards/panels: `background: var(--card-bg); border: 1px solid var(--border)`.
+6. Data-encoding colours inside sketches/visualisations are exempt — they encode
+   meaning and stay as-is.

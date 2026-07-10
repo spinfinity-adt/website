@@ -17,31 +17,11 @@
 
         body {
             font-family: var(--hand);
-            background: #0a0a0a;
-            color: #e0e0e0;
+            background: var(--bg);
+            color: var(--text);
             padding: 20px;
             line-height: 1.6;
             padding-top: 56px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 40px 20px 20px;
-        }
-
-        h1 {
-            font-family: var(--display);
-            font-size: 2em;
-            margin-bottom: 10px;
-            color: #ffffff;
-            font-weight: normal;
-        }
-
-        .subtitle {
-            color: #888;
-            font-size: 1em;
-            font-weight: normal;
         }
 
         .container {
@@ -58,7 +38,7 @@
             text-align: center;
             margin-bottom: 40px;
             font-size: 1.5em;
-            color: #fff;
+            color: var(--text);
             font-weight: normal;
         }
 
@@ -70,23 +50,23 @@
         }
 
         .portrait-card {
-            background: #1a1a1a;
+            background: var(--card-bg);
             border-radius: 4px;
             overflow: hidden;
             transition: transform 0.2s ease;
-            border: 1px solid #2a2a2a;
+            border: 1px solid var(--border);
         }
 
         .portrait-card:hover {
             transform: translateY(-5px);
-            border-color: #3a3a3a;
+            border-color: var(--accent4);
         }
 
         .portrait-image {
             width: 100%;
             height: 320px;
             object-fit: cover;
-            background: #0a0a0a;
+            background: var(--bg);
             cursor: pointer;
             display: block;
         }
@@ -105,22 +85,22 @@
 
         .portrait-name {
             font-weight: normal;
-            color: #fff;
+            color: var(--text);
             font-size: 1.1em;
         }
 
         .event-tag {
             font-size: 0.7em;
-            color: #b8a1ff;
+            color: var(--accent2);
             padding: 3px 8px;
-            border: 1px solid #4a3f6f;
+            border: 1px solid var(--accent4);
             border-radius: 3px;
             white-space: nowrap;
         }
 
         .portrait-prompt {
             font-size: 0.9em;
-            color: #aaa;
+            color: var(--muted);
             line-height: 1.5;
             margin-bottom: 15px;
             display: -webkit-box;
@@ -131,9 +111,9 @@
 
         .portrait-link {
             display: inline-block;
-            color: #fff;
+            color: var(--text);
             padding: 8px 16px;
-            border: 1px solid #444;
+            border: 1px solid var(--border);
             border-radius: 3px;
             text-decoration: none;
             font-size: 0.85em;
@@ -141,16 +121,16 @@
         }
 
         .portrait-link:hover {
-            background: #2a2a2a;
-            border-color: #555;
+            background: var(--card-bg);
+            border-color: var(--accent1);
         }
 
         .submission-section {
-            background: #1a1a1a;
+            background: var(--card-bg);
             padding: 50px;
             border-radius: 4px;
             margin-bottom: 60px;
-            border: 1px solid #2a2a2a;
+            border: 1px solid var(--border);
             max-width: 800px;
             margin-left: auto;
             margin-right: auto;
@@ -159,22 +139,22 @@
         .submission-section h2 {
             font-family: var(--display);
             margin-bottom: 35px;
-            color: #fff;
+            color: var(--text);
             font-weight: normal;
             font-size: 1.4em;
         }
 
         .instructions {
-            background: #0a0a0a;
+            background: var(--bg);
             padding: 25px;
             border-radius: 3px;
             margin-bottom: 35px;
-            border-left: 3px solid #444;
+            border-left: 3px solid var(--accent4);
         }
 
         .instructions h3 {
             margin-bottom: 15px;
-            color: #fff;
+            color: var(--text);
             font-weight: normal;
             font-size: 1em;
         }
@@ -182,7 +162,7 @@
         .instructions ol {
             margin-left: 25px;
             line-height: 1.9;
-            color: #aaa;
+            color: var(--muted);
         }
 
         .form-group {
@@ -193,7 +173,7 @@
             display: block;
             margin-bottom: 10px;
             font-weight: normal;
-            color: #bbb;
+            color: var(--muted);
             font-size: 0.95em;
         }
 
@@ -202,20 +182,20 @@
         textarea {
             width: 100%;
             padding: 14px;
-            border: 1px solid #333;
+            border: 1px solid var(--border);
             border-radius: 3px;
             font-family: var(--hand);
             font-size: 14px;
-            background: #0a0a0a;
-            color: #e0e0e0;
+            background: var(--bg);
+            color: var(--text);
             transition: border-color 0.2s;
         }
 
         input[type="text"]:focus,
         textarea:focus {
             outline: none;
-            border-color: #666;
-            background: #111;
+            border-color: var(--accent1);
+            background: var(--bg);
         }
 
         textarea {
@@ -231,16 +211,16 @@
 
         .hint {
             font-size: 0.8em;
-            color: #666;
+            color: var(--muted);
             margin-top: 8px;
             line-height: 1.4;
         }
 
         button {
-            background: #2a2a2a;
-            color: #fff;
+            background: var(--card-bg);
+            color: var(--text);
             padding: 14px 35px;
-            border: 1px solid #444;
+            border: 1px solid var(--border);
             border-radius: 3px;
             font-size: 1em;
             cursor: pointer;
@@ -250,15 +230,16 @@
         }
 
         button:hover {
-            background: #333;
-            border-color: #555;
+            background: var(--border);
+            border-color: var(--accent1);
         }
 
         button:disabled {
-            background: #1a1a1a;
-            border-color: #222;
+            background: var(--card-bg);
+            border-color: var(--border);
             cursor: not-allowed;
-            color: #555;
+            color: var(--muted);
+            opacity: 0.6;
         }
 
         .modal {
@@ -274,13 +255,13 @@
         }
 
         .modal-content {
-            background: #1a1a1a;
+            background: var(--bg);
             margin: 50px auto;
             padding: 40px;
             max-width: 900px;
             border-radius: 4px;
             position: relative;
-            border: 1px solid #2a2a2a;
+            border: 1px solid var(--border);
         }
 
         .close-modal {
@@ -289,75 +270,75 @@
             right: 25px;
             font-size: 28px;
             cursor: pointer;
-            color: #666;
+            color: var(--muted);
             transition: color 0.2s;
         }
 
         .close-modal:hover {
-            color: #fff;
+            color: var(--text);
         }
 
         .modal-image {
             width: 100%;
             max-height: 600px;
             object-fit: contain;
-            background: #0a0a0a;
+            background: var(--bg);
             border-radius: 3px;
             margin-bottom: 25px;
         }
 
         .modal-info h3 {
             margin-bottom: 8px;
-            color: #fff;
+            color: var(--text);
             font-weight: normal;
             font-size: 1.3em;
         }
 
         .modal-event {
             font-size: 0.85em;
-            color: #888;
+            color: var(--muted);
             margin-bottom: 20px;
         }
 
         .modal-prompt {
-            background: #0a0a0a;
+            background: var(--card-bg);
             padding: 20px;
             border-radius: 3px;
             line-height: 1.7;
-            color: #aaa;
+            color: var(--muted);
             white-space: pre-wrap;
             margin-bottom: 20px;
-            border-left: 3px solid #333;
+            border-left: 3px solid var(--accent4);
         }
 
         .modal-link {
             display: inline-block;
-            background: #2a2a2a;
-            color: #fff;
+            background: var(--card-bg);
+            color: var(--text);
             padding: 10px 20px;
             border-radius: 3px;
             text-decoration: none;
             font-size: 1em;
-            border: 1px solid #444;
+            border: 1px solid var(--border);
             transition: all 0.2s;
         }
 
         .modal-link:hover {
-            background: #333;
-            border-color: #555;
+            background: var(--border);
+            border-color: var(--accent1);
         }
 
         .empty-gallery {
             text-align: center;
             padding: 80px 20px;
-            color: #666;
+            color: var(--muted);
             font-size: 1.1em;
         }
 
         .error-message {
-            background: #2a1a1a;
-            border: 1px solid #4a2a2a;
-            color: #ff6b6b;
+            background: color-mix(in srgb, var(--error) 10%, var(--bg));
+            border: 1px solid color-mix(in srgb, var(--error) 35%, transparent);
+            color: var(--error);
             padding: 12px;
             border-radius: 3px;
             margin-top: 15px;
@@ -365,9 +346,9 @@
         }
 
         .success-message {
-            background: #1a2a1a;
-            border: 1px solid #2a4a2a;
-            color: #6bff6b;
+            background: color-mix(in srgb, var(--success) 10%, var(--bg));
+            border: 1px solid color-mix(in srgb, var(--success) 35%, transparent);
+            color: var(--success);
             padding: 12px;
             border-radius: 3px;
             margin-top: 15px;
@@ -377,7 +358,7 @@
         .loading-spinner {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: var(--muted);
         }
 
         a {
@@ -386,14 +367,14 @@
     </style>
 </head>
 
-<body>
+<body class="theme-studio">
     <div id="sf-nav-mount"></div>
     <script src="/nav.js"></script>
     <div class="container">
-        <div class="header">
+        <header class="proj-header">
             <h1>generative data portraits</h1>
-            <p class="subtitle">made with p5.js and claude</p>
-        </div>
+            <p class="proj-sub">made with p5.js and claude</p>
+        </header>
 
         <div class="gallery-section">
             <h2>gallery wall 🖼️</h2>

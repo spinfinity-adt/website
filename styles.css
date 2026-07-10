@@ -21,6 +21,9 @@
   --accent1:#ff8a5c; --accent2:#38e6df; --accent3:#b388ff; --accent4:#ffd24a;
   --card-bg:rgba(255,255,255,0.05); --border:rgba(180,235,240,0.14);
   --nav-bg:rgba(18,63,74,0.9);
+
+  /* form-feedback colours (theme-independent) */
+  --error:#ff6b6b; --success:#6bff6b;
 }
 
 /* ===== THEMES ===== */
@@ -76,6 +79,17 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .tagline,p.body,.blog-intro,.blog-card-sub,.blog-card-blurb,.manifesto p,.proj-desc{font-family:var(--hand)!important}
 
 /* ---- shared components (all token-driven, so they recolour per theme) ---- */
+
+/* standard project-page header — use on every project sub-page (esp. dark/theme-studio):
+   <header class="proj-header">
+     <h1>Project Title</h1>
+     <p class="proj-sub">one-line subtitle</p>
+   </header>
+   Title = the one brand teal for text (--accent1-text); subtitle = muted small caps. */
+.proj-header{text-align:center;padding:40px 20px 0;margin-bottom:30px}
+.proj-header h1{font-family:var(--display);font-weight:normal;font-size:clamp(2em,5vw,3em);color:var(--accent1-text,var(--accent1));margin-bottom:10px;letter-spacing:1px}
+.proj-header .proj-sub{font-family:var(--hand);color:var(--muted);font-size:.9em;letter-spacing:3px;text-transform:uppercase}
+
 .tag{display:inline-block;font-family:var(--hand);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .7rem;border-radius:30px;border:1px solid currentColor;opacity:.85}
 .section-label{font-family:var(--hand);font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.8rem;margin-bottom:2rem}
 .section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--muted),transparent)}

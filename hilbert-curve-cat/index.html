@@ -17,14 +17,14 @@
     body {
       --pink:   var(--accent2);
       --purple: var(--accent4);
-      --cyan:   var(--accent1);
+      --cyan:   var(--accent1-text); /* the one brand teal for text on dark */
       --yellow: var(--accent3);
       --card:   var(--card-bg);
     }
 
     body {
       background: var(--bg);
-      color: #e2e8f0;
+      color: var(--text);
       font-family: var(--hand);
       min-height: 100dvh;
       overflow-x: hidden;
@@ -46,38 +46,6 @@
       pointer-events: none;
       z-index: 0;
     }
-
-    /* ── TOP BAR ── */
-    .topbar {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.6rem 1.2rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(13,13,26,0.85);
-      backdrop-filter: blur(8px);
-      flex-shrink: 0;
-    }
-
-    .title {
-      font-family: var(--display);
-      font-size: clamp(1.1rem, 3vw, 1.6rem);
-      background: linear-gradient(135deg, var(--pink), var(--purple), var(--cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      white-space: nowrap;
-    }
-
-    .topbar-sub {
-      font-size: 0.6rem;
-      color: #7c7c9a;
-      letter-spacing: 0.06em;
-      display: none;
-    }
-    @media (min-width: 500px) { .topbar-sub { display: block; } }
 
     /* ── MAIN AREA ── */
     .main {
@@ -177,7 +145,7 @@
       font-size: 0.58rem;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      color: #5a5a7a;
+      color: var(--muted);
       border-bottom: 1px solid var(--border);
       padding-bottom: 0.4rem;
     }
@@ -186,7 +154,7 @@
     .control-label {
       font-size: 0.65rem;
       letter-spacing: 0.06em;
-      color: #7c7c9a;
+      color: var(--muted);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -229,7 +197,7 @@
 
     .slider-hint {
       font-size: 0.58rem;
-      color: #4a4a6a;
+      color: var(--muted);
       line-height: 1.5;
     }
 
@@ -255,7 +223,7 @@
 
     .btn-cat {
       background: linear-gradient(135deg, var(--pink), var(--purple));
-      color: #fff;
+      color: var(--text);
       box-shadow: 0 0 18px rgba(255,110,180,0.35);
       font-size: 0.82rem;
       padding: 0.75rem;
@@ -265,7 +233,7 @@
     .btn-secondary {
       background: transparent;
       border: 1px solid var(--border);
-      color: #7c7c9a;
+      color: var(--muted);
     }
     .btn-secondary:hover { border-color: var(--purple); color: var(--purple); }
 
@@ -305,7 +273,7 @@
       font-size: 0.52rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #5a5a7a;
+      color: var(--muted);
     }
 
     .stat .s-value {
@@ -318,7 +286,7 @@
     /* ── STATUS ── */
     #status {
       font-size: 0.62rem;
-      color: #5a5a7a;
+      color: var(--muted);
       letter-spacing: 0.04em;
       line-height: 1.6;
       word-break: break-word;
@@ -329,7 +297,7 @@
     .explainer-text {
       font-size: 0.63rem;
       line-height: 1.75;
-      color: #6a6a8a;
+      color: var(--muted);
     }
     .explainer-text code {
       background: rgba(168,85,247,0.12);
@@ -338,12 +306,12 @@
       border-radius: 0.25em;
       font-size: 0.9em;
     }
-    .explainer-text strong { color: #a0a0c0; }
+    .explainer-text strong { color: var(--text); }
 
     /* ── FOOTER ── */
     .footer-links {
       font-size: 0.55rem;
-      color: #3a3a5a;
+      color: var(--muted);
       letter-spacing: 0.04em;
       text-align: center;
       line-height: 2;
@@ -361,11 +329,11 @@
 <body class="theme-studio">
 <div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <div class="title"><span class="wiggle">🐱</span> Hilbert Curve Cat</div>
-    <div class="topbar-sub">space-filling curve · fractal image rendering</div>
-  </div>
+  <!-- HEADER -->
+  <header class="proj-header">
+    <h1><span class="wiggle">🐱</span> Hilbert Curve Cat</h1>
+    <p class="proj-sub">space-filling curve · fractal image rendering</p>
+  </header>
 
   <!-- MAIN -->
   <div class="main">
