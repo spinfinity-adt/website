@@ -17,11 +17,14 @@
        from /styles.css. */
     --develop:#3aa5e0; --collect:#f4e11e; --design:#ff5bb0;
     --narrate:#ff8a3d; --analyze:#7ed957;
+    /* The paper roll the hands were traced on — a content surface (like the
+       marker colors), distinct from the theme's --bg page ground. */
+    --paper:#f5f1e8; --paper-2:#efe9dc; --paper-edge:#d8cfbd;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--hand);}
   body{min-height:100vh;}
-  header{padding:40px 30px 8px;max-width:1120px;}
+  header{padding:24px 30px 0;max-width:1120px;}
   .eyebrow{font-family:var(--hand);font-weight:700;font-size:12px;letter-spacing:.08em;
     text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
   h1{font-family:var(--display);font-weight:700;font-size:clamp(32px,5.4vw,58px);
@@ -29,7 +32,7 @@
   .lede{font-size:15.5px;color:var(--muted);margin:14px 0 0;max-width:640px;line-height:1.55;}
 
   /* legend as marker swatches, not neat dots */
-  .key{display:flex;flex-wrap:wrap;gap:16px;margin:22px 0 2px;
+  .key{display:flex;flex-wrap:wrap;gap:16px;margin:12px 0 0;
     font-family:var(--hand);font-size:12.5px;}
   .key span{display:inline-flex;align-items:center;gap:7px;color:var(--muted);}
   .swatch{width:22px;height:11px;border-radius:2px;display:inline-block;
@@ -45,7 +48,14 @@
     grid-template-columns:repeat(auto-fill, minmax(var(--tw), 1fr));
     gap:0; align-items:center; justify-items:center;
     padding:34px 20px 40px;
-    border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+    border-top:1px solid var(--paper-edge);border-bottom:1px solid var(--paper-edge);
+    /* the long paper roll: cream ground + faint tooth, distinct from the page */
+    background-color:var(--paper);
+    background-image:
+      radial-gradient(var(--paper-2) 1px, transparent 1.4px),
+      radial-gradient(var(--paper-2) 1px, transparent 1.4px);
+    background-size:22px 22px, 22px 22px;
+    background-position:0 0, 11px 11px;
   }
   /* Phone: pack 3 across (was 2) so you still get the mass on a small screen */
   @media (max-width:520px){
@@ -179,7 +189,7 @@
     text-transform:uppercase;color:var(--muted);}
   .lbcodedslot{width:min(28vw,240px);}
   .lbhand{width:100%;height:auto;aspect-ratio:var(--tw) / var(--th);
-    background:var(--card-bg);}
+    background:var(--paper);}
   .lbcard img{max-height:74vh;max-width:44vw;border-radius:8px;object-fit:contain;
     background:var(--card-bg);border:1px solid var(--border);}
   .lbimgwrap{align-items:center;justify-content:center;flex:1;
@@ -224,11 +234,6 @@
 <header>
   <p class="eyebrow">Vizchitra 2025 · participatory data viz</p>
   <h1>Hands of Vizchitra</h1>
-  <p class="lede">At Vizchitra 2025, ~44 people traced a hand on paper and encoded
-    themselves onto it — a palm pentagon rating five data-viz activities, fingers
-    carrying pet, viz-count, distance travelled, name and chronotype. Each hand
-    below is that data re-drawn in ink and highlighter. Click a hand to see the
-    original traced paper beside it.</p>
   <div class="key">
     <span><i class="swatch" style="background:var(--develop)"></i>develop</span>
     <span><i class="swatch" style="background:var(--collect)"></i>collect</span>
@@ -1572,7 +1577,7 @@ function paperTreatment(svg, inkMul=1){
   for(const kn of KNUCKLES){
     const el=resolveEl(svg,kn.id); if(!el) continue;
     const e=el.querySelector("ellipse")||el;
-    e.style.fill="var(--bg)";
+    e.style.fill="var(--paper)";
     e.style.stroke="var(--text)";
     e.style.strokeWidth=round(26)+"px";
   }
