@@ -7,49 +7,35 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="/styles.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Spectral:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
   :root{
-    /* PAPER palette — off-white ground, ink line, marker highlighters. */
-    --paper:#f5f1e8; --paper-2:#efe9dc; --ink:#1a1712; --ink-soft:#5c554a;
-    --rule:#d8cfbd;
-    /* Highlighter marker colors, matched to Aditi's real Vizchitra hand:
-       Develop=blue, Collect=yellow, Design=pink, Narrate=orange, Analyze=green.
-       Bright + saturated so multiply-overlap reads like real marker. */
+    /* DATA colors, not theme: highlighter markers matched to Aditi's real
+       Vizchitra hand (Develop=blue, Collect=yellow, Design=pink,
+       Narrate=orange, Analyze=green). Bright + saturated so multiply-overlap
+       reads like real marker. Page chrome uses the theme-paper tokens
+       from /styles.css. */
     --develop:#3aa5e0; --collect:#f4e11e; --design:#ff5bb0;
     --narrate:#ff8a3d; --analyze:#7ed957;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;background:var(--paper);color:var(--ink);
-    font-family:'Spectral',Georgia,serif;}
-  /* keep the piece's own paper tooth; drop the site-wide grain overlay */
-  body::before{content:none;}
-  body{
-    /* faint paper tooth: two offset dot grids + a warm vignette */
-    background-image:
-      radial-gradient(var(--paper-2) 1px, transparent 1.4px),
-      radial-gradient(var(--paper-2) 1px, transparent 1.4px);
-    background-size:22px 22px, 22px 22px;
-    background-position:0 0, 11px 11px;
-    min-height:100vh;
-  }
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--hand);}
+  body{min-height:100vh;}
   header{padding:40px 30px 8px;max-width:1120px;}
-  .eyebrow{font-family:'Nunito',sans-serif;font-size:12px;letter-spacing:.18em;
-    text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px;}
-  h1{font-family:'Rozha One',serif;font-weight:400;font-size:clamp(32px,5.4vw,58px);
+  .eyebrow{font-family:var(--hand);font-weight:700;font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 10px;}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(32px,5.4vw,58px);
     margin:0;line-height:1.02;}
-  .lede{font-size:15.5px;color:var(--ink-soft);margin:14px 0 0;max-width:640px;line-height:1.55;}
+  .lede{font-size:15.5px;color:var(--muted);margin:14px 0 0;max-width:640px;line-height:1.55;}
 
   /* legend as marker swatches, not neat dots */
   .key{display:flex;flex-wrap:wrap;gap:16px;margin:22px 0 2px;
-    font-family:'Nunito',sans-serif;font-size:12.5px;}
-  .key span{display:inline-flex;align-items:center;gap:7px;color:var(--ink-soft);}
+    font-family:var(--hand);font-size:12.5px;}
+  .key span{display:inline-flex;align-items:center;gap:7px;color:var(--muted);}
   .swatch{width:22px;height:11px;border-radius:2px;display:inline-block;
     transform:rotate(-2deg);mix-blend-mode:multiply;opacity:.85;}
 
-  .status{font-family:'Nunito',sans-serif;font-size:12.5px;color:var(--ink-soft);
+  .status{font-family:var(--hand);font-size:12.5px;color:var(--muted);
     padding:10px 30px 0;}
 
   .stripwrap{position:relative;margin-top:14px;padding:6px 0 44px;}
@@ -59,7 +45,7 @@
     grid-template-columns:repeat(auto-fill, minmax(var(--tw), 1fr));
     gap:0; align-items:center; justify-items:center;
     padding:34px 20px 40px;
-    border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+    border-top:1px solid var(--border);border-bottom:1px solid var(--border);
   }
   /* Phone: pack 3 across (was 2) so you still get the mass on a small screen */
   @media (max-width:520px){
@@ -88,18 +74,18 @@
   .tile.clickable:hover{
     /* on hover, straighten up and lift above neighbours to read clearly */
     transform:translate(var(--dx,0), calc(var(--dy,0) - 8px)) rotate(0deg) scale(1.06);
-    z-index:50 !important; filter:drop-shadow(0 6px 10px rgba(40,30,10,.18));
+    z-index:50 !important; filter:drop-shadow(0 6px 10px rgba(80,32,100,.18));
   }
   .tile .card{position:relative;width:var(--tw);height:var(--th);}
   .tile svg{display:block;width:100%;height:100%;overflow:visible;}
-  .tile .nm{font-family:'Nunito',sans-serif;font-size:11px;color:var(--ink-soft);
+  .tile .nm{font-family:var(--hand);font-size:11px;color:var(--muted);
     max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
     margin-top:0;opacity:0;transition:opacity .15s;}
   .tile:hover .nm{opacity:.9;}
-  .tile .nm.unk{color:var(--ink-soft);font-style:italic;}
+  .tile .nm.unk{color:var(--muted);font-style:italic;}
   .tile .hint{display:none;}
   .tile.pair .card::after{content:"";position:absolute;inset:-4px -8px;
-    border:1px dashed var(--rule);border-radius:12px;pointer-events:none;}
+    border:1px dashed var(--border);border-radius:12px;pointer-events:none;}
 
   /* ---- view toggle -------------------------------------------------------- */
   .viewbar{display:flex;gap:14px;justify-content:center;align-items:center;
@@ -107,23 +93,23 @@
   .vb-views{display:flex;gap:6px;}
   .vb-search{position:relative;display:flex;align-items:center;gap:8px;}
   .vb-search input{
-    font-family:'Nunito',sans-serif;font-size:12.5px;color:var(--ink);
-    background:#fffdf8;border:1px solid var(--rule);border-radius:999px;
+    font-family:var(--hand);font-size:12.5px;color:var(--text);
+    background:var(--card-bg);border:1px solid var(--border);border-radius:999px;
     padding:6px 15px;width:190px;outline:none;transition:border-color .15s, width .18s;}
-  .vb-search input::placeholder{color:var(--ink-soft);}
-  .vb-search input:focus{border-color:var(--ink-soft);width:220px;}
-  .search-count{font-family:'Nunito',sans-serif;font-size:11px;color:var(--ink-soft);
+  .vb-search input::placeholder{color:var(--muted);}
+  .vb-search input:focus{border-color:var(--accent2);width:220px;}
+  .search-count{font-family:var(--hand);font-size:11px;color:var(--muted);
     min-width:40px;}
   /* search states applied to tiles */
   .strip.searching .tile{opacity:.16;filter:grayscale(.5);transition:opacity .18s, filter .18s;}
   .strip.searching .tile.match{opacity:1;filter:none;z-index:40;}
   /* always show the matched person's name, even in field/fit where nm is hidden */
   .strip.searching .tile.match .nm{opacity:.95 !important;display:block !important;}
-  .vb-btn{font-family:'Nunito',sans-serif;font-size:12px;letter-spacing:.02em;
-    color:var(--ink-soft);background:transparent;border:1px solid var(--rule);
+  .vb-btn{font-family:var(--hand);font-weight:700;font-size:12px;letter-spacing:.02em;
+    color:var(--muted);background:var(--card-bg);border:1px solid var(--border);
     border-radius:999px;padding:5px 15px;cursor:pointer;transition:all .15s;}
-  .vb-btn:hover{color:var(--ink);border-color:var(--ink-soft);}
-  .vb-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .vb-btn:hover{color:var(--accent2);border-color:var(--accent2);}
+  .vb-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2);}
 
   /* SCROLL mode: horizontal, but rows stagger so it's a messy band, not a line */
   /* SCROLL mode: horizontal, but rows stagger so it's a messy band, not a line.
@@ -144,7 +130,7 @@
       rotate(calc(var(--rot,0)*.7)) scale(var(--scl,1));
   }
   .strip.view-scroll::-webkit-scrollbar{height:8px;}
-  .strip.view-scroll::-webkit-scrollbar-thumb{background:#cabfa6;border-radius:6px;}
+  .strip.view-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px;}
 
   /* FIT mode: every hand shrinks to fluid cells so ALL fit in one screen and
      FILL the viewport (both width and height). */
@@ -164,64 +150,69 @@
   }
   .strip.view-fit .nm{display:none;}
 
-  .panel{margin:20px 30px;max-width:700px;font-family:'Nunito',sans-serif;font-size:13px;
-    color:var(--ink-soft);}
-  .panel textarea{width:100%;height:150px;background:#fffdf8;color:var(--ink);
-    border:1px solid var(--rule);border-radius:8px;padding:10px;
+  .panel{margin:20px 30px;max-width:700px;font-family:var(--hand);font-size:13px;
+    color:var(--muted);}
+  .panel textarea{width:100%;height:150px;background:var(--card-bg);color:var(--text);
+    border:1px solid var(--border);border-radius:8px;padding:10px;
     font-family:ui-monospace,monospace;font-size:12px;}
-  .panel button{margin-top:10px;background:var(--ink);color:var(--paper);border:0;
-    border-radius:8px;padding:9px 18px;font-weight:700;cursor:pointer;
-    font-family:'Nunito',sans-serif;}
+  .panel button{margin-top:10px;background:var(--accent2);color:#fff;border:0;
+    border-radius:999px;padding:9px 18px;font-weight:700;cursor:pointer;
+    font-family:var(--hand);}
   .hidden{display:none;}
-  footer#footer{font-family:'Nunito',sans-serif;font-size:11.5px;color:var(--ink-soft);
+  footer#footer{font-family:var(--hand);font-size:11.5px;color:var(--muted);
     padding:4px 30px 56px;max-width:820px;line-height:1.7;}
-  footer#footer code{background:var(--paper-2);padding:1px 5px;border-radius:4px;}
+  footer#footer code{background:var(--border);padding:1px 5px;border-radius:4px;}
 
   /* lightbox — paper card, ink frame */
-  #lb{position:fixed;inset:0;background:rgba(26,23,18,.72);
+  #lb{position:fixed;inset:0;background:rgba(35,39,48,.72);
     backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;
     z-index:50;padding:24px;}
   #lb.open{display:flex;}
-  .lbcard{display:flex;gap:26px;max-width:960px;max-height:88vh;background:var(--paper);
-    border:1px solid var(--rule);border-radius:14px;padding:22px;overflow:auto;
-    box-shadow:0 24px 70px rgba(0,0,0,.35);}
+  .lbcard{display:flex;gap:26px;max-width:960px;max-height:88vh;background:var(--card-bg);
+    border:1px solid var(--border);border-radius:16px;padding:22px;overflow:auto;
+    box-shadow:0 8px 0 rgba(80,32,100,.25);}
   .lbleft{flex:1 1 42%;display:flex;flex-direction:column;min-width:220px;}
   .lbright{flex:1 1 44%;display:flex;flex-direction:column;gap:14px;min-width:260px;}
   .lbvisuals{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;}
   .lbcoded,.lbimgwrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
-  .lblabel{font-family:'Nunito',sans-serif;font-size:10.5px;letter-spacing:.12em;
-    text-transform:uppercase;color:var(--ink-soft);}
+  .lblabel{font-family:var(--hand);font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);}
   .lbcodedslot{width:min(28vw,240px);}
   .lbhand{width:100%;height:auto;aspect-ratio:var(--tw) / var(--th);
-    background:var(--paper);}
+    background:var(--card-bg);}
   .lbcard img{max-height:74vh;max-width:44vw;border-radius:8px;object-fit:contain;
-    background:#fff;border:1px solid var(--rule);}
+    background:var(--card-bg);border:1px solid var(--border);}
   .lbimgwrap{align-items:center;justify-content:center;flex:1;
     min-width:200px;min-height:220px;}
-  .lbloading{font-family:'Nunito',sans-serif;font-size:13px;color:var(--ink-soft);
+  .lbloading{font-family:var(--hand);font-size:13px;color:var(--muted);
     padding:40px 30px;}
-  .lbmiss{font-family:'Nunito',sans-serif;font-size:13px;color:var(--ink-soft);
+  .lbmiss{font-family:var(--hand);font-size:13px;color:var(--muted);
     text-align:center;padding:36px 24px;line-height:1.6;}
-  .lbmiss a{color:var(--ink);font-weight:700;}
-  .lbinfo{min-width:230px;max-width:310px;font-family:'Nunito',sans-serif;
+  .lbmiss a{color:var(--text);font-weight:700;}
+  .lbinfo{min-width:230px;max-width:310px;font-family:var(--hand);
     display:flex;flex-direction:column;}
-  .lbinfo h2{font-family:'Rozha One',serif;font-weight:400;font-size:30px;
-    margin:0 0 2px;color:var(--ink);}
-  .lbinfo .sub{font-size:12px;color:var(--ink-soft);margin-bottom:14px;
-    font-family:ui-monospace,monospace;}
+  .lbinfo h2{font-family:var(--display);font-weight:700;font-size:30px;
+    margin:0 0 2px;color:var(--text);}
+  .lbinfo .sub{font-size:12px;color:var(--muted);margin-bottom:14px;
+    font-family:var(--hand);font-weight:700;text-transform:uppercase;
+    letter-spacing:.08em;}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
-  .chip{font-size:11.5px;background:var(--paper-2);border:1px solid var(--rule);
-    color:var(--ink-soft);border-radius:999px;padding:3px 11px;}
-  .ratings{font-size:12px;color:var(--ink-soft);line-height:1.9;margin-bottom:14px;}
-  .ratings b{color:var(--ink);font-weight:700;}
-  .note{font-family:'Spectral',serif;font-size:13.5px;color:var(--ink);
-    font-style:italic;line-height:1.5;border-left:2px solid var(--rule);
+  .chip{font-size:11.5px;border:0;color:var(--text);border-radius:999px;
+    padding:3px 11px;background:rgba(63,167,150,.10);}
+  /* rotate chips through the four accents: teal, lilac, yellow, purple */
+  .chip:nth-child(4n+2){background:rgba(130,103,190,.10);}
+  .chip:nth-child(4n+3){background:rgba(255,189,53,.14);}
+  .chip:nth-child(4n+4){background:rgba(80,32,100,.08);}
+  .ratings{font-size:12px;color:var(--muted);line-height:1.9;margin-bottom:14px;}
+  .ratings b{color:var(--text);font-weight:700;}
+  .note{font-family:var(--hand);font-size:13.5px;color:var(--text);
+    font-style:italic;line-height:1.5;border-left:2px solid var(--accent2);
     padding-left:12px;margin-bottom:16px;}
-  .lbopen{margin-top:auto;font-size:12px;color:var(--ink);font-weight:700;
-    text-decoration:none;border-bottom:1px solid var(--ink);align-self:flex-start;
+  .lbopen{margin-top:auto;font-size:12px;color:var(--accent2);font-weight:700;
+    text-decoration:none;border-bottom:1px solid var(--accent2);align-self:flex-start;
     padding-bottom:1px;}
-  .lbclose{position:absolute;top:20px;right:26px;color:var(--paper);font-size:30px;
-    cursor:pointer;font-family:'Nunito',sans-serif;line-height:1;}
+  .lbclose{position:absolute;top:20px;right:26px;color:#fff;font-size:30px;
+    cursor:pointer;font-family:var(--hand);line-height:1;}
   @media(max-width:680px){.lbcard{flex-direction:column;}
     .lbcard img{max-width:80vw;max-height:48vh;}}
 </style>
@@ -1581,8 +1572,8 @@ function paperTreatment(svg, inkMul=1){
   for(const kn of KNUCKLES){
     const el=resolveEl(svg,kn.id); if(!el) continue;
     const e=el.querySelector("ellipse")||el;
-    e.style.fill="var(--paper)";
-    e.style.stroke="var(--ink)";
+    e.style.fill="var(--bg)";
+    e.style.stroke="var(--text)";
     e.style.strokeWidth=round(26)+"px";
   }
   // Kill the SVG-level default fill that makes the outline read as a black
@@ -1593,11 +1584,11 @@ function paperTreatment(svg, inkMul=1){
     const paths=[...hand.querySelectorAll("path")].sort((a,b)=>{
       const ba=a.getBBox(),bb=b.getBBox();return (bb.width*bb.height)-(ba.width*ba.height);});
     // largest path = the hand outline: no fill, firm ink stroke
-    if(paths[0]){paths[0].style.fill="none";paths[0].style.stroke="var(--ink)";
+    if(paths[0]){paths[0].style.fill="none";paths[0].style.stroke="var(--text)";
       paths[0].style.strokeWidth=round(20)+"px";paths[0].style.strokeLinejoin="round";}
     // remaining paths inside #hand are drawn detail (glyph line work): ink stroke,
     // keep them unfilled so they read as pen marks on paper.
-    paths.slice(1).forEach(p=>{p.style.fill="none";p.style.stroke="var(--ink)";
+    paths.slice(1).forEach(p=>{p.style.fill="none";p.style.stroke="var(--text)";
       if(!p.style.strokeWidth)p.style.strokeWidth=round(14)+"px";});
   }
   // Glyph groups (pets, chrono, distance, viz) sit as siblings of #hand.
@@ -1621,9 +1612,9 @@ function paperTreatment(svg, inkMul=1){
     el.querySelectorAll("path,ellipse,circle,line,polyline,polygon").forEach(p=>{
       const cs=getComputedStyle(p);
       // recolor dark fills to ink, keep light/none fills as-is
-      if(isDark(p.style.fill||cs.fill)) p.style.fill="var(--ink)";
+      if(isDark(p.style.fill||cs.fill)) p.style.fill="var(--text)";
       // recolor dark strokes to ink; leave stroke width/caps as authored
-      if(isDark(p.style.stroke||cs.stroke)) p.style.stroke="var(--ink)";
+      if(isDark(p.style.stroke||cs.stroke)) p.style.stroke="var(--text)";
     });
   }
 }
@@ -1670,7 +1661,7 @@ function codeGlyph(svg,slot,val){
   // rough finger positions in viewBox space (index/middle splay)
   const at=slot==="pet"?{x:4700,y:6400}:{x:5200,y:3200};
   const put=(el,attrs)=>{for(const k in attrs)el.setAttribute(k,attrs[k]);g.appendChild(el);return el;};
-  const stroke={fill:"none",stroke:"var(--ink)","stroke-width":34,"stroke-linecap":"round"};
+  const stroke={fill:"none",stroke:"var(--text)","stroke-width":34,"stroke-linecap":"round"};
   if(slot==="pet"&&val==="dog"){
     put(document.createElementNS(NS,"circle"),{cx:at.x,cy:at.y,r:120,...stroke});
     put(document.createElementNS(NS,"ellipse"),{cx:at.x-95,cy:at.y-70,rx:45,ry:80,...stroke});
@@ -1681,7 +1672,7 @@ function codeGlyph(svg,slot,val){
   }else if(slot==="chrono"&&val==="night"){
     put(document.createElementNS(NS,"path"),
       {d:`M ${at.x+120} ${at.y} a 130 130 0 1 1 -120 -175 a 100 100 0 1 0 120 175 z`,
-       fill:"var(--ink)",stroke:"none"});
+       fill:"var(--text)",stroke:"none"});
   }else if(slot==="chrono"&&val==="both"){
     put(document.createElementNS(NS,"circle"),{cx:at.x,cy:at.y,r:70,...stroke});
     for(let a=0;a<360;a+=45){const t=a*Math.PI/180;
@@ -1763,7 +1754,7 @@ function drawPentagon(svg,d){
   const line=document.createElementNS(NS,"polygon");
   line.setAttribute("points",polyPts);
   line.setAttribute("style",
-    `fill:none;stroke:var(--ink);stroke-width:${Math.round(meanR*0.09)};`+
+    `fill:none;stroke:var(--text);stroke-width:${Math.round(meanR*0.09)};`+
     `stroke-linejoin:round;stroke-linecap:round`);
   svg.appendChild(line);
 
@@ -1783,7 +1774,7 @@ function drawPentagon(svg,d){
     const ring=document.createElementNS(NS,"circle");
     ring.setAttribute("cx",cx);ring.setAttribute("cy",cy);ring.setAttribute("r",R);
     ring.setAttribute("style",
-      `fill:none;stroke:var(--ink);stroke-width:${Math.round(meanR*0.055)};`+
+      `fill:none;stroke:var(--text);stroke-width:${Math.round(meanR*0.055)};`+
       (val==null?"stroke-dasharray:20 16;opacity:.5":"opacity:.92"));
     svg.appendChild(ring);
   }
@@ -1865,7 +1856,7 @@ function drawName(svg,d){
   text.setAttribute("data-fitlen", (L*0.94).toFixed(0));
   text.setAttribute("data-fs", startFS.toFixed(1));
   text.setAttribute("style",
-    `font-family:'Nunito',sans-serif;font-weight:700;fill:var(--ink);`+
+    `font-family:var(--hand);font-weight:700;fill:var(--text);`+
     `font-size:${Math.round(startFS)}px;letter-spacing:1px;`);
   svg.appendChild(text);
 }
@@ -1878,7 +1869,7 @@ function fitNames(root){
     let fs=parseFloat(text.getAttribute("data-fs"))||100, ls=1, guard=0;
     if(!avail) return;
     const apply=()=>text.style.cssText=
-      `font-family:'Nunito',sans-serif;font-weight:700;fill:var(--ink);`+
+      `font-family:var(--hand);font-weight:700;fill:var(--text);`+
       `font-size:${fs.toFixed(1)}px;letter-spacing:${ls}px;`;
     let len=0; try{len=text.getComputedTextLength();}catch(e){return;}
     while(len>avail && fs>26 && guard++<40){
@@ -1946,7 +1937,7 @@ function openLightbox(d){
     `<div class="lbleft">${imgWrap}</div>`+
     `<div class="lbright">`+
       `<div class="lbcoded"><div class="lblabel">coded</div><div class="lbcodedslot" id="lbcodedslot"></div></div>`+
-      `<div class="lbinfo"><h2>${d.name||"Unnamed hand"}${d.uncertain?' <span style="font-size:14px;color:var(--ink-soft)">(name uncertain)</span>':''}</h2>`+
+      `<div class="lbinfo"><h2>${d.name||"Unnamed hand"}${d.uncertain?' <span style="font-size:14px;color:var(--muted)">(name uncertain)</span>':''}</h2>`+
       `<div class="sub">${d.id?"#"+d.id:""}${d.pair?" · pair":""}</div>`+
       `<div class="chips">${chips(d)}</div>`+ratingsLine(d)+note+
       `</div>`+
