@@ -1925,16 +1925,19 @@ function openLightbox(d){
   // right; the original traced photo fills the left. Side-by-side once it loads.
   const codedHand=buildHand(d); codedHand.classList.add("lbhand");
 
-  // Original photo (left). On load failure we swap to a small inline message
-  // instead of bouncing to a new tab, so it always stays a lightbox.
-  const imgWrap = d.photo
+  // Original photo (left). Prefer the repo-hosted copy (photos/<id>.jpg,
+  // synced from the sheet by update-photos.py); fall back to the sheet's
+  // remote link for ids not synced yet, then to a small inline message.
+  const localPhoto=/^\d+$/.test(d.id)?`photos/${String(parseInt(d.id,10)).padStart(3,"0")}.jpg`:"";
+  const photoSrc=localPhoto||d.photo, photoFb=(localPhoto&&d.photo)?d.photo:"";
+  const imgWrap = photoSrc
     ? `<div class="lbimgwrap" id="lbimgwrap">
          <div class="lblabel">original</div>
          <div class="lbloading" id="lbloading">loading photo…</div>
-         <img src="${d.photo}" alt="${(d.name||'traced hand')}" id="lbimg"
-              style="display:none"
+         <img src="${photoSrc}" alt="${(d.name||'traced hand')}" id="lbimg"
+              style="display:none" ${photoFb?`data-fb="${photoFb}"`:""}
               onload="this.style.display='block';var l=document.getElementById('lbloading');if(l)l.remove();"
-              onerror="var w=document.getElementById('lbimgwrap');if(w)w.innerHTML='<div class=&quot;lblabel&quot;>original</div><div class=&quot;lbmiss&quot;>Couldn\\'t load the photo here.<br><a href=&quot;${d.photo}&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>open it in a new tab ↗</a></div>';">
+              onerror="if(this.dataset.fb){this.src=this.dataset.fb;this.removeAttribute('data-fb');}else{var w=document.getElementById('lbimgwrap');if(w)w.innerHTML='<div class=&quot;lblabel&quot;>original</div><div class=&quot;lbmiss&quot;>Couldn\\'t load the photo here.${d.photo?`<br><a href=&quot;${d.photo}&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>open it in a new tab ↗</a>`:""}</div>';}">
        </div>`
     : `<div class="lbimgwrap"><div class="lblabel">original</div><div class="lbmiss">no photo yet</div></div>`;
 
