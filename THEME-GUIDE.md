@@ -5,6 +5,10 @@ spinfinity.in's current light theme. Written to be handed to anyone (or any
 session) with no other context. The source of truth is `styles.css` at the
 website repo root — if this document and `styles.css` disagree, trust the CSS.
 
+For the dark project-page theme (`theme-studio`), see **THEME-NOTES.md** in
+this same folder — same brand and same palette rules, re-tuned for dark
+surfaces.
+
 ## The one-paragraph version
 
 Warm off-white paper background, dark ink text, four brand accents used with
