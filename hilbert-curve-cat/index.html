@@ -510,7 +510,9 @@ function setGenBtn(loading) {
 // ─────────────────────────────────────
 function getCanvasSize() {
   const wrap    = document.querySelector('.canvas-wrap');
-  const topbarH = document.querySelector('.topbar').offsetHeight;
+  // nav is injected async by nav.js, so it may not exist yet — fall back to --nav-h
+  const nav     = document.querySelector('.sf-nav');
+  const topbarH = nav ? nav.offsetHeight : 56;
   const padding = 32;
   const availW  = wrap.clientWidth - padding;
   const availH  = window.innerHeight - topbarH - padding;
@@ -647,12 +649,30 @@ function launchSketch() {
       setProgress(currentIndex / (path.length - 1));
     };
 
-    p.windowResized = function () {
+    // one resize path for both window resizes and late layout (a page that
+    // loads in a background tab has no layout yet, so setup sees size 0)
+    let resizeTimer = null;
+    function handleResize() {
       const s = getCanvasSize();
+      if (Math.abs(s - p.width) < 2) return;
       p.resizeCanvas(s, s);
+      const slider = document.getElementById('order-slider');
+      if (!slider.dataset.userSet) {
+        order = defaultOrder(s);
+        slider.value = order;
+      }
       updateStats(order, s);
       if (catImg) startDraw(p, s);
-    };
+    }
+
+    p.windowResized = handleResize;
+
+    if (window.ResizeObserver) {
+      new ResizeObserver(function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(handleResize, 150);
+      }).observe(document.querySelector('.canvas-wrap'));
+    }
   };
 
   new p5(sketch);
