@@ -13,7 +13,7 @@
 .hero-cat{display:flex;flex-direction:column;gap:.9rem;align-items:flex-start;justify-self:stretch;width:100%;max-width:448px}
 .hero-cat #truchet-cat{width:100%}
 .hero-cat canvas{display:block;max-width:100%;height:auto;cursor:pointer}
-.cat-note{font-family:var(--hand);font-size:.82rem;letter-spacing:.06em;text-transform:lowercase;color:var(--muted);max-width:26ch;line-height:1.5}
+.cat-note{font-family:var(--hand);font-size:.82rem;letter-spacing:.06em;text-transform:lowercase;color:var(--muted);max-width:100%;line-height:1.6}
 .cat-note b{font-weight:700;color:var(--accent2)}
 .cat-again{font-family:var(--hand);font-size:.9rem;font-weight:700;color:var(--accent1-text);background:none;border:none;border-bottom:2px solid var(--accent3);padding:0 0 2px;cursor:pointer;transition:color .2s ease,border-color .2s ease}
 .cat-again:hover{color:var(--accent2);border-color:var(--accent2)}
@@ -66,8 +66,8 @@
    </div>
 
    <div class="hero-cat anim-4">
-     <div id="truchet-cat" role="img" aria-label="a stranger's cat, its light measured and redrawn in hoop arcs"></div>
-     <p class="cat-note">a stranger's cat, measured for light and redrawn in <b>hoops</b> &mdash; <button type="button" class="cat-again" id="cat-again">spin another</button></p>
+     <div id="truchet-cat" role="img" aria-label="a stranger's cat, its light measured and redrawn as truchet true cat tiles"></div>
+     <p class="cat-note">a stranger's cat, measured for light and redrawn in <b>truchet true cat tiles</b> &mdash; <button type="button" class="cat-again" id="cat-again">spin another</button></p>
    </div>
   </section>
 </div>
@@ -77,23 +77,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 <script>
 /* ============================================================
-   hoop cat — a stranger's cat from cataas.com, read as data and
-   redrawn in truchet tiles. A truchet tile is two quarter-arcs:
-   two fragments of a hoop. So the portrait is made of hoops and
-   nothing else.
+   truchet true cat tiles — a stranger's cat from cataas.com, read
+   as data and redrawn in truchet tiles. A truchet tile is two
+   quarter-arcs meeting the cell edges at their midpoints, so the
+   curves run on across tiles into one continuous meander: the
+   portrait is made of hoop fragments and nothing else.
 
    The encoding: each tile samples the light at its centre, then
    the tiles are split at their own quartiles into four steps —
    dark to light: deep purple, lilac, teal, yellow. Binning by
    quantile rather than by a fixed scale means a sunlit white cat
    and a black cat in a basement both come back using the whole
-   palette, instead of flattening into one colour. Darker also
-   draws heavier, so tone survives the quantisation. Every colour
-   comes from the theme tokens in styles.css; nothing is hardcoded.
+   palette, instead of flattening into one colour.
 
-   The portrait is a disc, not a square — a hoop-shaped portal with
-   a cat in it. Tiles land in order of distance from the centre, so
-   it blooms outward the way a hoop opens up, then settles and stops.
+   Tone is carried by colour, not by weight. Stroke stays inside a
+   narrow band well under the tile size: past about a third of the
+   tile the arcs of neighbouring cells touch and the dark areas
+   silt up into a solid mass, which is exactly where the truchet
+   weave stops reading. Every colour comes from the theme tokens
+   in styles.css; nothing is hardcoded.
+
+   Tiles land in order of distance from the centre, so the weave
+   blooms outward from the middle, then settles and stops.
    ============================================================ */
 (function(){
   var holder = document.getElementById('truchet-cat');
@@ -101,13 +106,13 @@
   if (!holder || typeof p5 === 'undefined') return;
 
   var CAT   = 'https://cataas.com/cat?width=480&height=480';
-  var TILE  = 14;
+  var TILE  = 10;
   var STEPS = ['--accent2','--accent4','--accent1','--accent3']; /* dark -> light */
-  var MIN = 196, MAX = 448;
+  var MIN = 200, MAX = 440;   /* both exact multiples of TILE */
   var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   new p5(function(p){
-    var src = null, buf = null, side = 0, queue = [], cursor = 0, raf = null;
+    var src = null, buf = null, side = 0, cols = 0, queue = [], cursor = 0, raf = null;
 
     function token(name){
       return getComputedStyle(document.body).getPropertyValue(name).trim();
@@ -121,18 +126,24 @@
       return Math.max(MIN, Math.min(Math.floor(w / TILE) * TILE, MAX));
     }
 
-    /* downsample the full-res original into an offscreen buffer:
-       always from the original, so repeated resizes never compound
-       the loss, and at density 1 so pixels index 1:1 with tiles */
+    /* Downsample the original to exactly one pixel per tile, and let
+       the browser area-average on the way down. Sampling a single
+       pixel per tile instead throws away the other ~99 and speckles
+       the result; an average per cell gives the tonal blocks the cat
+       actually has. Always from the full-res original, so repeated
+       resizes never compound the loss, and at density 1 so a pixel
+       really is one pixel. */
     function rescale(){
-      if (!src || !side) return;
-      if (!buf || buf.width !== side){
+      if (!src || !cols) return;
+      if (!buf || buf.width !== cols){
         if (buf) buf.remove();
-        buf = p.createGraphics(side, side);
+        buf = p.createGraphics(cols, cols);
         buf.pixelDensity(1);
       }
       buf.clear();
-      buf.image(src, 0, 0, side, side);
+      buf.drawingContext.imageSmoothingEnabled = true;
+      buf.drawingContext.imageSmoothingQuality = 'high';
+      buf.image(src, 0, 0, cols, cols);
       buf.loadPixels();
     }
 
@@ -140,16 +151,16 @@
       queue = []; cursor = 0;
       if (!buf || !buf.pixels || !buf.pixels.length) return;
 
-      var px = buf.pixels, c = side/2, reach = c - TILE * 0.4, x, y, i, l, d;
+      var px = buf.pixels, c = side/2, col, row, x, y, i, l;
 
-      /* pass one: the tiles that fall inside the hoop, with their light */
-      for (x = TILE/2; x < side; x += TILE){
-        for (y = TILE/2; y < side; y += TILE){
-          d = Math.hypot(x - c, y - c);
-          if (d > reach) continue;                      /* outside the hoop */
-          i = 4 * ((y | 0) * side + (x | 0));
+      /* pass one: every tile, carrying the average light of its cell */
+      for (col = 0; col < cols; col++){
+        for (row = 0; row < cols; row++){
+          i = 4 * (row * cols + col);
           l = 0.2126*px[i] + 0.7152*px[i+1] + 0.0722*px[i+2];
-          queue.push({x:x, y:y, l:l, d:d});
+          x = col * TILE + TILE/2;
+          y = row * TILE + TILE/2;
+          queue.push({x:x, y:y, l:l, d:Math.hypot(x - c, y - c)});
         }
       }
       if (!queue.length) return;
@@ -165,7 +176,7 @@
         var step = 0;
         while (step < cuts.length && queue[k].l > cuts[step]) step++;
         queue[k].col    = palette[step];
-        queue[k].weight = TILE * (0.52 - step * 0.07);  /* darker draws heavier */
+        queue[k].weight = TILE * (0.34 - step * 0.03); /* narrow: never enough to merge */
         queue[k].flip   = Math.random() < 0.5;
       }
 
@@ -219,6 +230,7 @@
       var s = measure();
       if (!s || s === side) return;
       side = s;
+      cols = side / TILE;
       p.resizeCanvas(side, side);
       rescale();
       restart();
@@ -226,6 +238,7 @@
 
     p.setup = function(){
       side = measure() || MIN;
+      cols = side / TILE;
       var c = p.createCanvas(side, side);
       c.parent(holder);
       c.mousePressed(fetchCat);
