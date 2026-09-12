@@ -316,7 +316,8 @@
 // ─────────────────────────────────────
 // State
 // ─────────────────────────────────────
-let order = 5;
+let order = 5;      // what the slider is set to (may be ahead of the canvas)
+let drawOrder = 5;  // what the path currently on screen was built with
 let path = [];
 let currentIndex = 0;
 let drawSpeed = 1;
@@ -370,10 +371,19 @@ function defaultOrder(canvasSize) {
 // ─────────────────────────────────────
 // UI helpers
 // ─────────────────────────────────────
+// the slider's own readout — reflects where the handle is, not the canvas
+function updateControl(ord) {
+  const segs = Math.pow(4, ord) - 1;
+  const grid = Math.pow(2, ord);
+  document.getElementById('order-display').textContent = ord;
+  document.getElementById('hint-grid').textContent     = grid + '×' + grid;
+  document.getElementById('hint-segs').textContent     = segs.toLocaleString();
+}
+
+// the stats panel — describes what is actually on the canvas
 function updateStats(ord, size) {
   const cells = Math.pow(4, ord);
   const segs  = cells - 1;
-  const grid  = Math.pow(2, ord);
 
   document.getElementById('stat-order').textContent    = ord;
   document.getElementById('stat-segments').textContent = segs >= 1000
@@ -381,9 +391,6 @@ function updateStats(ord, size) {
   document.getElementById('stat-cells').textContent    = cells >= 1000
     ? (cells / 1000).toFixed(0) + 'k' : cells;
   document.getElementById('stat-canvas').textContent   = size + 'px';
-  document.getElementById('order-display').textContent = ord;
-  document.getElementById('hint-grid').textContent     = grid + '×' + grid;
-  document.getElementById('hint-segs').textContent     = segs.toLocaleString();
 }
 
 function setStatus(msg) {
@@ -442,13 +449,15 @@ function startDraw(p, size) {
   setProgress(0);
   p.background(0);
 
-  path         = generateHilbertPath(order, size);
+  drawOrder    = order;
+  path         = generateHilbertPath(drawOrder, size);
   currentIndex = 0;
   drawSpeed    = Math.max(1, Math.ceil(path.length / 400));
 
   const segs = path.length - 1;
-  setStatus(`drawing order <span class="hl">${order}</span> — ${segs.toLocaleString()} segments`);
-  updateStats(order, size);
+  setStatus(`drawing order <span class="hl">${drawOrder}</span> — ${segs.toLocaleString()} segments`);
+  updateControl(drawOrder);
+  updateStats(drawOrder, size);
 
   p.loop();
 }
@@ -512,6 +521,7 @@ function launchSketch() {
         order = def;
       }
 
+      updateControl(order);
       updateStats(order, s);
       setGenBtn(false);
       loadCatPixels();
@@ -530,14 +540,15 @@ function launchSketch() {
 
       const size   = p.width;
       const end    = Math.min(currentIndex + drawSpeed, path.length - 1);
-      const strokeW = Math.max(1, (size / Math.pow(2, order)) * 0.85);
+      // must come from drawOrder: `order` can move under us mid-draw
+      const strokeW = Math.max(1, (size / Math.pow(2, drawOrder)) * 0.85);
+      p.strokeWeight(strokeW);
 
       for (let i = currentIndex; i < end; i++) {
         const x1 = path[i].x,   y1 = path[i].y;
         const x2 = path[i+1].x, y2 = path[i+1].y;
         const [r, g, b] = sampleCat(p, x1, y1, size);
         p.stroke(r, g, b);
-        p.strokeWeight(strokeW);
         p.line(x1, y1, x2, y2);
       }
 
@@ -557,6 +568,7 @@ function launchSketch() {
         order = defaultOrder(s);
         slider.value = order;
       }
+      updateControl(order);
       updateStats(order, s);
       if (catImg) startDraw(p, s);
     }
@@ -580,16 +592,15 @@ function launchSketch() {
 document.getElementById('order-slider').addEventListener('input', function () {
   order = parseInt(this.value);
   this.dataset.userSet = '1';
-  const s = document.querySelector('#canvas-container canvas');
-  updateStats(order, s ? s.width : 500);
+  updateControl(order);
 });
 
 document.getElementById('order-slider').addEventListener('change', function () {
   order = parseInt(this.value);
   this.dataset.userSet = '1';
-  if (catImg && !isDrawing && currentP) {
-    startDraw(currentP, currentP.width);
-  }
+  // restart even if a draw is in flight, otherwise the canvas keeps rendering
+  // the old order and never catches up with the slider
+  if (catImg && currentP) startDraw(currentP, currentP.width);
 });
 
 document.getElementById('gen-btn').addEventListener('click', function () {
