@@ -589,18 +589,33 @@ function launchSketch() {
 // ─────────────────────────────────────
 // Wire up controls
 // ─────────────────────────────────────
+// Dragging re-renders live. Each restart regenerates the path, so what's on
+// the canvas always matches the order it claims — the old bug was leaving the
+// path alone and only changing the pen width.
+let orderRestartTimer = null;
+
+function restartAtSliderOrder() {
+  clearTimeout(orderRestartTimer);
+  orderRestartTimer = null;
+  if (!catImg || !currentP) return;
+  if (order === drawOrder && !isDrawing) return;   // already showing this one
+  startDraw(currentP, currentP.width);
+}
+
 document.getElementById('order-slider').addEventListener('input', function () {
   order = parseInt(this.value);
   this.dataset.userSet = '1';
   updateControl(order);
+  // settle briefly before restarting: a drag across the whole track would
+  // otherwise rebuild the path once per step, and order 9 is 262k points
+  clearTimeout(orderRestartTimer);
+  orderRestartTimer = setTimeout(restartAtSliderOrder, 90);
 });
 
 document.getElementById('order-slider').addEventListener('change', function () {
   order = parseInt(this.value);
   this.dataset.userSet = '1';
-  // restart even if a draw is in flight, otherwise the canvas keeps rendering
-  // the old order and never catches up with the slider
-  if (catImg && currentP) startDraw(currentP, currentP.width);
+  restartAtSliderOrder();   // on release, don't wait out the debounce
 });
 
 document.getElementById('gen-btn').addEventListener('click', function () {
