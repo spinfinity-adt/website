@@ -325,6 +325,11 @@ let catImg = null;
 let catSeed = Math.floor(Math.random() * 1e8);
 let isDrawing = false;
 let currentP = null;
+let phase = 'loading';   // 'loading' (waiting on a cat) | 'drawing' | 'idle'
+let loadPath = [];
+let loadHead = 0;
+
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ─────────────────────────────────────
 // Hilbert math
@@ -444,6 +449,69 @@ function sampleCat(p, x, y, size) {
   return [catPixels[idx], catPixels[idx+1], catPixels[idx+2]];
 }
 
+// ─────────────────────────────────────
+// Loading state — a small Hilbert curve traced in the accent colour while we
+// wait on the photo. Same curve the page is about, so the wait shows the idea.
+// ─────────────────────────────────────
+function themeColor(name, fallback) {
+  const v = getComputedStyle(document.body).getPropertyValue(name).trim();
+  return v || fallback;
+}
+
+function buildLoadingPath(size) {
+  const inset = Math.round(size * 0.24);
+  loadPath = generateHilbertPath(4, size - inset * 2)
+    .map(function (pt) { return { x: pt.x + inset, y: pt.y + inset }; });
+  loadHead = 0;
+}
+
+// the whole curve, faint — the shape reads even before the trail reaches it,
+// and it doubles as the resting state when there's no cat to draw
+function drawCurveGhost(p) {
+  p.background(themeColor('--bg', '#181320'));
+  if (loadPath.length < 2) return false;
+
+  const base = p.color(themeColor('--accent', '#54c7ba'));
+  base.setAlpha(38);
+  p.noFill();
+  p.strokeWeight(Math.max(1.5, p.width / 300));
+  p.stroke(base);
+  for (let i = 0; i < loadPath.length - 1; i++) {
+    p.line(loadPath[i].x, loadPath[i].y, loadPath[i + 1].x, loadPath[i + 1].y);
+  }
+  return true;
+}
+
+function drawLoading(p) {
+  if (!drawCurveGhost(p)) return;
+  if (REDUCED_MOTION) return;   // faint curve only, no travelling head
+
+  const accent = themeColor('--accent', '#54c7ba');
+  const segs   = loadPath.length - 1;
+  const trail  = Math.round(segs * 0.35);
+
+  // a head running the curve, fading out behind it
+  for (let j = 0; j < trail; j++) {
+    const i = loadHead - j;
+    if (i < 0 || i >= segs) continue;
+    const c = p.color(accent);
+    c.setAlpha(255 * (1 - j / trail));
+    p.stroke(c);
+    p.line(loadPath[i].x, loadPath[i].y, loadPath[i + 1].x, loadPath[i + 1].y);
+  }
+
+  loadHead += 2;
+  if (loadHead > segs + trail) loadHead = 0;
+}
+
+function startLoading(p, size) {
+  phase = 'loading';
+  isDrawing = false;
+  buildLoadingPath(size);
+  setProgress(0);
+  p.loop();
+}
+
 // resumeFrac (0-1) picks the render up partway instead of starting over. A
 // Hilbert curve covers the same region at the same fraction of its length
 // whatever its order, so resuming at the fraction already drawn carries on
@@ -451,8 +519,9 @@ function sampleCat(p, x, y, size) {
 function startDraw(p, size, resumeFrac) {
   const resume = resumeFrac > 0 && resumeFrac < 1;
 
+  phase = 'drawing';
   isDrawing = true;
-  if (!resume) p.background(0);
+  if (!resume) p.background(themeColor('--bg', '#181320'));
 
   drawOrder    = order;
   path         = generateHilbertPath(drawOrder, size);
@@ -474,9 +543,9 @@ function startDraw(p, size, resumeFrac) {
 function fetchCat(newSeed) {
   if (newSeed) catSeed = Math.floor(Math.random() * 1e8);
   setGenBtn(true);
-  setStatus('loading…');
-  setProgress(0);
+  setStatus('fetching a cat…');
   catPixels = null;
+  startLoading(currentP, currentP.width);
 
   const url = `https://cataas.com/cat?width=800&height=800&t=${catSeed}`;
   currentP.loadImage(
@@ -488,7 +557,11 @@ function fetchCat(newSeed) {
       startDraw(currentP, currentP.width);
     },
     function () {
+      // the canvas and controls stay up — only the photo is missing
       setGenBtn(false);
+      phase = 'idle';
+      currentP.noLoop();
+      drawCurveGhost(currentP);
       setStatus('couldn\u2019t load a cat — try again');
     }
   );
@@ -501,18 +574,9 @@ function launchSketch() {
   // p5 global mode: define sketch functions then call new p5(sketch, container)
   const sketch = function (p) {
 
-    p.preload = function () {
-      const url = `https://cataas.com/cat?width=800&height=800&t=${catSeed}`;
-      catImg = p.loadImage(
-        url,
-        function () { /* success — setup will run next */ },
-        function () {
-          setGenBtn(false);
-          setStatus('couldn\u2019t load a cat — try again');
-        }
-      );
-    };
-
+    // no preload: preload holds setup until the photo resolves, so a slow or
+    // failed cataas fetch meant no canvas at all. The sketch comes up first and
+    // the photo arrives whenever it arrives.
     p.setup = function () {
       currentP = p;
       const s   = getCanvasSize();
@@ -529,15 +593,18 @@ function launchSketch() {
 
       updateControl(order);
       updateStats(order, s);
-      setGenBtn(false);
-      loadCatPixels();
-      startDraw(p, s);
+      startLoading(p, s);
+      fetchCat(false);
     };
 
     p.draw = function () {
+      if (phase === 'loading') { drawLoading(p); return; }
+      if (phase !== 'drawing') { p.noLoop(); return; }
+
       if (currentIndex > path.length - 2) {
         p.noLoop();
         isDrawing = false;
+        phase = 'idle';
         setProgress(1);
         const segs = path.length - 1;
         setStatus(`done — <span class="hl">${segs.toLocaleString()}</span> segments`);
@@ -576,7 +643,11 @@ function launchSketch() {
       }
       updateControl(order);
       updateStats(order, s);
-      if (catImg) startDraw(p, s);
+      if (catImg) {
+        startDraw(p, s);
+      } else if (phase === 'loading') {
+        startLoading(p, s);   // still waiting — refit the loading curve
+      }
     }
 
     p.windowResized = handleResize;
