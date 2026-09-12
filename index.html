@@ -8,7 +8,20 @@
 <title>Spinfinity</title>
 <link rel="stylesheet" href="/styles.css"/>
 <style>
-.hero{display:flex;flex-direction:column;justify-content:center;gap:1.8rem;min-height:calc(100vh - var(--nav-h));padding:clamp(2rem,6vw,5rem) clamp(1.2rem,5vw,3.5rem) 3rem;max-width:700px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:clamp(2rem,5vw,4rem);min-height:calc(100vh - var(--nav-h));padding:clamp(2rem,6vw,5rem) clamp(1.2rem,5vw,3.5rem) 3rem}
+.hero-text{display:flex;flex-direction:column;justify-content:center;gap:1.8rem;max-width:700px}
+.hero-cat{display:flex;flex-direction:column;gap:.9rem;align-items:flex-start;justify-self:stretch;width:100%;max-width:448px}
+.hero-cat #truchet-cat{width:100%}
+.hero-cat canvas{display:block;max-width:100%;height:auto;cursor:pointer}
+.cat-note{font-family:var(--hand);font-size:.82rem;letter-spacing:.06em;text-transform:lowercase;color:var(--muted);max-width:26ch;line-height:1.5}
+.cat-note b{font-weight:700;color:var(--accent2)}
+.cat-again{font-family:var(--hand);font-size:.9rem;font-weight:700;color:var(--accent1-text);background:none;border:none;border-bottom:2px solid var(--accent3);padding:0 0 2px;cursor:pointer;transition:color .2s ease,border-color .2s ease}
+.cat-again:hover{color:var(--accent2);border-color:var(--accent2)}
+.cat-again:disabled{opacity:.45;cursor:default}
+@media(min-width:1000px){
+  .hero{grid-template-columns:minmax(0,700px) minmax(0,1fr)}
+  .hero-cat{margin-inline:auto}
+}
 .logo-area{position:relative;display:inline-block;align-self:flex-start}
 .logo{font-family:var(--hand);font-size:clamp(2.6rem,10vw,6rem);font-weight:700;line-height:.88;color:var(--fg);white-space:nowrap}
 .logo .inf{color:var(--accent2)}
@@ -38,6 +51,7 @@
 
 <div class="page">
   <section class="hero">
+   <div class="hero-text">
     <div class="logo-area anim-0"><h1 class="logo" aria-label="spinfinity">sp<span class="it">ı<svg class="tit" viewBox="-6 -6 132 132" aria-hidden="true"><g transform="rotate(0 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g><g transform="rotate(90 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g><g transform="rotate(180 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g><g transform="rotate(270 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g></svg></span>n<span class="inf">f<span class="it">ı<svg class="tit" viewBox="-6 -6 132 132" aria-hidden="true"><g transform="rotate(0 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g><g transform="rotate(90 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g><g transform="rotate(180 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g><g transform="rotate(270 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g></svg></span>n<span class="it">ı<svg class="tit" viewBox="-6 -6 132 132" aria-hidden="true"><g transform="rotate(0 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g><g transform="rotate(90 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g><g transform="rotate(180 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g><g transform="rotate(270 60 60)"><path d="M66 54 C40 44 32 6 60 6 C88 6 80 44 54 54" stroke="var(--text)" stroke-width="9" fill="none" stroke-linecap="round"/></g></svg></span>ty</span></h1></div>
     <p class="tagline anim-1">using the <span class="hoop">hula hoop</span> as a portal to explore<br>the worlds of <span class="math">math, movement, art</span> and <span class="math">data</span></p>
     
@@ -49,10 +63,189 @@
       <a href="https://instagram.com/spinfinity.in" target="_blank" rel="noopener" class="social-btn insta">instagram</a>
       <a href="https://spinfinity.substack.com" target="_blank" rel="noopener" class="social-btn sub">substack</a>
     </div>
+   </div>
+
+   <div class="hero-cat anim-4">
+     <div id="truchet-cat" role="img" aria-label="a stranger's cat, its light measured and redrawn in hoop arcs"></div>
+     <p class="cat-note">a stranger's cat, measured for light and redrawn in <b>hoops</b> &mdash; <button type="button" class="cat-again" id="cat-again">spin another</button></p>
+   </div>
   </section>
 </div>
 
 <div id="sf-footer-mount"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script>
+/* ============================================================
+   hoop cat — a stranger's cat from cataas.com, read as data and
+   redrawn in truchet tiles. A truchet tile is two quarter-arcs:
+   two fragments of a hoop. So the portrait is made of hoops and
+   nothing else.
+
+   The encoding: each tile samples the light at its centre, then
+   the tiles are split at their own quartiles into four steps —
+   dark to light: deep purple, lilac, teal, yellow. Binning by
+   quantile rather than by a fixed scale means a sunlit white cat
+   and a black cat in a basement both come back using the whole
+   palette, instead of flattening into one colour. Darker also
+   draws heavier, so tone survives the quantisation. Every colour
+   comes from the theme tokens in styles.css; nothing is hardcoded.
+
+   The portrait is a disc, not a square — a hoop-shaped portal with
+   a cat in it. Tiles land in order of distance from the centre, so
+   it blooms outward the way a hoop opens up, then settles and stops.
+   ============================================================ */
+(function(){
+  var holder = document.getElementById('truchet-cat');
+  var again  = document.getElementById('cat-again');
+  if (!holder || typeof p5 === 'undefined') return;
+
+  var CAT   = 'https://cataas.com/cat?width=480&height=480';
+  var TILE  = 14;
+  var STEPS = ['--accent2','--accent4','--accent1','--accent3']; /* dark -> light */
+  var MIN = 196, MAX = 448;
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  new p5(function(p){
+    var src = null, buf = null, side = 0, queue = [], cursor = 0, raf = null;
+
+    function token(name){
+      return getComputedStyle(document.body).getPropertyValue(name).trim();
+    }
+
+    /* the block's width is set by the grid column, never by what is
+       inside it, so measuring it can't feed back into the canvas */
+    function measure(){
+      var w = holder.getBoundingClientRect().width;
+      if (!w) return 0;
+      return Math.max(MIN, Math.min(Math.floor(w / TILE) * TILE, MAX));
+    }
+
+    /* downsample the full-res original into an offscreen buffer:
+       always from the original, so repeated resizes never compound
+       the loss, and at density 1 so pixels index 1:1 with tiles */
+    function rescale(){
+      if (!src || !side) return;
+      if (!buf || buf.width !== side){
+        if (buf) buf.remove();
+        buf = p.createGraphics(side, side);
+        buf.pixelDensity(1);
+      }
+      buf.clear();
+      buf.image(src, 0, 0, side, side);
+      buf.loadPixels();
+    }
+
+    function plan(){
+      queue = []; cursor = 0;
+      if (!buf || !buf.pixels || !buf.pixels.length) return;
+
+      var px = buf.pixels, c = side/2, reach = c - TILE * 0.4, x, y, i, l, d;
+
+      /* pass one: the tiles that fall inside the hoop, with their light */
+      for (x = TILE/2; x < side; x += TILE){
+        for (y = TILE/2; y < side; y += TILE){
+          d = Math.hypot(x - c, y - c);
+          if (d > reach) continue;                      /* outside the hoop */
+          i = 4 * ((y | 0) * side + (x | 0));
+          l = 0.2126*px[i] + 0.7152*px[i+1] + 0.0722*px[i+2];
+          queue.push({x:x, y:y, l:l, d:d});
+        }
+      }
+      if (!queue.length) return;
+
+      /* pass two: cut at this cat's own quartiles, so every cat fills
+         the palette however it happened to be lit */
+      var ranked = queue.map(function(t){ return t.l; }).sort(function(a,b){ return a-b; });
+      var cuts = [], n = STEPS.length;
+      for (var j = 1; j < n; j++) cuts.push(ranked[Math.floor(ranked.length * j / n)]);
+
+      var palette = STEPS.map(function(name){ return token(name) || '#502064'; });
+      for (var k = 0; k < queue.length; k++){
+        var step = 0;
+        while (step < cuts.length && queue[k].l > cuts[step]) step++;
+        queue[k].col    = palette[step];
+        queue[k].weight = TILE * (0.52 - step * 0.07);  /* darker draws heavier */
+        queue[k].flip   = Math.random() < 0.5;
+      }
+
+      /* draw from the middle out, so it opens like a hoop */
+      queue.sort(function(a, b){ return a.d - b.d; });
+    }
+
+    function tileAt(t){
+      p.stroke(t.col);
+      p.strokeWeight(t.weight);
+      if (t.flip){
+        p.arc(t.x - TILE/2, t.y - TILE/2, TILE, TILE, 0, 90);
+        p.arc(t.x + TILE/2, t.y + TILE/2, TILE, TILE, 180, 270);
+      } else {
+        p.arc(t.x + TILE/2, t.y - TILE/2, TILE, TILE, 90, 180);
+        p.arc(t.x - TILE/2, t.y + TILE/2, TILE, TILE, 270, 360);
+      }
+    }
+
+    /* own ticker rather than p5's draw loop: the trace is a one-shot
+       animation with a definite end, not a running sketch */
+    function tick(){
+      var budget = Math.max(6, Math.ceil(queue.length / 70));
+      for (var n = 0; n < budget && cursor < queue.length; n++) tileAt(queue[cursor++]);
+      raf = cursor < queue.length ? requestAnimationFrame(tick) : null;
+    }
+
+    function restart(){
+      if (raf){ cancelAnimationFrame(raf); raf = null; }
+      p.background(token('--bg') || '#FBFBF8');
+      plan();
+      if (still){ while (cursor < queue.length) tileAt(queue[cursor++]); }
+      else if (queue.length) raf = requestAnimationFrame(tick);
+    }
+
+    function fetchCat(){
+      if (again) again.disabled = true;
+      p.loadImage(CAT + '&t=' + Date.now(), function(img){
+        if (again) again.disabled = false;
+        src = img;
+        rescale();
+        restart();
+      }, function(){
+        /* offline, or cataas is down: leave the paper blank rather
+           than parking an error box in the hero */
+        if (again) again.disabled = false;
+      });
+    }
+
+    function resize(){
+      var s = measure();
+      if (!s || s === side) return;
+      side = s;
+      p.resizeCanvas(side, side);
+      rescale();
+      restart();
+    }
+
+    p.setup = function(){
+      side = measure() || MIN;
+      var c = p.createCanvas(side, side);
+      c.parent(holder);
+      c.mousePressed(fetchCat);
+      p.angleMode(p.DEGREES);
+      p.noFill();
+      p.strokeCap(p.ROUND);
+      p.background(token('--bg') || '#FBFBF8');
+      p.noLoop();
+      if (again) again.addEventListener('click', fetchCat);
+      fetchCat();
+
+      /* nav.js injects the nav and footer after load, so the real
+         column width only exists later — watch for it rather than
+         trusting the layout at setup */
+      if ('ResizeObserver' in window) new ResizeObserver(resize).observe(holder);
+      else window.addEventListener('resize', resize);
+    };
+  });
+})();
+</script>
 
 </body>
 </html>
