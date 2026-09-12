@@ -444,17 +444,23 @@ function sampleCat(p, x, y, size) {
   return [catPixels[idx], catPixels[idx+1], catPixels[idx+2]];
 }
 
-function startDraw(p, size) {
+// resumeFrac (0-1) picks the render up partway instead of starting over. A
+// Hilbert curve covers the same region at the same fraction of its length
+// whatever its order, so resuming at the fraction already drawn carries on
+// from roughly the same point on the photo — what's painted stays painted.
+function startDraw(p, size, resumeFrac) {
+  const resume = resumeFrac > 0 && resumeFrac < 1;
+
   isDrawing = true;
-  setProgress(0);
-  p.background(0);
+  if (!resume) p.background(0);
 
   drawOrder    = order;
   path         = generateHilbertPath(drawOrder, size);
-  currentIndex = 0;
+  const segs   = path.length - 1;
+  currentIndex = resume ? Math.min(Math.floor(resumeFrac * segs), segs) : 0;
   drawSpeed    = Math.max(1, Math.ceil(path.length / 400));
 
-  const segs = path.length - 1;
+  setProgress(currentIndex / segs);
   setStatus(`drawing order <span class="hl">${drawOrder}</span> — ${segs.toLocaleString()} segments`);
   updateControl(drawOrder);
   updateStats(drawOrder, size);
@@ -598,8 +604,11 @@ function restartAtSliderOrder() {
   clearTimeout(orderRestartTimer);
   orderRestartTimer = null;
   if (!catImg || !currentP) return;
-  if (order === drawOrder && !isDrawing) return;   // already showing this one
-  startDraw(currentP, currentP.width);
+  if (order === drawOrder) return;   // already drawing (or showing) this one
+
+  // mid-draw: carry on from how far along we are. finished: draw it again.
+  const frac = isDrawing && path.length > 1 ? currentIndex / (path.length - 1) : 0;
+  startDraw(currentP, currentP.width, frac);
 }
 
 document.getElementById('order-slider').addEventListener('input', function () {
