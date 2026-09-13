@@ -10,17 +10,18 @@
 <style>
 .hero{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:clamp(2rem,5vw,4rem);min-height:calc(100vh - var(--nav-h));padding:clamp(2rem,6vw,5rem) clamp(1.2rem,5vw,3.5rem) 3rem}
 .hero-text{display:flex;flex-direction:column;justify-content:center;gap:1.8rem;max-width:700px}
-.hero-cat{display:flex;flex-direction:column;gap:.9rem;align-items:flex-start;justify-self:stretch;width:100%;max-width:448px}
-.hero-cat #truchet-cat{width:100%}
-.hero-cat canvas{display:block;max-width:100%;height:auto;cursor:pointer}
-.cat-note{font-family:var(--hand);font-size:.82rem;letter-spacing:.06em;text-transform:lowercase;color:var(--muted);max-width:100%;line-height:1.6}
+.hero-cat{position:relative;width:100%;aspect-ratio:1;justify-self:stretch;overflow:hidden}
+.hero-cat #truchet-cat{position:absolute;inset:0}
+.hero-cat canvas{display:block;cursor:pointer}
+.cat-note{margin-top:.4rem;font-family:var(--hand);font-size:.82rem;letter-spacing:.06em;text-transform:lowercase;color:var(--muted);max-width:100%;line-height:1.6}
 .cat-note b{font-weight:700;color:var(--accent2)}
 .cat-again{font-family:var(--hand);font-size:.9rem;font-weight:700;color:var(--accent1-text);background:none;border:none;border-bottom:2px solid var(--accent3);padding:0 0 2px;cursor:pointer;transition:color .2s ease,border-color .2s ease}
 .cat-again:hover{color:var(--accent2);border-color:var(--accent2)}
 .cat-again:disabled{opacity:.45;cursor:default}
 @media(min-width:1000px){
-  .hero{grid-template-columns:minmax(0,700px) minmax(0,1fr)}
-  .hero-cat{margin-inline:auto}
+  /* the cat takes the right half of the screen, bled to the edges */
+  .hero{grid-template-columns:minmax(0,1fr);padding-right:calc(50vw + clamp(1.5rem,3vw,3rem))}
+  .hero-cat{position:absolute;top:0;right:0;width:50vw;height:100%;aspect-ratio:auto}
 }
 .logo-area{position:relative;display:inline-block;align-self:flex-start}
 .logo{font-family:var(--hand);font-size:clamp(2.6rem,10vw,6rem);font-weight:700;line-height:.88;color:var(--fg);white-space:nowrap}
@@ -63,11 +64,11 @@
       <a href="https://instagram.com/spinfinity.in" target="_blank" rel="noopener" class="social-btn insta">instagram</a>
       <a href="https://spinfinity.substack.com" target="_blank" rel="noopener" class="social-btn sub">substack</a>
     </div>
+    <p class="cat-note anim-4">a stranger's cat, redrawn in <b>truchet true cat tiles</b> &mdash; <button type="button" class="cat-again" id="cat-again">spin another</button></p>
    </div>
 
    <div class="hero-cat anim-4">
-     <div id="truchet-cat" role="img" aria-label="a stranger's cat, its light measured and redrawn as truchet true cat tiles"></div>
-     <p class="cat-note">a stranger's cat, measured for light and redrawn in <b>truchet true cat tiles</b> &mdash; <button type="button" class="cat-again" id="cat-again">spin another</button></p>
+     <div id="truchet-cat" role="img" aria-label="a stranger's cat redrawn as truchet true cat tiles"></div>
    </div>
   </section>
 </div>
@@ -77,25 +78,40 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 <script>
 /* ============================================================
-   truchet true cat tiles — a stranger's cat from cataas.com, read
-   as data and redrawn in truchet tiles. A truchet tile is two
-   quarter-arcs meeting the cell edges at their midpoints, so the
-   curves run on across tiles into one continuous meander: the
-   portrait is made of hoop fragments and nothing else.
+   truchet true cat tiles — a stranger's cat from cataas.com,
+   redrawn in truchet tiles. A truchet tile is two quarter-arcs
+   meeting the cell edges at their midpoints, so the curves run on
+   across tiles into one continuous meander: the whole panel is
+   hoop fragments and nothing else.
 
-   The encoding: each tile samples the light at its centre, then
-   the tiles are split at their own quartiles into four steps —
-   dark to light: deep purple, lilac, teal, yellow. Binning by
-   quantile rather than by a fixed scale means a sunlit white cat
-   and a black cat in a basement both come back using the whole
-   palette, instead of flattening into one colour.
+   Each tile takes the average colour of the patch of cat it sits
+   on, so the picture is revealed by the weave rather than posted
+   as a photo. The colours are put through an auto-levels stretch
+   first: cataas will hand you a black cat in a dark room as
+   readily as a sunlit one, and without it that cat arrives as a
+   single muddy tone. The stretch is capped, so a genuinely flat
+   photo isn't blown up into noise. Colour is what carries the cat here — which is what
+   lets the tiles be big. Tone alone needs a fine grid to read;
+   real colour survives being chunky, so the truchet stays legible
+   as truchet while the cat still arrives.
 
-   Tone is carried by colour, not by weight. Stroke stays inside a
-   narrow band well under the tile size: past about a third of the
-   tile the arcs of neighbouring cells touch and the dark areas
-   silt up into a solid mass, which is exactly where the truchet
-   weave stops reading. Every colour comes from the theme tokens
-   in styles.css; nothing is hardcoded.
+   Each cell is filled with its colour and the truchet arcs are
+   drawn over it a step lighter or darker — lighter over a dark
+   cell, darker over a light one. Arcs alone on paper only ever
+   showed the dark half of a photo: a white cat on a cream ground
+   simply vanished. Filling the cell means the whole tonal range
+   survives, and shifting the arcs relative to their own cell means
+   the weave stays legible everywhere instead of only where the
+   photo happens to be dark.
+
+   The cat is fetched at its own proportions and fitted whole into
+   the panel, over a soft field of its own colours. Asking cataas
+   for the panel's tall shape instead makes it crop a mostly
+   landscape library down the middle and scale up — which is why
+   every cat used to arrive as an unreadable close-up of fur. The
+   backdrop is the same photo drawn to fill: at one pixel per tile
+   that is already just soft blocks of colour, so it mats the cat
+   in tones that always agree with it.
 
    Tiles land in order of distance from the centre, so the weave
    blooms outward from the middle, then settles and stops.
@@ -105,101 +121,135 @@
   var again  = document.getElementById('cat-again');
   if (!holder || typeof p5 === 'undefined') return;
 
-  var CAT   = 'https://cataas.com/cat?width=480&height=480';
-  var TILE  = 10;
-  var STEPS = ['--accent2','--accent4','--accent1','--accent3']; /* dark -> light */
-  var MIN = 200, MAX = 440;   /* both exact multiples of TILE */
+  var ACROSS  = 24;    /* roughly this many tiles across the panel */
+  var MINTILE = 16;
+  var WEIGHT  = 0.30;  /* of a tile — a ribbon, not a blob */
+
   var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   new p5(function(p){
-    var src = null, buf = null, side = 0, cols = 0, queue = [], cursor = 0, raf = null;
+    var src = null, buf = null;
+    var w = 0, h = 0, tile = 0, cols = 0, rows = 0;
+    var queue = [], cursor = 0, raf = null;
 
     function token(name){
       return getComputedStyle(document.body).getPropertyValue(name).trim();
     }
 
-    /* the block's width is set by the grid column, never by what is
+    /* the panel's size comes from the layout, never from what is
        inside it, so measuring it can't feed back into the canvas */
     function measure(){
-      var w = holder.getBoundingClientRect().width;
-      if (!w) return 0;
-      return Math.max(MIN, Math.min(Math.floor(w / TILE) * TILE, MAX));
+      var r = holder.getBoundingClientRect();
+      return { w: Math.round(r.width), h: Math.round(r.height) };
     }
 
-    /* Downsample the original to exactly one pixel per tile, and let
-       the browser area-average on the way down. Sampling a single
-       pixel per tile instead throws away the other ~99 and speckles
-       the result; an average per cell gives the tonal blocks the cat
-       actually has. Always from the full-res original, so repeated
-       resizes never compound the loss, and at density 1 so a pixel
-       really is one pixel. */
+    /* One buffer pixel per tile, letting the browser area-average on
+       the way down: each tile then carries the real average of the
+       patch it covers instead of one arbitrary pixel from it. The
+       square cat is cropped to the panel's shape, centred, so it
+       fills the half-screen without stretching. */
     function rescale(){
-      if (!src || !cols) return;
-      if (!buf || buf.width !== cols){
+      if (!src || !cols || !rows) return;
+      if (!buf || buf.width !== cols || buf.height !== rows){
         if (buf) buf.remove();
-        buf = p.createGraphics(cols, cols);
+        buf = p.createGraphics(cols, rows);
         buf.pixelDensity(1);
       }
+
       buf.clear();
       buf.drawingContext.imageSmoothingEnabled = true;
       buf.drawingContext.imageSmoothingQuality = 'high';
-      buf.image(src, 0, 0, cols, cols);
+
+      var aspect = cols / rows, srcAspect = src.width / src.height;
+
+      /* mat: the site's deep purple — one flat brand colour, so the
+         cat is unmistakably the subject sitting on it */
+      buf.background(token('--accent2') || '#502064');
+
+      /* subject: the whole photo, fitted inside and centred */
+      var dw, dh;
+      if (srcAspect > aspect){ dw = cols; dh = cols / srcAspect; }
+      else                   { dh = rows; dw = rows * srcAspect; }
+      buf.image(src, (cols - dw) / 2, (rows - dh) / 2, dw, dh);
+
       buf.loadPixels();
+    }
+
+    /* auto-levels: find where this photo's tones actually sit and
+       stretch them to fill the range. Percentiles rather than
+       min/max, so one blown highlight or one black shadow doesn't
+       decide the whole mapping. */
+    function levels(px, n){
+      var lum = [], i, k;
+      for (k = 0; k < n; k++){
+        i = 4 * k;
+        lum.push(0.2126*px[i] + 0.7152*px[i+1] + 0.0722*px[i+2]);
+      }
+      lum.sort(function(a, b){ return a - b; });
+      var lo = lum[Math.floor(n * 0.02)], hi = lum[Math.floor(n * 0.98)];
+
+      /* cap the gain at 4x: a genuinely flat photo should stay flat
+         rather than have its jpeg noise amplified into confetti */
+      var mid = (lo + hi) / 2, span = Math.max(hi - lo, 64);
+      return { lo: mid - span/2, span: span };
     }
 
     function plan(){
       queue = []; cursor = 0;
       if (!buf || !buf.pixels || !buf.pixels.length) return;
 
-      var px = buf.pixels, c = side/2, col, row, x, y, i, l;
+      var px = buf.pixels, cx = w/2, cy = h/2, col, row, i, x, y;
+      var lv = levels(px, cols * rows), gain = 255 / lv.span;
 
-      /* pass one: every tile, carrying the average light of its cell */
+      function stretch(v){
+        v = (v - lv.lo) * gain;
+        return v < 0 ? 0 : v > 255 ? 255 : v;
+      }
+
       for (col = 0; col < cols; col++){
-        for (row = 0; row < cols; row++){
+        for (row = 0; row < rows; row++){
           i = 4 * (row * cols + col);
-          l = 0.2126*px[i] + 0.7152*px[i+1] + 0.0722*px[i+2];
-          x = col * TILE + TILE/2;
-          y = row * TILE + TILE/2;
-          queue.push({x:x, y:y, l:l, d:Math.hypot(x - c, y - c)});
+          x = col * tile + tile/2;
+          y = row * tile + tile/2;
+          var r = stretch(px[i]), g = stretch(px[i+1]), b = stretch(px[i+2]);
+          var base = p.color(r, g, b);
+          var lum  = 0.2126*r + 0.7152*g + 0.0722*b;
+          queue.push({
+            x: x, y: y,
+            col: base,
+            /* shift the weave against its own cell, so it reads on
+               a black cat and a white one alike */
+            weave: lum < 128 ? p.lerpColor(base, p.color(255), 0.42)
+                             : p.lerpColor(base, p.color(0),   0.32),
+            flip: Math.random() < 0.5,
+            d: Math.hypot(x - cx, y - cy)
+          });
         }
       }
-      if (!queue.length) return;
-
-      /* pass two: cut at this cat's own quartiles, so every cat fills
-         the palette however it happened to be lit */
-      var ranked = queue.map(function(t){ return t.l; }).sort(function(a,b){ return a-b; });
-      var cuts = [], n = STEPS.length;
-      for (var j = 1; j < n; j++) cuts.push(ranked[Math.floor(ranked.length * j / n)]);
-
-      var palette = STEPS.map(function(name){ return token(name) || '#502064'; });
-      for (var k = 0; k < queue.length; k++){
-        var step = 0;
-        while (step < cuts.length && queue[k].l > cuts[step]) step++;
-        queue[k].col    = palette[step];
-        queue[k].weight = TILE * (0.34 - step * 0.03); /* narrow: never enough to merge */
-        queue[k].flip   = Math.random() < 0.5;
-      }
-
       /* draw from the middle out, so it opens like a hoop */
       queue.sort(function(a, b){ return a.d - b.d; });
     }
 
     function tileAt(t){
-      p.stroke(t.col);
-      p.strokeWeight(t.weight);
+      p.noStroke();
+      p.fill(t.col);
+      p.rect(t.x - tile/2, t.y - tile/2, tile + 1, tile + 1);  /* +1 hides seams */
+
+      p.noFill();
+      p.stroke(t.weave);
       if (t.flip){
-        p.arc(t.x - TILE/2, t.y - TILE/2, TILE, TILE, 0, 90);
-        p.arc(t.x + TILE/2, t.y + TILE/2, TILE, TILE, 180, 270);
+        p.arc(t.x - tile/2, t.y - tile/2, tile, tile, 0, 90);
+        p.arc(t.x + tile/2, t.y + tile/2, tile, tile, 180, 270);
       } else {
-        p.arc(t.x + TILE/2, t.y - TILE/2, TILE, TILE, 90, 180);
-        p.arc(t.x - TILE/2, t.y + TILE/2, TILE, TILE, 270, 360);
+        p.arc(t.x + tile/2, t.y - tile/2, tile, tile, 90, 180);
+        p.arc(t.x - tile/2, t.y + tile/2, tile, tile, 270, 360);
       }
     }
 
     /* own ticker rather than p5's draw loop: the trace is a one-shot
        animation with a definite end, not a running sketch */
     function tick(){
-      var budget = Math.max(6, Math.ceil(queue.length / 70));
+      var budget = Math.max(4, Math.ceil(queue.length / 70));
       for (var n = 0; n < budget && cursor < queue.length; n++) tileAt(queue[cursor++]);
       raf = cursor < queue.length ? requestAnimationFrame(tick) : null;
     }
@@ -207,14 +257,20 @@
     function restart(){
       if (raf){ cancelAnimationFrame(raf); raf = null; }
       p.background(token('--bg') || '#FBFBF8');
+      p.strokeWeight(tile * WEIGHT);
       plan();
       if (still){ while (cursor < queue.length) tileAt(queue[cursor++]); }
       else if (queue.length) raf = requestAnimationFrame(tick);
     }
 
+    /* the whole photo at its own shape — no server-side cropping */
+    function catURL(){
+      return 'https://cataas.com/cat?width=800&t=' + Date.now();
+    }
+
     function fetchCat(){
       if (again) again.disabled = true;
-      p.loadImage(CAT + '&t=' + Date.now(), function(img){
+      p.loadImage(catURL(), function(img){
         if (again) again.disabled = false;
         src = img;
         rescale();
@@ -226,32 +282,45 @@
       });
     }
 
+    /* the panel decides the tile size, so the weave stays the same
+       coarseness whether it's half a desktop or a phone screen */
+    function fit(){
+      var m = measure();
+      if (!m.w || !m.h) return false;
+      var t = Math.max(MINTILE, Math.round(m.w / ACROSS));
+      if (m.w === w && m.h === h && t === tile) return false;
+      w = m.w; h = m.h; tile = t;
+      cols = Math.ceil(w / tile);
+      rows = Math.ceil(h / tile);
+      return true;
+    }
+
     function resize(){
-      var s = measure();
-      if (!s || s === side) return;
-      side = s;
-      cols = side / TILE;
-      p.resizeCanvas(side, side);
+      if (!fit()) return;
+      p.resizeCanvas(w, h);
+      if (!src) { fetchCat(); return; }   /* first real size: now ask for that shape */
       rescale();
       restart();
     }
 
     p.setup = function(){
-      side = measure() || MIN;
-      cols = side / TILE;
-      var c = p.createCanvas(side, side);
+      var sized = fit();
+      if (!sized){ w = 400; h = 400; tile = MINTILE; cols = 25; rows = 25; }
+      var c = p.createCanvas(w, h);
       c.parent(holder);
       c.mousePressed(fetchCat);
       p.angleMode(p.DEGREES);
-      p.noFill();
       p.strokeCap(p.ROUND);
+      p.rectMode(p.CORNER);
       p.background(token('--bg') || '#FBFBF8');
       p.noLoop();
       if (again) again.addEventListener('click', fetchCat);
-      fetchCat();
+      /* if the layout isn't settled yet, the observer below fetches
+         once it is, so the request carries the real panel shape */
+      if (sized) fetchCat();
 
       /* nav.js injects the nav and footer after load, so the real
-         column width only exists later — watch for it rather than
+         panel size only exists later — watch for it rather than
          trusting the layout at setup */
       if ('ResizeObserver' in window) new ResizeObserver(resize).observe(holder);
       else window.addEventListener('resize', resize);
