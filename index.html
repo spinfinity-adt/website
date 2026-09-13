@@ -18,6 +18,8 @@
 .cat-again{font-family:var(--hand);font-size:.9rem;font-weight:700;color:var(--accent1-text);background:none;border:none;border-bottom:2px solid var(--accent3);padding:0 0 2px;cursor:pointer;transition:color .2s ease,border-color .2s ease}
 .cat-again:hover{color:var(--accent2);border-color:var(--accent2)}
 .cat-again:disabled{opacity:.45;cursor:default}
+.cat-size{display:flex;align-items:center;gap:.7rem;margin-top:.55rem;font-family:var(--hand);font-size:.82rem;letter-spacing:.06em;color:var(--muted)}
+.cat-size input{accent-color:var(--accent2);width:150px;max-width:40vw;cursor:pointer}
 @media(min-width:1000px){
   /* the cat takes the right half of the screen, bled to the edges */
   .hero{grid-template-columns:minmax(0,1fr);padding-right:calc(50vw + clamp(1.5rem,3vw,3rem))}
@@ -65,6 +67,9 @@
       <a href="https://spinfinity.substack.com" target="_blank" rel="noopener" class="social-btn sub">substack</a>
     </div>
     <p class="cat-note anim-4">a stranger's cat, redrawn in <b>truchet true cat tiles</b> &mdash; <button type="button" class="cat-again" id="cat-again">spin another</button></p>
+    <label class="cat-size anim-4" for="cat-size">tile size
+      <input type="range" id="cat-size" min="8" max="56" step="2" value="24">
+    </label>
    </div>
 
    <div class="hero-cat anim-4">
@@ -80,60 +85,58 @@
 /* ============================================================
    truchet true cat tiles — Aditi's sketch, wired into the page.
 
-   Her draw loop, unchanged: black ground, one truchet tile per
-   cell, each arc stroked with the cat's colour at that tile's
-   centre, a fresh coin flip every frame at frameRate(2) so the
-   weave keeps reshuffling. Then the cat itself is multiplied back
-   over the top, so the tiles mask it: the photo comes through
-   where the arcs are and the gaps stay black.
+   Her draw loop: one truchet tile per cell, a fresh coin flip
+   every frame at frameRate(2) so the weave keeps moving, tile
+   size on a slider.
 
-   Two things differ from the standalone sketch, both forced by
-   living on a page rather than in its own 800x800 window:
+   The tiles are a mask cut out of the cat. The arcs are drawn
+   into an offscreen layer, then the photo is composited through
+   them with 'source-in', so the cat survives at full resolution
+   inside the arcs and everything else stays paper.
 
-   - the canvas is the panel's size, not 800x800, and the cat is
-     requested at those dimensions so it still lands 1:1 with the
-     tiles the way catImg.resize(width, height) intends.
-   - the tile colours are sampled once when the image loads rather
-     than via get(x, y) inside the loop. get() runs a getImageData
-     call per tile; at this canvas size that is ~6000 of them per
-     frame, twice a second. Same colours, read once instead.
+   Why not multiply, now that the ground is the site's paper
+   rather than black: multiplying by white is the identity, so
+   white ground + multiply paints the cat across the whole panel
+   and the ground never shows. Multiply only reads as a mask when
+   what it lands on is black. Cutting the cat out of the arc
+   shapes gives the same windows-onto-the-photo effect and leaves
+   the gaps genuinely paper, so the panel sits flush with the rest
+   of the page.
+
+   This also retires the per-tile colour sampling: the arcs show
+   real photo pixels now rather than one averaged colour each, so
+   there is nothing to sample.
    ============================================================ */
 (function(){
   var holder = document.getElementById('truchet-cat');
   var again  = document.getElementById('cat-again');
+  var sizer  = document.getElementById('cat-size');
   if (!holder || typeof p5 === 'undefined') return;
 
   var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   new p5(function(p){
-    var catImg = null, colours = null;
-    var w = 0, h = 0, size = 10, cols = 0, rows = 0;
+    var catImg = null, layer = null;
+    var w = 0, h = 0;
+    var size = sizer ? parseInt(sizer.value, 10) : 24;
+
+    function paper(){
+      return getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#FBFBF8';
+    }
 
     function measure(){
       var r = holder.getBoundingClientRect();
       return { w: Math.round(r.width), h: Math.round(r.height) };
     }
 
-    /* catImg.get(x, y) for every tile centre, done once */
-    function sample(){
-      colours = null;
-      if (!catImg) return;
-      catImg.loadPixels();
-      if (!catImg.pixels || !catImg.pixels.length) return;
-
-      cols = Math.ceil(w / size);
-      rows = Math.ceil(h / size);
-      colours = new Array(cols * rows);
-
-      var px = catImg.pixels, iw = catImg.width, ih = catImg.height, c, r, x, y, i;
-      for (c = 0; c < cols; c++){
-        for (r = 0; r < rows; r++){
-          x = Math.min(iw - 1, Math.floor(c * size + size/2));
-          y = Math.min(ih - 1, Math.floor(r * size + size/2));
-          i = 4 * (y * iw + x);
-          colours[r * cols + c] = p.color(px[i], px[i+1], px[i+2]);
-        }
-      }
+    function makeLayer(){
+      if (layer) layer.remove();
+      layer = p.createGraphics(w, h);
+      layer.pixelDensity(1);
+      layer.angleMode(layer.DEGREES);
+      layer.noFill();
+      layer.strokeCap(layer.ROUND);
+      layer.stroke(255);          /* colour is irrelevant: this is a stencil */
     }
 
     function fetchCat(){
@@ -142,12 +145,11 @@
                   '&t=' + Date.now(), function(img){
         if (again) again.disabled = false;
         catImg = img;
-        catImg.resize(w, h);   // 1:1 with canvas so the tiles line up
-        sample();
+        catImg.resize(w, h);   // 1:1 with the canvas, so the blit is cheap
         if (still) p.redraw();
       }, function(){
-        /* offline, or cataas is down: leave it black rather than
-           parking an error box in the hero */
+        /* offline, or cataas is down: leave the paper blank rather
+           than parking an error box in the hero */
         if (again) again.disabled = false;
       });
     }
@@ -160,9 +162,15 @@
       c.mousePressed(fetchCat);
       p.angleMode(p.DEGREES);
       p.frameRate(2);
-      p.background('Black');
+      p.background(paper());
+      makeLayer();
       if (still) p.noLoop();   /* no shimmer if the visitor asked for none */
+
       if (again) again.addEventListener('click', fetchCat);
+      if (sizer) sizer.addEventListener('input', function(){
+        size = parseInt(sizer.value, 10) || 24;
+        if (still) p.redraw();   /* redraw live while dragging */
+      });
       fetchCat();
 
       if ('ResizeObserver' in window) new ResizeObserver(resize).observe(holder);
@@ -170,35 +178,36 @@
     };
 
     p.draw = function(){
-      p.blendMode(p.BLEND);
-      p.background('Black');
-      if (!colours) return;
-      p.noFill();
-      p.strokeWeight(size * 0.4);
+      p.background(paper());
+      if (!catImg || !layer) return;
 
-      var c, r, x, y, choice;
-      for (c = 0; c < cols; c++){
-        x = c * size + size/2;
-        for (r = 0; r < rows; r++){
-          y = r * size + size/2;
+      /* the tiles, cut as a stencil */
+      var ctx = layer.drawingContext;
+      layer.clear();
+      ctx.globalCompositeOperation = 'source-over';
+      layer.strokeWeight(size * 0.4);
 
-          p.stroke(colours[r * cols + c]);
+      var x, y, choice;
+      for (x = size / 2; x < w; x += size) {
+        for (y = size / 2; y < h; y += size) {
 
           choice = p.random(0, 1);
           if (choice < 0.5) {
-            p.arc(x - size/2, y - size/2, size, size, 0, 90);
-            p.arc(x + size/2, y + size/2, size, size, 180, 270);
+            layer.arc(x - size/2, y - size/2, size, size, 0, 90);
+            layer.arc(x + size/2, y + size/2, size, size, 180, 270);
           } else {
-            p.arc(x + size/2, y - size/2, size, size, 90, 180);
-            p.arc(x - size/2, y + size/2, size, size, 270, 0);
+            layer.arc(x + size/2, y - size/2, size, size, 90, 180);
+            layer.arc(x - size/2, y + size/2, size, size, 270, 0);
           }
         }
       }
 
-      /* the tiles become the mask: the cat multiplied back through them */
-      p.blendMode(p.MULTIPLY);
-      p.image(catImg, 0, 0, w, h);
-      p.blendMode(p.BLEND);
+      /* the cat, kept only where the arcs are */
+      ctx.globalCompositeOperation = 'source-in';
+      layer.image(catImg, 0, 0, w, h);
+      ctx.globalCompositeOperation = 'source-over';
+
+      p.image(layer, 0, 0);
     };
 
     function resize(){
@@ -206,9 +215,9 @@
       if (!m.w || !m.h || (m.w === w && m.h === h)) return;
       w = m.w; h = m.h;
       p.resizeCanvas(w, h);
+      makeLayer();
       if (!catImg) { fetchCat(); return; }
       catImg.resize(w, h);
-      sample();
       if (still) p.redraw();
     }
 
