@@ -10,20 +10,12 @@
 <style>
 .hero{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:clamp(2rem,5vw,4rem);min-height:calc(100vh - var(--nav-h));padding:clamp(2rem,6vw,5rem) clamp(1.2rem,5vw,3.5rem) 3rem}
 .hero-text{display:flex;flex-direction:column;justify-content:center;gap:1.8rem;max-width:700px}
-.hero-cat{position:relative;width:100%;aspect-ratio:1;justify-self:stretch;overflow:hidden}
-.hero-cat #truchet-cat{position:absolute;inset:0}
-.hero-cat canvas{display:block;cursor:pointer}
-.cat-panel{position:absolute;left:0;bottom:0;z-index:2;margin:clamp(.8rem,2vw,1.6rem);padding:.85rem 1.05rem .95rem;display:flex;flex-direction:column;align-items:flex-start;gap:.55rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)}
-.cat-title{font-family:var(--display);font-weight:700;font-size:1rem;line-height:1.15;color:var(--accent2)}
-.cat-again{font-family:var(--hand);font-size:.9rem;font-weight:700;color:var(--accent1-text);background:none;border:none;border-bottom:2px solid var(--accent3);padding:0 0 2px;cursor:pointer;transition:color .2s ease,border-color .2s ease}
-.cat-again:hover{color:var(--accent2);border-color:var(--accent2)}
-.cat-again:disabled{opacity:.45;cursor:default}
-.cat-size{display:flex;align-items:center;gap:.7rem;font-family:var(--hand);font-size:.82rem;letter-spacing:.06em;color:var(--muted)}
-.cat-size input{accent-color:var(--accent2);width:130px;max-width:38vw;cursor:pointer}
+.hero-media{position:relative;width:100%;aspect-ratio:1;justify-self:stretch;overflow:hidden}
+.hero-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 @media(min-width:1000px){
-  /* the cat takes the right half of the screen, bled to the edges */
+  /* the video takes the right half of the screen, bled to the edges */
   .hero{grid-template-columns:minmax(0,1fr);padding-right:calc(50vw + clamp(1.5rem,3vw,3rem))}
-  .hero-cat{position:absolute;top:0;right:0;width:50vw;height:100%;aspect-ratio:auto}
+  .hero-media{position:absolute;top:0;right:0;width:50vw;height:100%;aspect-ratio:auto}
 }
 .logo-area{position:relative;display:inline-block;align-self:flex-start}
 .logo{font-family:var(--hand);font-size:clamp(2.6rem,10vw,6rem);font-weight:700;line-height:.88;color:var(--fg);white-space:nowrap}
@@ -68,167 +60,40 @@
     </div>
    </div>
 
-   <div class="hero-cat anim-4">
-     <div id="truchet-cat" role="img" aria-label="a stranger's cat redrawn as truchet cat tiles"></div>
-     <div class="cat-panel">
-       <h2 class="cat-title">Truchet Cat Tiles</h2>
-       <label class="cat-size" for="cat-size">tile size
-         <input type="range" id="cat-size" min="8" max="56" step="2" value="24">
-       </label>
-       <button type="button" class="cat-again" id="cat-again">spin another</button>
-     </div>
+   <div class="hero-media anim-4">
+     <video id="hero-video" src="/aditi-spiral.MOV" muted playsinline preload="auto" aria-label="aditi with a hula hoop on a rooftop"></video>
+   </div>
    </div>
   </section>
 </div>
 
 <div id="sf-footer-mount"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 <script>
-/* ============================================================
-   truchet true cat tiles — Aditi's sketch, wired into the page.
+/* hero video: starts at 1s and loops back to 1s, so the first second
+   never shows. Muted + playsinline is what lets browsers autoplay it.
 
-   Her draw loop: one truchet tile per cell, a fresh coin flip
-   every frame at frameRate(2) so the weave keeps moving, tile
-   size on a slider.
-
-   The tiles are a mask cut out of the cat. The arcs are drawn
-   into an offscreen layer, then the photo is composited through
-   them with 'source-in', so the cat survives at full resolution
-   inside the arcs and everything else stays paper.
-
-   Why not multiply, now that the ground is the site's paper
-   rather than black: multiplying by white is the identity, so
-   white ground + multiply paints the cat across the whole panel
-   and the ground never shows. Multiply only reads as a mask when
-   what it lands on is black. Cutting the cat out of the arc
-   shapes gives the same windows-onto-the-photo effect and leaves
-   the gaps genuinely paper, so the panel sits flush with the rest
-   of the page.
-
-   This also retires the per-tile colour sampling: the arcs show
-   real photo pixels now rather than one averaged colour each, so
-   there is nothing to sample.
-   ============================================================ */
+   Play only once the seek has landed ('seeked'): setting currentTime
+   and calling play() back to back races, and the video starts from 0. */
 (function(){
-  var holder = document.getElementById('truchet-cat');
-  var again  = document.getElementById('cat-again');
-  var sizer  = document.getElementById('cat-size');
-  if (!holder || typeof p5 === 'undefined') return;
-
+  var v = document.getElementById('hero-video');
+  if (!v) return;
+  var START = 1;
   var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  new p5(function(p){
-    var catImg = null, layer = null;
-    var w = 0, h = 0;
-    var size = sizer ? parseInt(sizer.value, 10) : 24;
+  function fromStart(){
+    v.addEventListener('seeked', function go(){
+      v.removeEventListener('seeked', go);
+      if (!still) v.play().catch(function(){});   /* autoplay refused: the 1s frame stays up */
+    });
+    v.currentTime = START;
+  }
 
-    function paper(){
-      return getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#FBFBF8';
-    }
+  /* metadata may already be in by the time this runs */
+  if (v.readyState >= 1) fromStart();
+  else v.addEventListener('loadedmetadata', fromStart, { once: true });
 
-    function measure(){
-      var r = holder.getBoundingClientRect();
-      return { w: Math.round(r.width), h: Math.round(r.height) };
-    }
-
-    function makeLayer(){
-      if (layer) layer.remove();
-      layer = p.createGraphics(w, h);
-      layer.pixelDensity(1);
-      layer.angleMode(layer.DEGREES);
-      layer.noFill();
-      layer.strokeCap(layer.ROUND);
-      layer.stroke(255);          /* colour is irrelevant: this is a stencil */
-    }
-
-    function fetchCat(){
-      if (again) again.disabled = true;
-      p.loadImage('https://cataas.com/cat?width=' + w + '&height=' + h +
-                  '&t=' + Date.now(), function(img){
-        if (again) again.disabled = false;
-        catImg = img;
-        catImg.resize(w, h);   // 1:1 with the canvas, so the blit is cheap
-        if (still) p.redraw();
-      }, function(){
-        /* offline, or cataas is down: leave the paper blank rather
-           than parking an error box in the hero */
-        if (again) again.disabled = false;
-      });
-    }
-
-    p.setup = function(){
-      var m = measure();
-      w = m.w || 400; h = m.h || 400;
-      var c = p.createCanvas(w, h);
-      c.parent(holder);
-      c.mousePressed(fetchCat);
-      p.angleMode(p.DEGREES);
-      p.frameRate(2);
-      p.background(paper());
-      makeLayer();
-      if (still) p.noLoop();   /* no shimmer if the visitor asked for none */
-
-      if (again) again.addEventListener('click', fetchCat);
-      if (sizer) sizer.addEventListener('input', function(){
-        size = parseInt(sizer.value, 10) || 24;
-        if (still) p.redraw();   /* redraw live while dragging */
-      });
-      fetchCat();
-
-      if ('ResizeObserver' in window) new ResizeObserver(resize).observe(holder);
-      else window.addEventListener('resize', resize);
-    };
-
-    p.draw = function(){
-      p.background(paper());
-      if (!catImg || !layer) return;
-
-      /* the tiles, cut as a stencil */
-      var ctx = layer.drawingContext;
-      layer.clear();
-      ctx.globalCompositeOperation = 'source-over';
-      layer.strokeWeight(size * 0.4);
-
-      var x, y, choice;
-      for (x = size / 2; x < w; x += size) {
-        for (y = size / 2; y < h; y += size) {
-
-          choice = p.random(0, 1);
-          if (choice < 0.5) {
-            layer.arc(x - size/2, y - size/2, size, size, 0, 90);
-            layer.arc(x + size/2, y + size/2, size, size, 180, 270);
-          } else {
-            layer.arc(x + size/2, y - size/2, size, size, 90, 180);
-            layer.arc(x - size/2, y + size/2, size, size, 270, 0);
-          }
-        }
-      }
-
-      /* the cat, kept only where the arcs are */
-      ctx.globalCompositeOperation = 'source-in';
-      layer.image(catImg, 0, 0, w, h);
-      ctx.globalCompositeOperation = 'source-over';
-
-      p.image(layer, 0, 0);
-    };
-
-    function resize(){
-      var m = measure();
-      if (!m.w || !m.h || (m.w === w && m.h === h)) return;
-      w = m.w; h = m.h;
-      p.resizeCanvas(w, h);
-      makeLayer();
-      if (!catImg) { fetchCat(); return; }
-      catImg.resize(w, h);
-      if (still) p.redraw();
-    }
-
-    p.keyPressed = function(){
-      if (p.key === 's') p.saveCanvas('truchet-cat.jpg');
-      if (p.key === 'g') p.saveGif('truchet-cat.gif', 5);
-    };
-  });
+  v.addEventListener('ended', fromStart);
 })();
 </script>
 
