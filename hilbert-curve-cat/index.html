@@ -461,9 +461,80 @@ function themeColor(name, fallback) {
   return v || fallback;
 }
 
+// Aditi's cat-Hilbert. The order-1 tile is a cat — up the left leg, over the
+// ears, down the right leg — instead of the usual square-cornered U, so the
+// whole curve is built out of cats. Ported from her p5 sketch to plain JS:
+// the page's render shares one sketch, so this can't switch angleMode to
+// degrees under it. Angles are the same 0/±90 turns, in radians.
+const QUARTER_TURN = Math.PI / 2;
+
+function catHilbertPath(span, order) {
+  const pts = [];
+
+  function addPoint(x, y) {
+    const last = pts[pts.length - 1];
+    // skip repeats at joins
+    if (last && Math.abs(last.x - x) < 0.0001 && Math.abs(last.y - y) < 0.0001) return;
+    pts.push({ x: x, y: y });
+  }
+
+  // turn a point in this square's own coordinates into a point on the canvas
+  function place(cx, cy, ang, lx, ly) {
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    return { x: cx + lx * ca - ly * sa, y: cy + lx * sa + ly * ca };
+  }
+
+  // dir = +1 walk this square forwards, -1 walk it backwards
+  function walk(cx, cy, size, ord, ang, dir) {
+    const c = size / Math.pow(2, ord + 1);
+    const e = size / 2 - c;
+    const h = size / 2;
+    let parts;
+
+    if (ord <= 1) {
+      // the cat, in travel order: up the left leg, over the ears, down the right leg
+      parts = [
+        { line: [[-e, c], [-e, -c], [-c / 2, -c / 2], [c / 2, -c / 2], [e, -c], [e, c]] }
+      ];
+    } else {
+      parts = [
+        { kid: [-size / 4,  size / 4, ang + QUARTER_TURN, -1] },        // bottom-left
+        { line: [[-e, c], [-e, -c]] },                                  // left leg, going up
+        { kid: [-size / 4, -size / 4, ang,                 1] },        // top-left
+        { line: [[-c, -c], [-c / 2, -c / 2], [c / 2, -c / 2], [c, -c]] }, // head and ears
+        { kid: [ size / 4, -size / 4, ang,                 1] },        // top-right
+        { line: [[e, -c], [e, c]] },                                    // right leg, going down
+        { kid: [ size / 4,  size / 4, ang - QUARTER_TURN, -1] }         // bottom-right
+      ];
+    }
+
+    const seq = dir === 1 ? parts : parts.slice().reverse();
+
+    for (const part of seq) {
+      if (part.line) {
+        const L = dir === 1 ? part.line : part.line.slice().reverse();
+        for (const lp of L) {
+          const q = place(cx, cy, ang, lp[0], lp[1]);
+          addPoint(q.x, q.y);
+        }
+      } else {
+        const k = part.kid;
+        const q = place(cx, cy, ang, k[0], k[1]);
+        walk(q.x, q.y, h, ord - 1, k[2], dir === 1 ? k[3] : -k[3]);
+      }
+    }
+  }
+
+  walk(span / 2, span / 2, span, Math.max(1, order), 0, 1);
+  return pts;
+}
+
 function buildLoadingPath(size) {
-  const inset = Math.round(size * 0.24);
-  loadPath = generateHilbertPath(4, size - inset * 2)
+  const inset = Math.round(size * 0.22);
+  const span  = size - inset * 2;
+  // keep the cats big enough to read as cats on a small canvas
+  const ord   = span < 240 ? 2 : 3;
+  loadPath = catHilbertPath(span, ord)
     .map(function (pt) { return { x: pt.x + inset, y: pt.y + inset }; });
   loadHead = 0;
 }
