@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" href="/favicon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOSS Contribution Chart — Spinfinity</title>
+<meta name="description" content="Inspired by github contribution charts, this was an attempt to record all the IndiaFOSS 2026 attendees">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FOSS Contribution Chart!">
+<meta property="og:description" content="Inspired by github contribution charts, this was an attempt to record all the IndiaFOSS 2026 attendees">
+<meta property="og:image" content="https://spinfinity.in/indiafoss2026/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Hand-decorated green Space Invader stickers on a paper scroll, each signed with a username.">
+<meta property="og:url" content="https://spinfinity.in/indiafoss2026/">
+<meta property="og:site_name" content="Spinfinity">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FOSS Contribution Chart!">
+<meta name="twitter:description" content="Inspired by github contribution charts, this was an attempt to record all the IndiaFOSS 2026 attendees">
+<meta name="twitter:image" content="https://spinfinity.in/indiafoss2026/img/og.jpg">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  /* Page chrome reads only theme-paper tokens from /styles.css.
+     The scroll is the one loud thing here; everything else stays quiet. */
+  /* same side gutter as the nav, so the page uses its full width */
+  .wrap{padding:0 clamp(1.2rem,4vw,3rem)}
+
+  /* Sticker colours sampled from the IndiaFOSS instruction poster: the four
+     invaders (octopus, crab, squid, UFO = 1, 2-3, 4-5, all 6 editions) plus
+     the cream they're printed in. Data colours, not theme — keep as-is. */
+  :root{--inv0:#ebedf0; --inv1:#d2e483; --inv2:#8fc873; --inv3:#379d29; --inv4:#25611d;
+        --inv-ink:#fef9e2}
+
+  /* ---------- header ---------- */
+  .fc-head{display:flex;align-items:center;justify-content:space-between;
+    gap:clamp(24px,4vw,64px);padding:32px 0 22px}
+  /* GitHub-style contribution chart whose darkest days spell out invaders */
+  .gh{display:block;flex:0 1 auto;width:620px;min-width:0;max-width:100%;height:auto}
+  .gh .l0{fill:var(--inv0)} .gh .l1{fill:var(--inv1)} .gh .l2{fill:var(--inv2)}
+  .gh .l3{fill:var(--inv3)} .gh .l4{fill:var(--inv4)}
+  .gh text{font-family:var(--hand);font-size:13px;fill:var(--muted)}
+  .fc-title{flex:0 1 auto;max-width:44ch}
+  .dek{margin-top:.7rem;font-size:1rem;line-height:1.55;color:var(--muted)}
+  .fc-head h1{font-family:var(--display);font-weight:700;font-size:clamp(1.95rem,4.3vw,2.85rem);
+    line-height:1.04;letter-spacing:-.018em;margin:0;color:var(--text)}
+  .fc-head h1 .n{color:var(--accent2)}
+
+  /* ---------- the scroll ---------- */
+  /* The real thing: a paper roll at each end in red 3D-printed mounts.
+     Object colours (paper, PLA), like the sticker greens — keep as-is. */
+  :root{--roll-hi:#fffdf6; --roll-mid:#efe9da; --roll-lo:#c9c0aa;
+        --mount:#d8322b; --mount-hi:#f0675d; --mount-lo:#9a1d18}
+  .stage{position:relative;z-index:10;margin:8px 0 0;padding:16px clamp(1.2rem,4vw,3rem)}
+  /* the band runs axle to axle; each roll is centred on its axle, half off the paper */
+  .rolled{position:relative;padding:0 calc(var(--rmax,50px)/2)}
+  .band{
+    position:relative;overflow:hidden;cursor:grab;
+    height:clamp(230px,44vh,470px);
+    background:var(--roll-hi);
+    box-shadow:0 2px 6px rgba(35,39,48,.10);
+    touch-action:pan-y;
+  }
+  .band.dragging{cursor:grabbing}
+  .band.loupe-on{cursor:none}
+  .band img{
+    position:absolute;top:0;left:0;height:100%;width:auto;max-width:none;
+    display:block;will-change:transform;user-select:none;-webkit-user-drag:none;
+  }
+  /* blurred placeholder paints first, full image fades in over it */
+  .band img.full{opacity:0;transition:opacity .5s ease}
+  .band img.full.ready{opacity:1}
+  .band img.ph.gone{visibility:hidden}
+  /* annotation layer: pans with the scroll, sized to the image, so marks
+     placed with left:% stay pinned to their spot on the paper */
+  .marks{position:absolute;top:0;left:0;height:100%;pointer-events:none;z-index:2;
+    will-change:transform}
+
+  /* @spinfinity.adt's sticker, ringed */
+  .marks .me{position:absolute;margin:-5px;padding:5px;box-sizing:content-box;
+    border:2.5px solid var(--accent2);border-radius:8px;
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--bg) 70%,transparent);
+    animation:me-pulse 2.4s ease-in-out infinite}
+  @keyframes me-pulse{50%{box-shadow:0 0 0 9px color-mix(in srgb,var(--accent2) 18%,transparent)}}
+
+  /* the rolls: cylinders seen side-on, centred on a fixed axle. JS sets --w so the
+     left roll fattens and the right one thins as the paper winds across. */
+  .roll{position:absolute;top:-5px;bottom:-5px;width:var(--w,36px);z-index:4;pointer-events:none;
+    margin-left:calc(var(--w,36px)/-2);
+    border-radius:7px;
+    background:linear-gradient(90deg,var(--roll-lo) 0%,var(--roll-mid) 22%,var(--roll-hi) 45%,
+      var(--roll-mid) 72%,var(--roll-lo) 100%)}
+  .roll.l{left:calc(var(--rmax,50px)/2);box-shadow:5px 0 9px -3px rgba(60,45,25,.32)}
+  .roll.r{left:calc(100% - var(--rmax,50px)/2);box-shadow:-5px 0 9px -3px rgba(60,45,25,.32)}
+  /* end caps: the mounts. Fixed size on the axle, whatever the roll is doing */
+  .roll::before,.roll::after{content:"";position:absolute;left:50%;width:calc(var(--rmax,50px) + 10px);
+    margin-left:calc((var(--rmax,50px) + 10px)/-2);height:15px;border-radius:4px;
+    background:linear-gradient(90deg,var(--mount-lo) 0%,var(--mount) 25%,var(--mount-hi) 45%,
+      var(--mount) 70%,var(--mount-lo) 100%);
+    box-shadow:0 1px 2px rgba(35,39,48,.25)}
+  .roll::before{top:-11px}
+  .roll::after{bottom:-11px}
+
+  /* ---------- the whole scroll at once ---------- */
+  .overview{position:relative;margin-top:12px;overflow:hidden;border-radius:3px;
+    cursor:pointer;touch-action:none;line-height:0}
+  .overview img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+  /* the part of the scroll the band is showing; the rest is veiled */
+  .overview .win{position:absolute;top:0;bottom:0;left:0;border:2px solid var(--accent2);
+    border-radius:3px;pointer-events:none;
+    box-shadow:0 0 0 100vmax color-mix(in srgb,var(--bg) 50%,transparent)}
+
+  /* ---------- magnifier ---------- */
+  .loupe{
+    position:absolute;width:190px;height:190px;border-radius:50%;
+    pointer-events:none;z-index:5;opacity:0;transition:opacity .16s ease;
+    border:2px solid var(--accent2);
+    box-shadow:0 10px 30px rgba(35,39,48,.26), 0 0 0 1px var(--card-bg) inset;
+    background-repeat:no-repeat;transform:translate(-50%,-50%);
+  }
+  .loupe.on{opacity:1}
+
+  /* ---------- controls ---------- */
+  .controls{display:flex;align-items:center;gap:16px;margin-top:14px;font-family:var(--hand)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    height:38px;min-width:92px;padding:0 15px;border:1px solid var(--accent2);border-radius:999px;
+    background:transparent;color:var(--accent2);font:700 .86rem/1 var(--hand);
+    cursor:pointer;transition:background .15s ease,color .15s ease;white-space:nowrap}
+  .btn:hover{background:var(--accent2);color:var(--bg)}
+  .btn:focus-visible{outline:2px solid var(--accent4);outline-offset:3px}
+  .btn svg{width:13px;height:13px;fill:currentColor}
+
+  .track{flex:1;display:flex;align-items:center;min-width:0}
+  .track input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer}
+  .track input[type=range]::-webkit-slider-runnable-track{
+    height:3px;border-radius:2px;
+    background:linear-gradient(90deg,var(--accent1) var(--p,0%),var(--border) var(--p,0%))}
+  .track input[type=range]::-moz-range-track{height:3px;border-radius:2px;background:var(--border)}
+  .track input[type=range]::-moz-range-progress{height:3px;border-radius:2px;background:var(--accent1)}
+  .track input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+    background:var(--accent2);margin-top:-6px;border:2px solid var(--bg);
+    box-shadow:0 1px 4px rgba(35,39,48,.3)}
+  .track input[type=range]::-moz-range-thumb{
+    width:15px;height:15px;border:2px solid var(--bg);border-radius:50%;background:var(--accent2)}
+  .track input[type=range]:focus-visible{outline:2px solid var(--accent4);outline-offset:4px}
+
+  .speeds{display:flex;gap:4px}
+  .sp{height:30px;min-width:38px;padding:0 9px;border:1px solid var(--border);border-radius:999px;
+    background:transparent;color:var(--muted);font:700 .76rem/1 var(--hand);cursor:pointer}
+  .sp[aria-pressed=true]{border-color:var(--accent1);color:var(--accent1-text);
+    background:color-mix(in srgb,var(--accent1) 10%,transparent)}
+  .sp:focus-visible{outline:2px solid var(--accent4);outline-offset:2px}
+
+  .hint{margin-top:10px;font-size:.8rem;color:var(--muted)}
+
+  /* ---------- context: the instruction poster + the stall at IndiaFOSS ----------
+     One row, equal heights: each tile grows by its aspect ratio. */
+  .context{display:flex;gap:12px;margin-top:44px;padding-top:28px;border-top:1px solid var(--border)}
+  .context figure,.context .events{flex:var(--ar) 1 0;min-width:0;margin:0}
+  .context figure{aspect-ratio:var(--ar)}
+  .context .events{display:flex;gap:12px}
+  .context img,.context video{display:block;width:100%;height:100%;
+    object-fit:cover;border-radius:6px;background:var(--border)}
+  .context .poster img{border:1px solid var(--border);background:var(--card-bg)}
+  .context a{display:block;height:100%}
+
+  /* ---------- credit ---------- */
+  .vcredit{margin-top:10px;font-size:.8rem;color:var(--muted)}
+  .more{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-bottom:56px;font-size:.92rem;color:var(--muted)}
+  .more span{margin-right:4px}
+  .more a{display:inline-flex;align-items:center;height:34px;padding:0 14px;border:1px solid var(--accent2);
+    border-radius:999px;color:var(--accent2);font-weight:700;text-decoration:none;
+    transition:background .15s ease,color .15s ease}
+  .more a:hover{background:var(--accent2);color:var(--bg)}
+  .more a:focus-visible{outline:2px solid var(--accent4);outline-offset:3px}
+  .credit{padding:40px 0 16px;font-size:.96rem;line-height:1.6;color:var(--muted)}
+  .credit a{color:var(--accent2)}
+
+  @media (max-width:900px){
+    .fc-head{flex-direction:column;align-items:flex-start;gap:16px}
+    .gh{width:100%}
+  }
+  @media (max-width:760px){
+    .context{flex-direction:column}   /* poster full width, the three event tiles share a row under it */
+    .context .events{gap:8px}
+  }
+  @media (max-width:640px){
+    .fc-head{padding:24px 0 18px}
+    .controls{flex-wrap:wrap;gap:12px}
+    .track{order:3;flex-basis:100%}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .band img.full,.loupe{transition:none}
+    .marks .me{animation:none}
+  }
+</style>
+</head>
+<body class="theme-paper">
+<div id="sf-nav-mount"></div>
+<script src="/nav.js"></script>
+
+<div class="wrap">
+  <header class="fc-head">
+    <div class="fc-title">
+      <h1>FOSS<br>Contribution <span class="n">Chart!</span></h1>
+      <p class="dek">Inspired by github contribution charts, this was an attempt to record all the IndiaFOSS 2026 attendees</p>
+    </div>
+    <svg class="gh" id="gh" role="img" aria-label="A GitHub-style contribution chart where the darkest days draw four Space Invaders: an octopus, a crab, a squid and a UFO."></svg>
+  </header>
+</div>
+
+<div class="stage">
+  <div class="rolled">
+  <div class="band" id="band">
+    <img class="ph" id="ph" src="img/scroll-tiny.jpg" alt="" aria-hidden="true">
+    <img class="full" id="scroll"
+         src="img/scroll-3000.jpg"
+         srcset="img/scroll-3000.jpg 3000w, img/scroll-6000.jpg 6000w, img/scroll-12000.jpg 12000w"
+         sizes="20000px"
+         alt="A long paper scroll covered in hand-decorated green Space Invader stickers, each signed with a username.">
+    <div class="marks" id="marks" aria-hidden="true">
+      <!-- Aditi's own sticker: first column, bottom row. Box in % of the image. -->
+      <span class="me" style="left:.25%;top:75.4%;width:.93%;height:18.3%" title="@spinfinity.adt"></span>
+    </div>
+    <div class="loupe" id="loupe" aria-hidden="true"></div>
+  </div>
+  <div class="roll l" id="rollL" aria-hidden="true"></div>
+  <div class="roll r" id="rollR" aria-hidden="true"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="overview" id="ov">
+    <img src="img/scroll-seamless-fullres.jpg" alt="The whole scroll at once, all twenty two metres shrunk to the width of the page.">
+    <div class="win" id="win"></div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="play" aria-label="Play">
+      <svg id="icon" viewBox="0 0 12 12"><path d="M2 1l9 5-9 5z"/></svg>
+      <span id="playLabel">Play</span>
+    </button>
+    <div class="track">
+      <input type="range" id="scrub" min="0" max="1000" value="0" step="1"
+             aria-label="Position along the scroll">
+    </div>
+    <div class="speeds" role="group" aria-label="Speed">
+      <button class="sp" data-s="0.5" aria-pressed="false">&frac12;&times;</button>
+      <button class="sp" data-s="1"   aria-pressed="true">1&times;</button>
+      <button class="sp" data-s="2"   aria-pressed="false">2&times;</button>
+    </div>
+  </div>
+  <p class="hint" id="hint">Hover to magnify and pause. Drag to move it yourself.</p>
+
+  <section class="context">
+    <figure class="poster" style="--ar:.7071">
+      <a href="img/poster.png" target="_blank" rel="noopener">
+        <img src="img/poster.jpg" loading="lazy" width="1600" height="2263"
+             alt="The instruction poster at the stall: pick your invader by how many IndiaFOSS editions you've been to (octopus for your first, crab for two or three, squid for four or five, UFO for all six), pick the row for your FOSS superpower, draw a sun for day or a moon for night, write your username, decorate it, and git push it onto the paper roll.">
+      </a>
+    </figure>
+    <div class="events" style="--ar:1.8702">  <!-- sum of the three tiles' aspect ratios (width/height) -->
+    <figure style="--ar:.5577">
+      <video src="img/at-foss-scroll.mp4" muted loop playsinline preload="metadata"
+             aria-label="Video panning along the finished scroll of stickers."></video>
+    </figure>
+    <figure style="--ar:.75">
+      <img src="img/at-foss-table.jpg" loading="lazy" width="960" height="1280"
+           alt="The scroll unrolled along a table at the IndiaFOSS venue, people walking past.">
+    </figure>
+    <figure style="--ar:.5625">
+      <video src="img/at-foss-table.mp4" muted loop playsinline preload="metadata"
+             aria-label="Short video along the table with the scroll at IndiaFOSS."></video>
+    </figure>
+    </div>
+  </section>
+  <p class="vcredit">Video credits: Sai Rahul Poruri and Sai Motupali Nair</p>
+
+  <p class="credit">Participatory Data Viz Made for <a href="https://fossunited.org/indiafoss/2026" target="_blank" rel="noopener">IndiaFOSS 2026</a>, Bengaluru</p>
+
+  <nav class="more" aria-label="Other participatory data viz">
+    <span>More participatory data viz</span>
+    <a href="/mosaic-data-viz/">Mosaic Data Viz</a>
+    <a href="/hands-of-vizchitra/">Hands of Vizchitra</a>
+  </nav>
+</div>
+
+<script>
+// GitHub-style contribution chart, a year of weeks x 7 days, where the darkest
+// days draw the four sticker invaders in edition order: octopus, crab, squid, UFO.
+// Background days are seeded so the chart is the same on every load.
+(function(){
+  const INV=[
+    ['....####....','.##########.','############','###..##..###','############','..##.##.##..','##........##'],
+    ['..#.....#..','...#...#...','..#######..','.##.###.##.','###########','#.#######.#','#.#.....#.#'],
+    ['...##...','..####..','.######.','##.##.##','########','.#.##.#.','#.#..#.#'],
+    ['.....######.....','...##########...','..############..','.##.##.##.##.##.','################','..###..##..###..','...#........#...']];
+  const W=53, D=7, C=14, G=2, S=C+G, GAP=2, L=32, T=19, B=26;
+  // lay the invaders out across the year
+  const lit=new Set(); let col=0;
+  INV.forEach(rows=>{
+    rows.forEach((r,d)=>{ for(let i=0;i<r.length;i++) if(r[i]==='#') lit.add((col+i)+','+d); });
+    col+=rows[0].length+GAP;
+  });
+  const off=Math.floor((W-(col-GAP))/2);
+  let seed=2026; const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
+  let out='';
+  for(let w=0;w<W;w++) for(let d=0;d<D;d++){
+    const on=lit.has((w-off)+','+d), r=rnd();
+    const lvl = on ? (r<.88?4:3) : (r<.9?1:2);
+    out+='<rect x="'+(L+w*S)+'" y="'+(T+d*S)+'" width="'+C+'" height="'+C+'" rx="2.5" class="l'+lvl+'"/>';
+  }
+  // month labels: the year leading up to IndiaFOSS 2026
+  const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const start=new Date(2025,9,5); let last=-1;
+  for(let w=0;w<W;w++){
+    const m=new Date(start.getTime()+w*7*864e5).getMonth();
+    if(m!==last && w<W-2){ out+='<text x="'+(L+w*S)+'" y="'+(T-5)+'">'+M[m]+'</text>'; last=m; }
+  }
+  ['Mon','Wed','Fri'].forEach((t,i)=>{ out+='<text x="0" y="'+(T+(1+2*i)*S+C-3)+'">'+t+'</text>'; });
+  // Less ... More legend, bottom right
+  const lx=L+W*S-G-5*S-74, ly=T+D*S+8;
+  out+='<text x="'+lx+'" y="'+(ly+C-2)+'">Less</text>';
+  for(let i=0;i<5;i++) out+='<rect x="'+(lx+33+i*S)+'" y="'+ly+'" width="'+C+'" height="'+C+'" rx="2.5" class="l'+i+'"/>';
+  out+='<text x="'+(lx+33+5*S+4)+'" y="'+(ly+C-2)+'">More</text>';
+  const svg=document.getElementById('gh');
+  svg.setAttribute('viewBox','0 0 '+(L+W*S-G)+' '+(T+D*S-G+B));
+  svg.innerHTML=out;
+})();
+</script>
+<script>
+(function(){
+  const band=document.getElementById('band'), img=document.getElementById('scroll'),
+        ph=document.getElementById('ph'), marks=document.getElementById('marks'),
+        loupe=document.getElementById('loupe'), play=document.getElementById('play'),
+        icon=document.getElementById('icon'), playLabel=document.getElementById('playLabel'),
+        scrub=document.getElementById('scrub'), hint=document.getElementById('hint'),
+        ov=document.getElementById('ov'), win=document.getElementById('win'),
+        rollL=document.getElementById('rollL'), rollR=document.getElementById('rollR'),
+        rolled=document.querySelector('.rolled');
+
+  const PLAY_D='M2 1l9 5-9 5z', PAUSE_D='M2 1h3v10H2zM7 1h3v10H7z';
+  const BASE_SECONDS=78;         // one full pass at 1x
+  const ASPECT=21894/1200;       // source image, 18.245:1
+  const ZOOM=2.3, LOUPE=190;
+
+  let x=0, maxX=0, speed=1, playing=false, hovering=false, dragging=false,
+      last=0, dispW=0,
+      rMin=30, rMax=50, off=15;   // roll widths (empty-ish / full); off = where the paper starts
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const touch=matchMedia('(hover:none)').matches;
+
+  function measure(){
+    const h=band.clientHeight;
+    // the exported sizes round slightly off 18.245, so trust the loaded file when we have it
+    const ratio=(img.naturalWidth&&img.naturalHeight)? img.naturalWidth/img.naturalHeight : ASPECT;
+    dispW=h*ratio;
+    rMin=Math.round(Math.max(22,Math.min(40,h*.075))); rMax=Math.round(rMin*1.7); off=rMin/2;
+    rolled.style.setProperty('--rmax',rMax+'px');   // sets the band's width, so read it after
+    // the paper runs from under one roll to under the other
+    maxX=Math.max(0, dispW-band.clientWidth+2*off);
+    x=Math.min(x,maxX);
+    marks.style.width=dispW+'px';
+    apply();
+  }
+  function apply(){
+    const t='translate3d('+(off-x)+'px,0,0)';
+    img.style.transform=t; ph.style.transform=t; marks.style.transform=t;
+    const p=maxX? x/maxX : 0;
+    const wL=rMin+(rMax-rMin)*p, wR=rMax-(rMax-rMin)*p;
+    rollL.style.setProperty('--w',wL+'px'); rollR.style.setProperty('--w',wR+'px');
+    if(dispW){   // the stretch of paper visible between the rolls
+      const a=x-off+wL/2, b=x-off+band.clientWidth-wR/2;
+      win.style.left=(a/dispW*100)+'%';
+      win.style.width=(Math.max(0,b-a)/dispW*100)+'%';
+    }
+    scrub.value=Math.round(p*1000);
+    scrub.style.setProperty('--p',(p*100)+'%');
+  }
+  function tick(t){
+    if(!last) last=t;
+    const dt=Math.min(.1,(t-last)/1000); last=t;   // no jump after a background tab wakes
+    if(playing && !hovering && !dragging && maxX>0){
+      x += (maxX/BASE_SECONDS)*speed*dt;
+      if(x>=maxX){ x=maxX; setPlaying(false); }
+      apply();
+    }
+    requestAnimationFrame(tick);
+  }
+  function setPlaying(on){
+    playing=on;
+    icon.firstElementChild.setAttribute('d', on?PAUSE_D:PLAY_D);
+    const label = on?'Pause':(x>=maxX&&maxX>0?'Replay':'Play');
+    play.setAttribute('aria-label', label);
+    playLabel.textContent = label;
+  }
+
+  play.addEventListener('click',()=>{
+    if(!playing && maxX>0 && x>=maxX){ x=0; apply(); }
+    setPlaying(!playing); last=0;
+  });
+  document.querySelectorAll('.sp').forEach(b=>{
+    b.addEventListener('click',()=>{
+      speed=parseFloat(b.dataset.s);
+      document.querySelectorAll('.sp').forEach(o=>o.setAttribute('aria-pressed', o===b));
+    });
+  });
+  scrub.addEventListener('input',()=>{
+    x=(scrub.value/1000)*maxX; apply();
+    setPlaying(false);
+  });
+
+  // ---- the whole scroll: click or drag it to jump the band there ----
+  let ovDrag=false;
+  function seekOv(e){
+    const r=ov.getBoundingClientRect();
+    const f=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+    x=Math.max(0,Math.min(maxX, f*dispW - band.clientWidth/2 + off)); apply();
+  }
+  ov.addEventListener('pointerdown',e=>{
+    ovDrag=true; ov.setPointerCapture(e.pointerId); setPlaying(false); seekOv(e);
+  });
+  ov.addEventListener('pointermove',e=>{ if(ovDrag) seekOv(e); });
+  ov.addEventListener('pointerup',()=>{ ovDrag=false; setPlaying(false); });
+  ov.addEventListener('pointercancel',()=>{ ovDrag=false; });
+
+  // ---- magnifier + hover pause ----
+  function showLoupe(on){
+    loupe.classList.toggle('on',on); band.classList.toggle('loupe-on',on);
+  }
+  function moveLoupe(e){
+    if(dragging) return;
+    if(hovering) showLoupe(true);
+    const r=band.getBoundingClientRect();
+    const cx=e.clientX-r.left, cy=e.clientY-r.top;
+    loupe.style.left=cx+'px'; loupe.style.top=cy+'px';
+    loupe.style.backgroundSize=(dispW*ZOOM)+'px '+(band.clientHeight*ZOOM)+'px';
+    loupe.style.backgroundImage='url('+(img.currentSrc||img.src)+')';
+    loupe.style.backgroundPosition =
+      (-((x-off+cx)*ZOOM - LOUPE/2))+'px '+(-(cy*ZOOM - LOUPE/2))+'px';
+  }
+  if(!touch){
+    band.addEventListener('mouseenter',e=>{hovering=true;moveLoupe(e);});
+    band.addEventListener('mousemove',moveLoupe);
+    band.addEventListener('mouseleave',()=>{hovering=false;showLoupe(false);last=0;});
+  }else{
+    hint.textContent='Drag to move the scroll.';
+  }
+
+  // ---- drag ----
+  let dx0=0,x0=0;
+  function down(e){
+    if(e.button>0) return;
+    dragging=true; showLoupe(false); band.classList.add('dragging');
+    dx0=(e.touches?e.touches[0].clientX:e.clientX); x0=x;
+    if(!e.touches) e.preventDefault();
+  }
+  function move(e){
+    if(!dragging) return;
+    const cx=(e.touches?e.touches[0].clientX:e.clientX);
+    x=Math.max(0,Math.min(maxX, x0-(cx-dx0))); apply();
+    if(e.cancelable && e.touches) e.preventDefault();
+  }
+  function up(e){
+    if(!dragging) return;
+    dragging=false; band.classList.remove('dragging'); last=0;
+    setPlaying(playing);  // refresh Replay/Play label
+    if(e && !e.touches && hovering) moveLoupe(e);
+  }
+  band.addEventListener('mousedown',down);
+  window.addEventListener('mousemove',move);
+  window.addEventListener('mouseup',up);
+  band.addEventListener('touchstart',down,{passive:true});
+  band.addEventListener('touchmove',move,{passive:false});
+  band.addEventListener('touchend',()=>up());
+  band.addEventListener('touchcancel',()=>up());
+
+  // ---- keyboard ----
+  window.addEventListener('keydown',e=>{
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    // let focused controls keep their own keys (range arrows, speed buttons)
+    const t=e.target instanceof Element? e.target : document.body;
+    if(t.matches('input,textarea,select')) return;
+    if(t.matches('button') && t!==play && e.key===' ') return;
+    if(e.key===' '){e.preventDefault();play.click();}
+    else if(e.key==='ArrowRight'){e.preventDefault();x=Math.min(maxX,x+band.clientWidth*.4);apply();setPlaying(playing);}
+    else if(e.key==='ArrowLeft'){e.preventDefault();x=Math.max(0,x-band.clientWidth*.4);apply();setPlaying(playing);}
+  });
+
+  let started=false;
+  setPlaying(false);
+  measure();
+  img.addEventListener('load',()=>{
+    img.classList.add('ready');
+    setTimeout(()=>ph.classList.add('gone'),600);
+    measure();
+    if(!reduce && !started){ started=true; last=0; setPlaying(true); }
+  });
+  if(img.complete && img.naturalWidth) img.dispatchEvent(new Event('load'));
+  addEventListener('resize',measure);
+  requestAnimationFrame(tick);
+})();
+</script>
+<script>
+// event videos: silent loops that only play while on screen, never under reduced motion
+(function(){
+  const vids=document.querySelectorAll('.context video');
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){ vids.forEach(v=>v.controls=true); return; }
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting) e.target.play().catch(()=>{ e.target.controls=true; });
+    else e.target.pause();
+  }),{threshold:.25});
+  vids.forEach(v=>io.observe(v));
+})();
+</script>
+<div id="sf-footer-mount"></div>
+</body>
+</html>
