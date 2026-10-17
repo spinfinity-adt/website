@@ -12,11 +12,12 @@
 @media(max-width:700px){.about-hero{grid-template-columns:1fr;gap:2.5rem}}
 .about-photo-wrap{position:relative}
 .about-photo{width:100%;border-radius:3px;display:block;border:1px solid var(--border)}
-.photo-caption{font-family:var(--hand);font-size:.88rem;color:var(--muted);margin-top:.8rem;font-style:italic;text-align:center;font-weight:300}
+.photo-caption{font-family:var(--hand);font-size:.88rem;color:var(--muted);margin-top:.8rem;font-style:italic;font-weight:400;line-height:1.55}
 .about-text{display:flex;flex-direction:column;gap:1.5rem}
-.about-hi{font-family:var(--hand);font-size:.85rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent1-text);margin-bottom:.6rem}
-.about-name{font-family:var(--display);font-size:clamp(2.5rem,7vw,4.5rem);font-weight:400;line-height:.95;color:var(--fg)}
-.about-name .highlight{color:var(--accent2)}
+.about-name{font-family:var(--display);font-size:clamp(1.7rem,3.3vw,2.7rem);font-weight:500!important;line-height:1.08;letter-spacing:-.01em;color:var(--fg);margin-bottom:.9rem}
+.about-name .highlight{color:var(--accent2);font-weight:700;white-space:nowrap}
+.about-name .highlight{position:relative;display:inline-block}
+.about-name .highlight::after{content:'';position:absolute;left:0;right:0;bottom:-.2em;height:4px;border-radius:4px;background:var(--accent1);transform:rotate(-1.2deg)}
 .roles{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.3rem}
 p.body{font-family:var(--hand);font-size:clamp(1rem,1.8vw,1.13rem);line-height:1.8;color:var(--text)}
 p.body em{color:var(--accent2);font-style:italic}
@@ -49,13 +50,12 @@ p.body a:hover{border-color:var(--accent2)}
   <div class="container">
     <div class="about-hero">
       <div class="about-photo-wrap anim-1">
-        <img class="about-photo" src="images/aditi-portrait.jpg" alt="Aditi Bhat juggling hula hoops"/>
-        <p class="photo-caption">hula hooper / flow artist / since 2005 ∞</p>
+        <img class="about-photo" src="images/aditi-portrait.jpg" alt="Aditi Bhat juggling hula hoops in Cubbon Park, each hoop labelled with a part of her professional background and the year it began"/>
+        <p class="photo-caption">A shot from juggling in Cubbon Park. A hoop for each dimension of my professional background: hula hooper and flow artist since 2005, computer science engineer since 2015, design researcher and educator since 2021, and learner/explorer, till forever ∞</p>
       </div>
       <div class="about-text anim-2">
         <div>
-          <p class="about-hi">hi, I'm</p>
-          <h1 class="about-name">Aditi<br><span class="highlight">Bhat</span></h1>
+          <h1 class="about-name">Hello! I'm <span class="highlight">Aditi Bhat</span></h1>
           <div class="roles">
             <span class="tag" style="color:var(--accent2)">flow &amp; fire artist</span>
             <span class="tag" style="color:var(--accent1-text)">design researcher</span>
