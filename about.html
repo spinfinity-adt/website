@@ -8,8 +8,23 @@
 <title>About — Spinfinity</title>
 <link rel="stylesheet" href="/styles.css"/>
 <style>
-.about-hero{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;margin-bottom:4rem}
-@media(max-width:700px){.about-hero{grid-template-columns:1fr;gap:2.5rem}}
+/* full width on the nav's gutter (styles.css --gutter): photo | intro | what I do on wide
+   screens, photo | intro with the rest below on medium ones, one column on phones */
+.about-wrap{max-width:none;margin:0;padding-inline:var(--gutter)}
+.about-hero{display:grid;grid-template-columns:clamp(260px,30vw,420px) minmax(0,1fr);gap:2.5rem clamp(2rem,4vw,4rem);align-items:start;margin-bottom:4rem}
+.about-hero .about-text,.about-hero .about-what{max-width:var(--measure)}
+.about-hero .about-what{grid-column:1 / -1;margin-bottom:0}
+@media(min-width:1400px){
+  .about-hero{grid-template-columns:clamp(320px,24vw,420px) minmax(0,1fr) minmax(0,1fr)}
+  .about-hero .about-what{grid-column:3}
+  .about-hero .about-what .section-label{margin-top:.6rem}
+}
+@media(max-width:700px){.about-hero{grid-template-columns:1fr}}
+@media(min-width:701px) and (max-width:1399px){
+  .about-hero .about-what{max-width:none;columns:2;column-gap:clamp(2rem,4vw,4rem)}
+  .about-what .section-label{column-span:all}
+  .about-what p.body{break-inside:avoid}
+}
 .about-photo-wrap{position:relative}
 .about-photo{width:100%;border-radius:3px;display:block;border:1px solid var(--border)}
 .photo-caption{font-family:var(--hand);font-size:.88rem;color:var(--muted);margin-top:.8rem;font-style:italic;font-weight:400;line-height:1.55}
@@ -25,7 +40,7 @@ p.body strong{color:var(--fg);font-weight:normal}
 p.body a{color:var(--accent2);text-decoration:none;border-bottom:1px solid rgba(63,167,150,.3);transition:border-color .2s}
 p.body a:hover{border-color:var(--accent2)}
 .about-section{margin-bottom:3.5rem}
-.worlds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-top:1.5rem}
+.worlds-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-top:1.5rem}
 .world-chip{background:var(--card-bg);border:1px solid var(--border);border-radius:3px;padding:.9rem 1.1rem;transition:border-color .2s,transform .2s}
 .world-chip:hover{transform:translateY(-3px);border-color:var(--wc,var(--accent2))}
 .world-chip .w-icon{font-size:1.4rem;display:block;margin-bottom:.3rem}
@@ -47,7 +62,7 @@ p.body a:hover{border-color:var(--accent2)}
 
 
 <div class="page">
-  <div class="container">
+  <div class="container about-wrap">
     <div class="about-hero">
       <div class="about-photo-wrap anim-1">
         <img class="about-photo" src="images/aditi-portrait.jpg" alt="Aditi Bhat juggling hula hoops in Cubbon Park, each hoop labelled with a part of her professional background and the year it began"/>
@@ -66,12 +81,12 @@ p.body a:hover{border-color:var(--accent2)}
         <p class="body">Ever since I was 6 years old, my hoops have been spinning through the circle of life with me. And through it, I've been a part of a whole universe, filled with fun, joy and exploration with my mind and body. It's kind of like I discovered a portal to a parallel universe, but spinning it is the only way to enter it! So this site, and my creative practice Spinfinity is an attempt to share my adventures with the world.</p>
         <p class="body">I'm a flow and fire artist with a Master's in Human-Centered Design and a B.Tech in Computer Science. Through my creative practice, I bring together science and art, math and movement, design and data through flow arts like hula hoops and poi. I love crafting learning experiences through which folks can explore abstract ideas through the body — because the body is an incredibly powerful site for learning and exploration!</p>
       </div>
-    </div>
-    <div class="about-section anim-3">
-      <p class="section-label">what I do with this</p>
-      <p class="body" style="max-width:720px;margin-bottom:1.4rem">I've worked with over <em>500 students</em> across government schools and neurodivergent learning spaces, helping them experience abstract ideas through the body. I run workshops where we explore angles, shapes, circle properties, and tangents — with hula hoops. For folks who are scared of math, it softens the fear. For mathematicians, it opens new ways into abstract areas like topology.</p>
-      <p class="body" style="max-width:720px;margin-bottom:1.4rem">Math is often claimed to be about logic and reasoning, but most people's experience of it is <em>deeply emotional</em>. Being "bad at math" gets tangled up with intelligence, identity, self-worth. My practice is also a way to resist the binaries of mind/body and emotion/reason — ideas rooted in feminist theory that I genuinely believe in.</p>
-      <p class="body" style="max-width:720px">Currently I'm a maker and lab manager at <strong>Paper Crane Lab</strong>, where I craft playful, hands-on learning experiences for all ages. And I'm always making something new — generative art, data viz, creative code experiments — which you can find in the <a href="/projects.html">projects</a> section.</p>
+      <div class="about-section about-what anim-3">
+        <p class="section-label">what I do with this</p>
+        <p class="body" style="max-width:720px;margin-bottom:1.4rem">I've worked with over <em>500 students</em> across government schools and neurodivergent learning spaces, helping them experience abstract ideas through the body. I run workshops where we explore angles, shapes, circle properties, and tangents — with hula hoops. For folks who are scared of math, it softens the fear. For mathematicians, it opens new ways into abstract areas like topology.</p>
+        <p class="body" style="max-width:720px;margin-bottom:1.4rem">Math is often claimed to be about logic and reasoning, but most people's experience of it is <em>deeply emotional</em>. Being "bad at math" gets tangled up with intelligence, identity, self-worth. My practice is also a way to resist the binaries of mind/body and emotion/reason — ideas rooted in feminist theory that I genuinely believe in.</p>
+        <p class="body" style="max-width:720px">Currently I'm a maker and lab manager at <strong>Paper Crane Lab</strong>, where I craft playful, hands-on learning experiences for all ages. And I'm always making something new — generative art, data viz, creative code experiments — which you can find in the <a href="/projects.html">projects</a> section.</p>
+      </div>
     </div>
     <div class="about-section anim-4">
       <p class="section-label">the hoop has taken me to</p>
