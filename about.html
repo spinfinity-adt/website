@@ -8,23 +8,14 @@
 <title>About — Spinfinity</title>
 <link rel="stylesheet" href="/styles.css"/>
 <style>
-/* full width on the nav's gutter (styles.css --gutter): photo | intro | what I do on wide
-   screens, photo | intro with the rest below on medium ones, one column on phones */
-.about-wrap{max-width:none;margin:0;padding-inline:var(--gutter)}
-.about-hero{display:grid;grid-template-columns:clamp(260px,30vw,420px) minmax(0,1fr);gap:2.5rem clamp(2rem,4vw,4rem);align-items:start;margin-bottom:4rem}
-.about-hero .about-text,.about-hero .about-what{max-width:var(--measure)}
-.about-hero .about-what{grid-column:1 / -1;margin-bottom:0}
-@media(min-width:1400px){
-  .about-hero{grid-template-columns:clamp(320px,24vw,420px) minmax(0,1fr) minmax(0,1fr)}
-  .about-hero .about-what{grid-column:3}
-  .about-hero .about-what .section-label{margin-top:.6rem}
-}
-@media(max-width:700px){.about-hero{grid-template-columns:1fr}}
-@media(min-width:701px) and (max-width:1399px){
-  .about-hero .about-what{max-width:none;columns:2;column-gap:clamp(2rem,4vw,4rem)}
-  .about-what .section-label{column-span:all}
-  .about-what p.body{break-inside:avoid}
-}
+/* one centred container (photo column + a text column at reading width) that the content
+   fills edge to edge, so the side margins are equal; the photo stays put while the intro
+   and "what I do" read down the right; one column on phones */
+.about-wrap{max-width:1320px;margin-inline:auto;padding-inline:var(--gutter)}
+.about-hero{display:grid;grid-template-columns:clamp(260px,30vw,460px) minmax(0,1fr);gap:1rem clamp(2rem,5vw,5rem);align-items:start;margin-bottom:4rem}
+.about-hero .about-what{grid-column:2;margin:1.6rem 0 0}
+.about-hero .about-photo-wrap{grid-row:1 / span 2;position:sticky;top:calc(var(--nav-h) + 2rem)}
+@media(max-width:700px){.about-hero{grid-template-columns:1fr;row-gap:2.2rem}.about-hero .about-what{grid-column:1}.about-hero .about-photo-wrap{grid-row:auto;position:static}}
 .about-photo-wrap{position:relative}
 .about-photo{width:100%;border-radius:3px;display:block;border:1px solid var(--border)}
 .photo-caption{font-family:var(--hand);font-size:.88rem;color:var(--muted);margin-top:.8rem;font-style:italic;font-weight:400;line-height:1.55}
