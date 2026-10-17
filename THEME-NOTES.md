@@ -17,14 +17,14 @@ Deep space background (`#181320`), off-white ink text, same four brand
 accents as the light theme but re-lifted for legibility on dark: teal and
 lilac lead, yellow decorates, purple is dimmed slightly since true brand
 purple is too dark to read on black. Same two fonts as the rest of the site:
-Bricolage Grotesque for display, Nunito for everything else.
+Excon for display, Nunito for everything else.
 
 ## Fonts
 
 Same as the light theme — loaded once, site-wide, in `styles.css`:
 
 ```css
---display: 'Bricolage Grotesque', sans-serif;  /* headings, titles, names */
+--display: 'Excon', sans-serif;                /* headings, titles, names */
 --hand:    'Nunito', sans-serif;               /* body, labels, buttons */
 ```
 
@@ -78,7 +78,7 @@ Any new project page that wants the dark look follows this recipe
 
 The site used to run a three-theme cosmic system (`theme-light` / `theme-dusk`
 / `theme-studio`) on a different font stack (Rozha One / Spectral / Kalam).
-That's been superseded: fonts are now Bricolage Grotesque + Nunito everywhere,
+That's been superseded: fonts are now Excon + Nunito everywhere,
 and the light surface is `theme-paper` (see THEME-GUIDE.md), not `theme-light`.
 `theme-dusk` still exists in `styles.css` as the pre-redesign default/fallback
 palette (teal-twilight) but new pages should not be built on it — pick

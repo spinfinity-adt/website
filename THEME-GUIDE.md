@@ -13,15 +13,19 @@ surfaces.
 
 Warm off-white paper background, dark ink text, four brand accents used with
 discipline: **deep purple leads, teal seconds, yellow only decorates, lilac
-supports**. Two fonts: Bricolage Grotesque for display/headings, Nunito for
+supports**. Two fonts: Excon for display/headings, Nunito for
 everything else. Rounded corners, pill buttons, white cards with subtle
 borders. Playful comes from color and shape — not from clutter.
 
 ## Fonts
 
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&display=swap');
---display: 'Bricolage Grotesque', sans-serif;  /* headings, titles, names */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&display=swap');
+/* Excon (Fontshare, ITF Free Font License) is self-hosted: copy /fonts/excon-500.woff2 + excon-700.woff2,
+   or swap these two rules for <link href="https://api.fontshare.com/v2/css?f[]=excon@500,700&display=swap"> */
+@font-face{font-family:'Excon';src:url('/fonts/excon-500.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Excon';src:url('/fonts/excon-700.woff2') format('woff2');font-weight:700;font-display:swap}
+--display: 'Excon', sans-serif;                /* headings, titles, names */
 --hand:    'Nunito', sans-serif;               /* body, labels, buttons — everything else */
 ```
 
@@ -104,7 +108,7 @@ uppercase Nunito 700 with letter-spacing ~0.08em in the muted color.
 `math-creatures/index.html` in the website repo is the current best example
 of a light project page on this system: theme-paper body, token-driven local
 styles, accent-cycling card frames with flat offset shadows, tinted image
-mats, Bricolage names with uppercase Nunito metadata.
+mats, Excon names with uppercase Nunito metadata.
 
 ## Don'ts
 

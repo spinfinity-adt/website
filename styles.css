@@ -1,16 +1,20 @@
 /* ============================================================
    styles.css — shared design system for spinfinity.in
-   Type:   Bricolage Grotesque (--display, headings) · Nunito (--hand, everything else)
+   Type:   Excon (--display, headings) · Nunito (--hand, everything else)
    Themes: .theme-light · .theme-dusk · .theme-studio · .theme-paper  (set on <body>)
    Edit tokens below to restyle the whole site from one place.
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&display=swap');
+
+/* Excon by Alisa Nowak / Indian Type Foundry, via Fontshare (ITF Free Font License), self-hosted */
+@font-face{font-family:'Excon';src:url('/fonts/excon-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Excon';src:url('/fonts/excon-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 /* ---- theme-independent tokens ---- */
 :root{
-  --display:'Bricolage Grotesque',sans-serif;
+  --display:'Excon',sans-serif;
   --hand:'Nunito',sans-serif;
   --nav-h:56px;
   --radius:11px;
