@@ -12,22 +12,36 @@
 
     body { margin:0; padding:0; font-family: var(--hand); min-height:100vh; overflow-x:hidden; padding-top: var(--nav-h, 56px); }
     
-    main {
-      padding: 40px 20px;
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto;
+    main { padding-bottom: 56px; }
+
+    /* hero: title + key on the left, the mosaic beside it */
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) auto;
+      gap: clamp(24px, 3vw, 48px);
+      align-items: start;
+    }
+    .hero-side .proj-header.split { padding-top: 32px; margin-bottom: 20px; }
+    .hero-side .legend { margin-top: 28px; grid-template-columns: 1fr; padding: 4px 0 0; background: none; border: 0; gap: 4px; }
+    .hero-side .legend-section { padding: 10px 0; }
+    .hero-main { padding-top: 40px; }
+    @media (max-width: 1400px) {
+      .hero { grid-template-columns: minmax(0, 1fr); }
+      .hero-main { padding-top: 0; }
+      .hero-side .proj-header.split { margin-bottom: 0; }
+      .hero-side { display: contents; }
+      .hero-side .legend { order: 3; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); padding: 24px 28px; background: var(--card-bg); border: 1px solid var(--border); }
     }
     
     #canvas-container {
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.5));
       overflow-x: auto;
       overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
-      margin: 0 -20px;
-      padding: 0 20px;
+      margin: 0 calc(-1 * var(--gutter));
+      padding: 0 var(--gutter);
     }
     
     canvas {
@@ -99,33 +113,28 @@
     }
     
     .analog-section {
-      text-align: center;
-      margin: 30px 0 40px 0;
-      padding: 30px;
-      background: var(--card-bg);
-      border-radius: 12px;
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border);
+      margin: 44px 0 0;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
     }
     
     .photos-container {
       display: flex;
-      gap: 20px;
-      justify-content: center;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
+      gap: 12px;
+      margin-bottom: 12px;
     }
+    .photos-container .analog-photo:nth-child(1) { flex: .751 1 0; min-width: 0; aspect-ratio: 1502/2000; }
+    .photos-container .analog-photo:nth-child(2) { flex: 1.36 1 0; min-width: 0; aspect-ratio: 1280/941; }
+    @media (max-width: 760px) { .photos-container { flex-direction: column; } }
     
     .analog-photo {
       max-width: 100%;
-      max-height: 600px;
-      width: auto;
+      width: 100%;
       height: auto;
       border-radius: 8px;
       border: 1px solid var(--border);
       transition: transform 0.3s ease;
-      object-fit: contain;
+      object-fit: cover;
     }
 
     .analog-photo:hover {
@@ -168,18 +177,19 @@
 <body class="theme-studio">
   <div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>
-<main>
-    <header class="proj-header">
-      <h1>MOSAIC Data <span class="w">Selfie</span></h1>
-      <p class="proj-sub">Participatory Data Viz</p>
+<main class="frame">
+  <div class="hero">
+   <div class="hero-side">
+    <header class="proj-header split">
+      <div class="proj-title">
+        <h1>MOSAIC Data <span class="w">Selfie</span></h1>
+        <p class="proj-sub">Participatory Data Viz</p>
+      </div>
+      <div class="proj-aside">
+        <a href="https://open.substack.com/pub/spinfinity/p/mosaic-data-selfie" target="_blank" class="read-more-link">Read About the Creative Process →</a>
+      </div>
     </header>
-    
-    <div style="text-align: center; margin: 20px 0 30px 0;">
-      <a href="https://open.substack.com/pub/spinfinity/p/mosaic-data-selfie" target="_blank" class="read-more-link">Read About the Creative Process →</a>
-    </div>
-    
-    <div id="canvas-container"></div>
-    
+
     <div class="legend">
       <div class="legend-section">
         <div class="legend-title">Which role do you identify with the most?</div>
@@ -249,13 +259,16 @@
         </div>
       </div>
     </div>
-    
+   </div>
+   <div class="hero-main"><div id="canvas-container"></div></div>
+  </div>
+
     <div class="analog-section">
       <div class="photos-container">
         <img src="analog-mosaic-1.jpg" alt="Analog MOSAIC Data Selfie on easel" class="analog-photo">
         <img src="analog-mosaic-2.png" alt="Analog MOSAIC Data Selfie close-up" class="analog-photo">
       </div>
-      <div class="analog-caption">The original analog data selfie created by participants at the Mosaic Science Community launch</div>
+      <div class="analog-caption measure">The original analog data selfie created by participants at the Mosaic Science Community launch</div>
     </div>
   </main>
 

@@ -103,6 +103,27 @@ body.theme-studio .proj-header h1 .w{color:var(--accent2)}
 body.theme-studio .proj-header h1::after{content:'';display:block;width:110px;height:4px;margin:.55rem auto 0;border-radius:4px;background:var(--accent1-text);transform:rotate(-1.2deg)}
 body.theme-studio .proj-header .proj-sub{color:var(--accent1-text);letter-spacing:.14em;font-weight:600}
 
+/* ---- full-width project layout (modelled on /indiafoss2026) ----
+   One shared left edge: the same side gutter as the nav, so titles line up under the
+   wordmark and visuals use the whole width. Only running text is held to a readable measure.
+   <main class="frame">
+     <header class="proj-header split">
+       <div class="proj-title"><h1>…</h1><p class="proj-sub">…</p></div>
+       <div class="proj-aside">visual or action</div>
+     </header>
+     <p class="measure">…</p>
+   </main> */
+:root{--gutter:clamp(1.2rem,4vw,3rem);--measure:70ch}
+.frame{width:100%;padding-inline:var(--gutter)}
+.measure{max-width:var(--measure)}
+.proj-header.split{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;
+  gap:16px clamp(24px,4vw,64px);text-align:left;padding:32px 0 22px;margin-bottom:12px}
+.proj-header.split .proj-title{flex:0 1 auto;max-width:44ch}
+.proj-header.split h1{font-size:clamp(1.95rem,4.3vw,2.85rem);line-height:1.04;letter-spacing:-.018em;margin-bottom:0}
+.proj-header.split .proj-sub{margin-top:.8rem}
+body.theme-studio .proj-header.split h1::after{margin-left:0}
+.proj-header.split .proj-aside{flex:0 1 auto;min-width:0}
+
 .tag{display:inline-block;font-family:var(--hand);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .7rem;border-radius:30px;border:1px solid currentColor;opacity:.85}
 .section-label{font-family:var(--hand);font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.8rem;margin-bottom:2rem}
 .section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--muted),transparent)}
