@@ -57,37 +57,8 @@
       padding-top: var(--nav-h);
     }
 
-    /* Noise grain overlay */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-      background-size: 200px;
-      pointer-events: none;
-      z-index: 1000;
-      opacity: .45;
-    }
 
-    /* Fixed backgrounds */
-    #ambient-glow {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background: radial-gradient(circle at 50% 50%, rgba(13, 27, 42, 0.7) 0%, rgba(7, 8, 15, 0.98) 80%);
-      transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    }
 
-    #bg-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      opacity: 0.3;
-      pointer-events: none;
-    }
 
     .page {
       position: relative;
@@ -117,6 +88,7 @@
     .side-by-side > #intro { grid-column: 1; grid-row: 1; }
     .side-by-side .meta-row { margin-top: 0; grid-template-columns: 1fr; }
     @media (max-width: 1100px) {
+      .container p, .container h2, .link-row, .pullquote, .step-content > p, .step-content > h4 { max-width: none; }
       .side-by-side { grid-template-columns: minmax(0, 1fr); }
       .side-by-side .meta-row { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
       .side-by-side .hero, .side-by-side > #intro { grid-column: auto; grid-row: auto; }
@@ -177,6 +149,18 @@
       .margin-note { display: none; }
     }
 
+    /* page ground runs the stripes top to bottom: darkest stripe blue (#08306b) at the top,
+       the theme's ink in the middle, darkest stripe red (#67000d) at the bottom, each mixed
+       into the ink so cream text stays readable. Scrolls with the page: the further you read, the warmer it gets. */
+    :root {
+      --cs-top: color-mix(in srgb, #08306b 55%, #1c1a20);
+      --cs-mid: #1c1a20;
+      --cs-bottom: color-mix(in srgb, #67000d 55%, #1c1a20);
+    }
+    html { background: linear-gradient(to bottom, var(--cs-top) 0%, color-mix(in srgb, #2171b5 22%, #1c1a20) 30%,
+      var(--cs-mid) 55%, color-mix(in srgb, #cb181d 22%, #1c1a20) 78%, var(--cs-bottom) 100%); }
+    body.theme-studio { background-color: transparent; }
+
     /* FULLSCREEN VIDEO HERO */
     .video-hero {
       position: relative;
@@ -200,10 +184,10 @@
       inset: 0;
       background: linear-gradient(
         to bottom,
-        rgba(7, 8, 15, 0.2) 0%,
-        rgba(7, 8, 15, 0.1) 40%,
-        rgba(7, 8, 15, 0.7) 80%,
-        rgba(7, 8, 15, 1) 100%
+        color-mix(in srgb, var(--bg) 20%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 10%, transparent) 40%,
+        color-mix(in srgb, var(--bg) 70%, transparent) 80%,
+        var(--cs-top) 100%
       );
       z-index: 2;
     }
@@ -891,7 +875,7 @@
     .talk-card-label span { display: block; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
 
     .linkedin-embed-wrap {
-      margin: 2rem 0;
+      margin: 2rem auto;
       max-width: 540px;
       border-radius: 6px;
       overflow: hidden;
@@ -969,9 +953,6 @@
 </head>
 <body class="theme-studio">
 
-  <!-- Background Ambient Glow -->
-  <div id="ambient-glow"></div>
-  <canvas id="bg-canvas"></canvas>
 
   <!-- Navigation Mounting point -->
   <div id="sf-nav-mount"></div>
@@ -1241,85 +1222,8 @@
       }
     });
 
-    /* Interactive background math spirals color-shifting on scroll */
-    (function(){
-      const canvas = document.getElementById('bg-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      let W, H, t = 0, lastTime = 0;
-      
-      // mathematical thread settings
-      const threads = [
-        {a: 170, b: 150, kx: 3, ky: 2, phase: 0, weight: 1.0, speed: 0.003},
-        {a: 210, b: 180, kx: 4, ky: 3, phase: 0.8, weight: 0.8, speed: 0.002},
-        {a: 130, b: 120, kx: 2, ky: 3, phase: 1.5, weight: 0.6, speed: 0.004}
-      ];
-      
-      const STEPS = 500;
-      
-      function resize() {
-        W = canvas.width = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-      }
-      resize();
-      window.addEventListener('resize', resize);
-      
-      function CX() { return W * 0.75; }
-      function CY() { return H * 0.45; }
-      
-      // get color shifting from blue/cyan [61, 232, 255] to warm red [255, 85, 114]
-      function getScrollColor(pct) {
-        const r = Math.round(61 + pct * (255 - 61));
-        const g = Math.round(232 + pct * (85 - 232));
-        const b = Math.round(255 + pct * (114 - 255));
-        return [r, g, b];
-      }
 
-      function drawThread(th, gt, color) {
-        const [r, g, b] = color;
-        ctx.beginPath();
-        for (let i = 0; i <= STEPS; i++) {
-          const a = (i / STEPS) * Math.PI * 2;
-          const px = CX() + th.a * Math.sin(th.kx * a + gt * th.speed * 1000 + th.phase);
-          const py = CY() + th.b * Math.sin(th.ky * a + th.phase * 1.3);
-          i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-        }
-        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.22)`;
-        ctx.lineWidth = th.weight;
-        ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.4)`;
-        ctx.shadowBlur = 8;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-      }
 
-      function animate(ts) {
-        const dt = ts - lastTime;
-        lastTime = ts;
-        t += dt * 0.001;
-        
-        ctx.clearRect(0, 0, W, H);
-        
-        // Calculate scroll percentage
-        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPct = scrollHeight > 0 ? window.scrollY / scrollHeight : 0;
-        const color = getScrollColor(scrollPct);
-        
-        threads.forEach(th => drawThread(th, t, color));
-        requestAnimationFrame(animate);
-      }
-      requestAnimationFrame(animate);
-    })();
-
-    /* Ambient glow color transition based on scroll position */
-    window.addEventListener('scroll', function() {
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPct = scrollHeight > 0 ? window.scrollY / scrollHeight : 0;
-      const r = Math.round(13 + scrollPct * (90 - 13));
-      const g = Math.round(27 + scrollPct * (8 - 27));
-      const b = Math.round(42 + scrollPct * (15 - 42));
-      const glow = document.getElementById('ambient-glow');
-      glow.style.background = `radial-gradient(circle at 50% 50%, rgba(${r}, ${g}, ${b}, 0.7) 0%, rgba(7, 8, 15, 0.98) 80%)`;
-    });
 
     /* Carousel drag-to-scroll */
     (function() {
