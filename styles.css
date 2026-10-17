@@ -52,17 +52,20 @@ body.theme-light{background:var(--bg)}
 }
 body.theme-dusk{background:radial-gradient(circle at 22% 14%,rgba(47,212,224,0.15),transparent 55%),radial-gradient(circle at 86% 90%,rgba(160,110,230,0.16),transparent 55%),var(--bg);background-attachment:fixed;}
 
-/* studio · dark project pages (art × data × tech) — brand dark
-   Accents are tuned for legibility on dark: teal + lilac lead, deep purple
-   is too dark for text here so --accent2 is a lifted purple. */
+/* studio · dark project pages (art × data × tech) — "ink & paper" night theme
+   Warm ink-charcoal ground with faint paper grain and cream text, so it reads as
+   the paper theme after dark. Purple still leads (lifted to --accent2 for legibility),
+   teal supports (--accent1-text, kept close to brand teal, not mint). No glows:
+   flat borders and offset shadows only, like the paper theme. */
 .theme-studio{
   --fg:var(--text);
-  --bg:#181320; --text:#f2eef8; --muted:#a99fb8;
-  --accent1:#3FA796; --accent1-text:#54c7ba; --accent2:#a582e6; --accent3:#FFBD35; --accent4:#8267BE;
-  --card-bg:rgba(255,255,255,0.05); --border:rgba(255,255,255,0.14);
-  --nav-bg:rgba(24,19,32,0.92);
+  --bg:#1c1a20; --text:#f3efe6; --muted:#b0aaa0;
+  --accent1:#4FA393; --accent1-text:#62b3a4; --accent2:#b996ec; --accent3:#FFBD35; --accent4:#8267BE;
+  --card-bg:#24222a; --border:rgba(243,239,230,0.13);
+  --nav-bg:rgba(28,26,32,0.92);
 }
-body.theme-studio{background:var(--bg)}
+body.theme-studio{background-color:var(--bg);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+body.theme-studio .sf-nav{box-shadow:0 1px 0 rgba(255,255,255,.07),0 6px 18px rgba(0,0,0,.25)} /* lift the nav off the dark ground */
 
 /* ===== BASE ===== */
 html{scroll-behavior:smooth}
@@ -93,6 +96,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .proj-header{text-align:center;padding:40px 20px 0;margin-bottom:30px}
 .proj-header h1{font-family:var(--display);font-weight:normal;font-size:clamp(2em,5vw,3em);color:var(--accent1-text,var(--accent1));margin-bottom:10px;letter-spacing:1px}
 .proj-header .proj-sub{font-family:var(--hand);color:var(--muted);font-size:.9em;letter-spacing:3px;text-transform:uppercase}
+/* on dark: cream title with one purple word (<span class="w">), a tilted teal underline
+   and a teal subtitle — the same ink + purple + teal pattern as the paper hub */
+body.theme-studio .proj-header h1{color:var(--text);font-weight:700;letter-spacing:0}
+body.theme-studio .proj-header h1 .w{color:var(--accent2)}
+body.theme-studio .proj-header h1::after{content:'';display:block;width:110px;height:4px;margin:.55rem auto 0;border-radius:4px;background:var(--accent1-text);transform:rotate(-1.2deg)}
+body.theme-studio .proj-header .proj-sub{color:var(--accent1-text);letter-spacing:.14em;font-weight:600}
 
 .tag{display:inline-block;font-family:var(--hand);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .7rem;border-radius:30px;border:1px solid currentColor;opacity:.85}
 .section-label{font-family:var(--hand);font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.8rem;margin-bottom:2rem}

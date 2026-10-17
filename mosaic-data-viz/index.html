@@ -9,8 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <style>
-    
-    body.theme-studio { background: radial-gradient(circle at 82% -10%, color-mix(in srgb, var(--accent1) 6%, transparent), transparent 55%), radial-gradient(circle at 4% 106%, color-mix(in srgb, var(--accent2) 6%, transparent), transparent 55%), var(--bg); }
+
     body { margin:0; padding:0; font-family: var(--hand); min-height:100vh; overflow-x:hidden; padding-top: var(--nav-h, 56px); }
     
     main {
@@ -68,10 +67,14 @@
     
     .legend-title {
       font-family: var(--display);
-      color: var(--accent1-text);
+      font-weight: 700;
+      color: var(--accent2);
       font-size: 1.1em;
       margin-bottom: 12px;
-      letter-spacing: 1px;
+    }
+
+    .legend-section:nth-child(even) .legend-title {
+      color: var(--accent1-text);
     }
     
     .legend-item {
@@ -120,15 +123,13 @@
       width: auto;
       height: auto;
       border-radius: 8px;
-      border: 2px solid color-mix(in srgb, var(--accent1) 30%, transparent);
-      box-shadow: 0 8px 32px color-mix(in srgb, var(--accent1) 20%, transparent);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--border);
+      transition: transform 0.3s ease;
       object-fit: contain;
     }
-    
+
     .analog-photo:hover {
       transform: scale(1.02);
-      box-shadow: 0 12px 40px color-mix(in srgb, var(--accent1) 30%, transparent);
     }
     
     @media (max-width: 768px) {
@@ -147,20 +148,20 @@
     .read-more-link {
       display: inline-block;
       padding: 12px 30px;
-      background: var(--accent1);
-      color: var(--bg);
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--accent2);
       text-decoration: none;
-      border-radius: 25px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px color-mix(in srgb, var(--accent1) 30%, transparent);
+      border-radius: 30px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 4px 4px 0 var(--accent1-text);
     }
-    
+
     .read-more-link:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 25px color-mix(in srgb, var(--accent1) 50%, transparent);
-      background: var(--accent1-text);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--accent1-text);
     }
   </style>
 </head>
@@ -169,7 +170,7 @@
 <script src="/nav.js"></script>
 <main>
     <header class="proj-header">
-      <h1>MOSAIC Data Selfie</h1>
+      <h1>MOSAIC Data <span class="w">Selfie</span></h1>
       <p class="proj-sub">Participatory Data Viz</p>
     </header>
     
