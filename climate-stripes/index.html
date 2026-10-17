@@ -94,12 +94,51 @@
       z-index: 10;
     }
 
+    /* full width on the nav's gutter (see .frame in styles.css); running text is held
+       to --measure, visuals sit beside it or across the width */
     .container {
-      max-width: 820px;
-      margin: 0 auto;
-      padding: clamp(2rem, 5vw, 5rem) clamp(1.2rem, 5vw, 3.5rem);
+      max-width: none;
+      margin: 0;
+      padding: clamp(2rem, 5vw, 5rem) var(--gutter);
       position: relative;
     }
+    .container p, .container h2, .link-row, .pullquote { max-width: var(--measure); }
+    .step-content > p, .step-content > h4 { max-width: calc(var(--measure) - 3rem); }
+
+    /* text on the left, its visual beside it; stacks below 1100px */
+    .side-by-side {
+      display: grid;
+      grid-template-columns: minmax(0, 60ch) minmax(0, 1fr);
+      gap: 0 clamp(32px, 4vw, 64px);
+      align-items: start;
+    }
+    .side-by-side > .video-container, .side-by-side > .linkedin-embed-wrap, .side-by-side > .hero { margin-top: .4rem; }
+    .side-by-side .hero { padding: 0; grid-column: 2; grid-row: 1; }
+    .side-by-side > #intro { grid-column: 1; grid-row: 1; }
+    .side-by-side .meta-row { margin-top: 0; grid-template-columns: 1fr; }
+    @media (max-width: 1100px) {
+      .side-by-side { grid-template-columns: minmax(0, 1fr); }
+      .side-by-side .meta-row { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+      .side-by-side .hero, .side-by-side > #intro { grid-column: auto; grid-row: auto; }
+      .side-by-side .hero { padding: 2rem 0 1rem; }
+    }
+
+    /* postcard + talk card in one equal-height row across the width */
+    .media-row { display: flex; gap: 16px; align-items: flex-start; margin: 1.5rem 0 2rem; }
+    .media-row > * { min-width: 0; margin: 0 !important; }
+    .media-row .postcard { flex: 1.414 1 0; }
+    .media-row .talk-card { flex: 1.778 1 0; }
+    @media (max-width: 760px) { .media-row { flex-direction: column; } .media-row > * { width: 100%; flex: none !important; } }
+
+    /* the prototype video sits beside its step text */
+    .step-content.with-media { display: grid; grid-template-columns: minmax(0, calc(60ch - 3rem)) minmax(0, 1fr); grid-template-rows: auto 1fr; gap: 0 clamp(32px, 4vw, 64px); align-items: start; }
+    .step-content.with-media > h4 { grid-column: 1; }
+    .step-content.with-media > .video-container { grid-column: 2; grid-row: 1 / span 2; margin-top: 0 !important; }
+    @media (max-width: 1100px) {
+      .step-content.with-media { grid-template-columns: minmax(0, 1fr); }
+      .step-content.with-media > .video-container { grid-column: 1; grid-row: auto; margin-top: 1.2rem !important; }
+    }
+    .etymology-grid { max-width: 1100px; }
 
     /* NOTEBOOK MARGIN NOTES */
     .margin-note {
@@ -142,8 +181,8 @@
     .video-hero {
       position: relative;
       width: 100%;
-      /* 16:9 aspect ratio so full video is visible */
-      padding-top: 56.25%;
+      /* 16:9 aspect ratio so full video is visible; never shorter than the title block on phones */
+      padding-top: max(56.25%, 27rem);
       background: #000;
       overflow: hidden;
     }
@@ -174,9 +213,9 @@
       bottom: 3rem;
       left: 0;
       right: 0;
-      padding: 0 clamp(1.2rem, 5vw, 3.5rem);
+      padding: 0 var(--gutter);
       z-index: 3;
-      max-width: 820px;
+      max-width: calc(820px + 2 * var(--gutter));
     }
 
     .video-hero-text .tag {
@@ -957,6 +996,7 @@
   <div class="page">
     <div class="container">
 
+      <div class="side-by-side">
       <!-- META ROW -->
       <div class="hero">
         <div class="meta-row">
@@ -973,11 +1013,13 @@
         <p>The dataset used here is the climate stripes: Ed Hawkins' visualization from the University of Reading — 175 years of global average temperature anomalies rendered as colored stripes, blue to red. People have adopted it into all kinds of forms: pottery, glass, it's on Greta Thunberg's book cover. I used that dataset.</p>
         <p>My outputs were a data performance and an audience interaction where we experienced the warming stripes at our fingertips (literally!).</p>
       </section>
+      </div>
 
       <!-- SECTION 1: THE PERFORMANCE -->
       <section id="performance">
         <div class="section-label">01 — The Performance</div>
         <h2>Climate Stripes: <em>a data performance</em></h2>
+        <div class="side-by-side">
         <p>I broke the full 175 years of warming stripes into decades, and in the live performance, each decade played for about thirty seconds. The video couldn't capture the long exposure trails created, so I recreated it in TouchDesigner — this time, with each year getting a second, and a data overlay showing the year and temperature. You can check out the long exposure photographs below to get a sense of the stripes. I used bits of the Laban Movement framework to choreograph this - the blues were slow and light, and as we moved to the reds, it became fast, strong and sustained.</p>
         <!-- PLAYABLE TD VIDEO with controls -->
         <div class="video-container">
@@ -991,11 +1033,13 @@
           </div>
           <div class="video-caption">TouchDesigner version — data overlay shows year + temperature anomaly (one second per year)</div>
         </div>
+        </div>
 
         <!-- LONG EXPOSURE CAROUSEL -->
         <p style="margin-top: 2rem;">Long exposure photographs from the performance! Credits: Last Theorem Studio, Media Partner at VizChitra 2025</p>
 
-        <div style="max-width:680px;margin:1.5rem auto 0;">
+        <div class="media-row">
+        <div class="postcard">
           <img src="/images/climate-stripes.png" alt="Climate Stripes postcard"
                style="width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--border);box-shadow:0 12px 44px rgba(0,0,0,0.5);cursor:zoom-in;"
                onclick="openLightbox('/images/climate-stripes.png','')" loading="lazy" />
@@ -1014,6 +1058,7 @@
             </div>
           </div>
         </a>
+        </div>
 
         <p>The performance ends with a question <strong>"2030?"</strong> What will the stripe at 2030 be? </p>
 
@@ -1021,7 +1066,7 @@
         <div class="process-timeline" style="margin-top: 2.5rem;">
           <div class="step-item">
             <div class="step-badge">01</div>
-            <div class="step-content">
+            <div class="step-content with-media">
               <h4>The prototype</h4>
               <p>Initially I wanted to program one color per second into the poi. That was way too much work. My partner Jagrut, who works at the Science Gallery Bengaluru, had a simpler idea: just upload segments of the stripes as images instead of changing colors every single second. At least for a prototype, that would work. We found a dark room at the gallery, he took some long-exposure photos, and we had a 30-second demo ready.</p>
 
@@ -1073,8 +1118,11 @@
       <section id="audience">
         <div class="section-label">02 — Audience Interaction</div>
         <h2>Surprise Community <em>Data Sonification!</em></h2>
+        <div class="side-by-side">
+        <div>
         <p>300 of us heated up the room with our palms — in an attempt to experience the rise in heat the earth has gone through in the last 160 years.</p>
         <p>I panned the stripes on the screen, and as it went from dark blue to dark red, I asked participants to rub their hands faster. We generated heat in our palms and data sonification also happened, exactly as I'd hoped! The AC was also particularly effective in the room, so folks enjoyed this exercise a little extra!</p>
+        </div>
 
         <!-- LINKEDIN EMBED -->
         <div class="linkedin-embed-wrap">
@@ -1086,6 +1134,7 @@
             allowfullscreen="" 
             title="Embedded post — Climate Stripes audience interaction at VizChitra 2025">
           </iframe>
+        </div>
         </div>
       </section>
 
