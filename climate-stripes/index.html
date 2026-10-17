@@ -65,21 +65,20 @@
       z-index: 10;
     }
 
-    /* full width on the nav's gutter (see .frame in styles.css); running text is held
-       to --measure, visuals sit beside it or across the width */
+    /* one centred container that the content fills edge to edge (equal side margins):
+       text and its visual share each row 50/50, so no text column leaves a gap beside it */
+    :root { --wrap: 1320px; }
     .container {
-      max-width: none;
-      margin: 0;
+      max-width: var(--wrap);
+      margin: 0 auto;
       padding: clamp(2rem, 5vw, 5rem) var(--gutter);
       position: relative;
     }
-    .container p, .container h2, .link-row, .pullquote { max-width: var(--measure); }
-    .step-content > p, .step-content > h4 { max-width: calc(var(--measure) - 3rem); }
 
     /* text on the left, its visual beside it; stacks below 1100px */
     .side-by-side {
       display: grid;
-      grid-template-columns: minmax(0, 60ch) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 0 clamp(32px, 4vw, 64px);
       align-items: start;
     }
@@ -87,9 +86,12 @@
     .side-by-side .hero { padding: 0; grid-column: 2; grid-row: 1; }
     .side-by-side > #intro { grid-column: 1; grid-row: 1; }
     .side-by-side .meta-row { margin-top: 0; grid-template-columns: 1fr; }
+    .side-by-side .etymology-grid { grid-template-columns: 1fr; margin: .4rem 0 0; gap: 1.5rem; }
+    .side-by-side .pullquote { margin-bottom: 0; }
+    .side-by-side > section { border-top: 1px solid var(--border); }
     @media (max-width: 1100px) {
-      .container p, .container h2, .link-row, .pullquote, .step-content > p, .step-content > h4 { max-width: none; }
       .side-by-side { grid-template-columns: minmax(0, 1fr); }
+      .side-by-side .etymology-grid { margin-top: 2rem; }
       .side-by-side .meta-row { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
       .side-by-side .hero, .side-by-side > #intro { grid-column: auto; grid-row: auto; }
       .side-by-side .hero { padding: 2rem 0 1rem; }
@@ -103,14 +105,22 @@
     @media (max-width: 760px) { .media-row { flex-direction: column; } .media-row > * { width: 100%; flex: none !important; } }
 
     /* the prototype video sits beside its step text */
-    .step-content.with-media { display: grid; grid-template-columns: minmax(0, calc(60ch - 3rem)) minmax(0, 1fr); grid-template-rows: auto 1fr; gap: 0 clamp(32px, 4vw, 64px); align-items: start; }
+    /* steps: 01 (with its video) across the width, 02-05 as a 2x2 grid */
+    @media (min-width: 1101px) {
+      .container .process-timeline { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem clamp(32px, 4vw, 64px); padding-left: 0; }
+      .process-timeline::before { display: none; }
+      .process-timeline .step-item { margin: 0; padding-left: 2.2rem; }
+      .process-timeline .step-badge { left: 0; }
+      .process-timeline .step-item:first-child { grid-column: 1 / -1; }
+    }
+    .step-content.with-media { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; gap: 0 clamp(32px, 4vw, 64px); align-items: start; }
     .step-content.with-media > h4 { grid-column: 1; }
     .step-content.with-media > .video-container { grid-column: 2; grid-row: 1 / span 2; margin-top: 0 !important; }
     @media (max-width: 1100px) {
       .step-content.with-media { grid-template-columns: minmax(0, 1fr); }
       .step-content.with-media > .video-container { grid-column: 1; grid-row: auto; margin-top: 1.2rem !important; }
     }
-    .etymology-grid { max-width: 1100px; }
+
 
     /* NOTEBOOK MARGIN NOTES */
     .margin-note {
@@ -197,9 +207,10 @@
       bottom: 3rem;
       left: 0;
       right: 0;
-      padding: 0 var(--gutter);
+      --hero-x: max(var(--gutter), calc((100% - var(--wrap)) / 2 + var(--gutter)));
+      padding: 0 var(--gutter) 0 var(--hero-x);
       z-index: 3;
-      max-width: calc(820px + 2 * var(--gutter));
+      max-width: calc(820px + var(--hero-x) + var(--gutter));
     }
 
     .video-hero-text .tag {
@@ -1069,7 +1080,13 @@
       <section id="concept">
         <div class="section-label">03 — The Concept</div>
         <h2>What is <em>data visceralization</em>?</h2>
+        <div class="side-by-side">
+        <div>
         <p>I first came across this term in <a href="https://data-feminism.mitpress.mit.edu/pub/5evfe9yd/release/5" style="color: var(--accent2); text-decoration: none;">Data Feminism</a> (D'Ignazio & Klein), in the chapter "Elevate Emotion and Embodiment." A good pun gets etched in my brain. Whenever I find an intriguing term, I like to look at how the word came to be — the same way a data nerd looks at the source of their data, I look at the source of the word.</p>
+        <div class="pullquote">
+          Raw data doesn't exist. It's always processed — sometimes by our sensors, often by our guts.
+        </div>
+        </div>
 
         <div class="etymology-grid">
           <div class="etym-card visceral">
@@ -1095,12 +1112,10 @@
             </div>
           </div>
         </div>
-
-        <div class="pullquote">
-          Raw data doesn't exist. It's always processed — sometimes by our sensors, often by our guts.
         </div>
       </section>
 
+      <div class="side-by-side">
       <!-- ACKNOWLEDGEMENTS -->
       <section id="acknowledgements">
         <div class="section-label">04 — Acknowledgements</div>
@@ -1122,6 +1137,7 @@
           <a class="link-btn" href="../projects.html">← All projects</a>
         </div>
       </section>
+      </div>
 
 
     </div>
