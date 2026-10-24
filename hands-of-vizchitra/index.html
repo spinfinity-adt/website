@@ -174,8 +174,11 @@
     text-transform:uppercase;color:var(--muted);text-align:center;margin:12px 0 0;}
 
   /* ---- view toggle -------------------------------------------------------- */
+  /* search first, view tabs last: the tabs always end on the right gutter, and
+     hiding the search (original view) never moves them. margin-left:auto keeps
+     the toolbar right-aligned when it wraps under the key. */
   .viewbar{display:flex;gap:14px;justify-content:flex-end;align-items:center;
-    flex-wrap:wrap;margin:0;}
+    flex-wrap:wrap;margin:0 0 0 auto;}
   .vb-views{display:flex;gap:6px;}
   .vb-search{position:relative;display:flex;align-items:center;gap:8px;}
   .vb-search input{
@@ -197,6 +200,8 @@
     color:var(--muted);background:var(--card-bg);border:1px solid var(--border);
     border-radius:999px;padding:5px 15px;cursor:pointer;transition:all .15s;}
   .vb-btn:hover{color:var(--accent2);border-color:var(--accent2);}
+  .vb-btn:focus{outline:none;}
+  .vb-btn:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;}
   .vb-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2);}
   /* Phones: three view buttons + search must still share one line (as two did),
      or the taller toolbar shrinks the fit view. */
@@ -399,16 +404,16 @@
   </button>
 
 <div class="viewbar">
-  <div class="vb-views">
-    <button data-view="scroll" class="vb-btn active">scroll</button>
-    <button data-view="fit" class="vb-btn">fit</button>
-    <button data-view="original" class="vb-btn">original</button>
-    <button type="button" class="vb-btn vb-legend" aria-controls="legend" aria-haspopup="dialog"
-            aria-expanded="false" aria-label="How to read a hand"><span class="vbl-q" aria-hidden="true">?</span><span class="vbl-text" aria-hidden="true">how to read</span></button>
-  </div>
   <div class="vb-search">
     <input id="nameSearch" type="search" placeholder="find your name…" autocomplete="off" />
     <span id="searchCount" class="search-count"></span>
+  </div>
+  <div class="vb-views">
+    <button data-view="fit" class="vb-btn active">fit</button>
+    <button data-view="scroll" class="vb-btn">scroll</button>
+    <button data-view="original" class="vb-btn">original</button>
+    <button type="button" class="vb-btn vb-legend" aria-controls="legend" aria-haspopup="dialog"
+            aria-expanded="false" aria-label="How to read a hand"><span class="vbl-q" aria-hidden="true">?</span><span class="vbl-text" aria-hidden="true">how to read</span></button>
   </div>
 </div>
 </div>
@@ -2263,7 +2268,9 @@ function applyFitScale(){
   const aspect=VB.w/VB.h;                              // tile width/height (<1, tall)
   const stripRect=strip.getBoundingClientRect();
   const availW=stripRect.width - 28;
-  const availH=window.innerHeight - stripRect.top - 20;// fill down to bottom edge
+  // fill down to the bottom of the first screen; measured from the top of the
+  // page (not the viewport) so the fit doesn't depend on where you've scrolled
+  const availH=window.innerHeight - (stripRect.top + window.scrollY) - 20;
   // Try every column count; keep the one that makes the LARGEST tile while all
   // rows still fit the height. That fills the viewport instead of stopping early.
   let best={cols:11, tileH:0};
@@ -2300,7 +2307,17 @@ function setView(mode){
 }
 document.querySelectorAll(".vb-btn[data-view]").forEach(b=>
   b.addEventListener("click",()=>setView(b.dataset.view)));
-window.addEventListener("resize",()=>{ applyFitScale(); sizeRoll(); });
+// Refit only when the window really changes size. Phones fire "resize" while
+// scrolling as the address bar slides in and out, so on touch screens a
+// height-only change is ignored (width changes, e.g. rotation, still refit).
+let lastW=window.innerWidth, lastH=window.innerHeight;
+const finePointer=window.matchMedia("(pointer:fine)");
+window.addEventListener("resize",()=>{
+  const w=window.innerWidth, h=window.innerHeight;
+  if(w===lastW && (h===lastH || !finePointer.matches)) return;
+  lastW=w; lastH=h;
+  applyFitScale(); sizeRoll();
+});
 
 /* ---- original view: the photographed roll -------------------------------- */
 const roll=document.getElementById("roll");
@@ -2440,7 +2457,7 @@ document.addEventListener("focusin",e=>{
 window.addEventListener("hashchange",()=>{ location.hash==="#legend" ? openLegend() : closeLegend(); });
 if(location.hash==="#legend") openLegend();
 
-boot().then(()=>setView("scroll"));
+boot().then(()=>setView("fit"));
 </script>
 <div id="sf-footer-mount"></div>
 </body>
