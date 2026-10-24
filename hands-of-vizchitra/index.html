@@ -190,10 +190,21 @@
   .vb-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2);}
   /* Phones: three view buttons + search must still share one line (as two did),
      or the taller toolbar shrinks the fit view. */
+  /* "how to read" opens the legend; it isn't a view, so it never goes active */
+  .vb-legend{display:inline-flex;align-items:center;gap:6px;margin-left:4px;}
+  .vbl-q{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
+    border:1.5px solid currentColor;font-size:10px;line-height:1;}
+  .vb-legend[aria-expanded="true"]{color:var(--accent2);border-color:var(--accent2);}
+  /* below ~600px the label would push search onto a second line: icon only */
+  @media (max-width:600px){
+    .vb-btn.vb-legend{padding:5px 7px;margin-left:0;}
+    .vbl-text{display:none;}
+  }
   @media (max-width:520px){
     .vb-btn{padding:5px 11px;}
-    .vb-search input{width:120px;}
-    .vb-search input:focus{width:150px;}
+    .vb-search input,.vb-search input:focus{width:120px;}
+    /* the match count floats just under the box instead of reserving a column */
+    .search-count{position:absolute;top:calc(100% + 3px);right:8px;min-width:0;text-align:right;}
   }
 
   /* SCROLL mode: horizontal, but rows stagger so it's a messy band, not a line */
@@ -244,9 +255,6 @@
     border-radius:999px;padding:9px 18px;font-weight:700;cursor:pointer;
     font-family:var(--hand);}
   .hidden{display:none;}
-  footer#footer{font-family:var(--hand);font-size:11.5px;color:var(--muted);
-    padding:4px 30px 56px;max-width:820px;line-height:1.7;}
-  footer#footer code{background:var(--border);padding:1px 5px;border-radius:4px;}
 
   /* lightbox — paper card, ink frame */
   #lb{position:fixed;inset:0;background:rgba(35,39,48,.72);
@@ -300,6 +308,49 @@
     cursor:pointer;font-family:var(--hand);line-height:1;}
   @media(max-width:680px){.lbcard{flex-direction:column;}
     .lbcard img{max-width:80vw;max-height:48vh;}}
+
+  /* ---- "how to read" legend: the lightbox's sibling, as a side panel ------
+     A light scrim (click to close) leaves the page visible and scrollable;
+     below 700px wide the card becomes a bottom sheet. */
+  .legend{position:fixed;inset:var(--nav-h,56px) 0 0 0;z-index:60;}
+  .legend[hidden]{display:none;}
+  .lgscrim{position:absolute;inset:0;background:rgba(35,39,48,.16);}
+  .lgcard{position:absolute;top:14px;right:14px;bottom:14px;width:min(420px,calc(100vw - 28px));
+    display:flex;flex-direction:column;background:var(--card-bg);
+    border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 0 rgba(80,32,100,.25);
+    animation:lg-in .22s ease-out;}
+  @keyframes lg-in{from{transform:translateX(24px);opacity:0}}
+  .lghead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+    padding:18px 18px 10px 22px;}
+  .lghead h2{font-family:var(--display);font-weight:700;font-size:26px;line-height:1.05;
+    margin:2px 0 0;color:var(--text);}
+  .lgclose{flex:none;width:34px;height:34px;border-radius:999px;cursor:pointer;
+    border:1px solid var(--border);background:var(--card-bg);color:var(--muted);
+    font-family:var(--hand);font-size:22px;line-height:1;transition:all .15s;}
+  .lgclose:hover,.lgclose:focus-visible{color:var(--accent2);border-color:var(--accent2);outline:none;}
+  .lgbody{overflow-y:auto;overscroll-behavior:contain;padding:4px 22px 22px;outline:none;}
+  .lgbody:focus-visible{box-shadow:inset 0 0 0 2px var(--accent2);border-radius:8px;}
+  .lgposter{display:block;width:100%;height:auto;aspect-ratio:1200 / 1800;border-radius:8px;
+    border:1px solid var(--border);background:var(--paper);}
+  .lgnotes{margin:18px 0 0;font-family:var(--hand);}
+  .lgnotes ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:9px;}
+  .lgnotes li{display:flex;align-items:center;gap:11px;font-size:13.5px;line-height:1.4;color:var(--text);}
+  .lgnotes svg{flex:none;width:24px;height:24px;}
+  @media (max-width:699px){
+    .lgcard{top:auto;left:0;right:0;bottom:0;width:auto;max-height:85vh;max-height:85dvh;
+      border-radius:16px 16px 0 0;border-bottom:0;box-shadow:0 -6px 0 rgba(80,32,100,.18);
+      animation-name:lg-up;}
+    @keyframes lg-up{from{transform:translateY(32px);opacity:0}}
+    .lghead{padding-top:22px;position:relative;}
+    .lghead::before{content:"";position:absolute;top:8px;left:50%;width:40px;height:4px;
+      margin-left:-20px;border-radius:4px;background:var(--border);}
+  }
+  @media (prefers-reduced-motion:reduce){.lgcard{animation:none;}}
+
+  /* the header key doubles as a way into the legend */
+  .key{background:none;border:0;padding:0;text-align:left;cursor:pointer;color:inherit;line-height:inherit;}
+  .key:hover span,.key:focus-visible span{color:var(--accent2);}
+  .key:focus-visible{outline:2px solid var(--accent2);outline-offset:4px;border-radius:4px;}
 </style>
 </head>
 <body class="theme-paper">
@@ -309,13 +360,14 @@
 <header>
   <p class="eyebrow">Vizchitra 2025 · participatory data viz</p>
   <h1>Hands of Vizchitra</h1>
-  <div class="key">
+  <button type="button" class="key" aria-controls="legend" aria-haspopup="dialog" aria-expanded="false"
+          title="How to read a hand">
     <span><i class="swatch" style="background:var(--develop)"></i>develop</span>
     <span><i class="swatch" style="background:var(--collect)"></i>collect</span>
     <span><i class="swatch" style="background:var(--design)"></i>design</span>
     <span><i class="swatch" style="background:var(--narrate)"></i>narrate</span>
     <span><i class="swatch" style="background:var(--analyze)"></i>analyze</span>
-  </div>
+  </button>
 </header>
 
 <!-- Hidden stubs keep the existing JS element refs valid. -->
@@ -330,6 +382,8 @@
     <button data-view="scroll" class="vb-btn active">scroll</button>
     <button data-view="fit" class="vb-btn">fit</button>
     <button data-view="original" class="vb-btn">original</button>
+    <button type="button" class="vb-btn vb-legend" aria-controls="legend" aria-haspopup="dialog"
+            aria-expanded="false" aria-label="How to read a hand"><span class="vbl-q" aria-hidden="true">?</span><span class="vbl-text" aria-hidden="true">how to read</span></button>
   </div>
   <div class="vb-search">
     <input id="nameSearch" type="search" placeholder="find your name…" autocomplete="off" />
@@ -339,14 +393,45 @@
 <div class="stripwrap"><div class="strip" id="strip"><div class="hov-loader" role="status" aria-label="Loading the hands"><svg class="hov-loader-hand" viewBox="0 0 1640 2360" aria-hidden="true"><defs><clipPath id="hovLoaderClip"><polygon points="241,1205 1035,1105 1130,1713 563,2170 188,1874"/></clipPath></defs><path class="lp-hand" d="M1163 1865L936 2141L887 2183L800 2227L629 2273L496 2330L513 2312L616 2265L818 2208L862 2186L913 2146L1218 1789L1307 1654L1527 1415L1576 1351L1599 1307L1608 1260L1592 1215L1536 1186L1489 1190L1406 1240L1275 1362L1170 1506L1148 1564L1103 1580L1071 1546L1073 1482L1114 1376L1134 1298L1163 1074L1252 782L1264 719L1298 495L1307 382L1300 303L1278 261L1251 243L1219 239L1189 251L1167 274L1135 366L1107 509L1076 618L945 949L922 1043L915 1058L901 1065L888 1056L883 1025L961 609L984 301L985 155L972 91L953 66L925 48L878 48L840 78L818 139L776 445L718 682L666 986L645 1029L617 1036L640 583L683 182L670 136L645 117L597 110L556 133L527 189L479 409L461 570L431 745L421 967L404 1078L386 1122L352 1156L323 1148L314 1134L221 692L183 471L159 429L137 408L105 405L59 413L42 440L34 488L35 646L68 887L125 1107L136 1204L87 1689L78 1882L70 1873L71 1732L125 1199L108 1087L59 898L29 689L23 498L32 433L50 407L95 396L143 398L167 421L192 462L214 556L234 698L275 872L290 984L310 1044L323 1124L344 1145L358 1140L379 1115L394 1069L410 957L419 747L452 556L470 395L520 175L552 121L594 99L642 103L682 130L694 176L653 564L647 743L625 1018L633 1025L655 982L704 694L762 457L803 151L821 88L838 61L864 42L895 32L942 44L977 76L994 138L995 317L975 593L903 960L894 1024L904 1052L941 929L1076 582L1121 377L1156 270L1190 237L1221 229L1253 232L1292 259L1314 319L1313 448L1275 721L1170 1095L1145 1304L1083 1489L1081 1537L1098 1564L1112 1569L1127 1563L1165 1493L1271 1349L1402 1228L1485 1178L1532 1174L1591 1200L1611 1224L1619 1272L1612 1303L1574 1374L1438 1536L1303 1677L1235 1787L1169 1859"/><g clip-path="url(#hovLoaderClip)" style="mix-blend-mode:multiply" stroke-width="62"><path class="lp-a lp-a0" stroke="var(--develop)" d="M487 1021A308 308 0 0 1 45 1443M653 897A515 515 0 0 1 -86 1603"/><path class="lp-a lp-a1" stroke="var(--collect)" d="M1251 1324A308 308 0 0 1 772 944M1397 1472A515 515 0 0 1 596 836"/><path class="lp-a lp-a2" stroke="var(--design)" d="M1034 2006A308 308 0 0 1 1154 1406M969 2202A515 515 0 0 1 1170 1200"/><path class="lp-a lp-a3" stroke="var(--narrate)" d="M264 2096A308 308 0 0 1 871 2171M63 2046A515 515 0 0 1 1078 2171"/><path class="lp-a lp-a4" stroke="var(--analyze)" d="M65 1592A308 308 0 0 1 375 2119M-18 1402A515 515 0 0 1 500 2284"/></g><g stroke-width="50"><path class="lp-e lp-e0" pathLength="1" d="M241 1205L1035 1105"/><path class="lp-e lp-e1" pathLength="1" d="M1035 1105L1130 1713"/><path class="lp-e lp-e2" pathLength="1" d="M1130 1713L563 2170"/><path class="lp-e lp-e3" pathLength="1" d="M563 2170L188 1874"/><path class="lp-e lp-e4" pathLength="1" d="M188 1874L241 1205"/></g><g class="lp-dots" stroke-width="31"><circle cx="241" cy="1205" r="90" fill="var(--develop)"/><circle cx="1035" cy="1105" r="90" fill="var(--collect)"/><circle cx="1130" cy="1713" r="90" fill="var(--design)"/><circle cx="563" cy="2170" r="90" fill="var(--narrate)"/><circle cx="188" cy="1874" r="90" fill="var(--analyze)"/></g></svg></div></div>
 <div class="roll" id="roll">
   <div class="roll-scroller" id="rollScroller" tabindex="0" aria-label="The original paper roll; scrolls sideways">
-    <img id="rollImg" data-src="original-roll.jpg" width="7348" height="1379" draggable="false"
+    <img id="rollImg" data-src="original-roll.jpg" width="4800" height="901" draggable="false"
          alt="The original paper roll from Vizchitra 2025, covered in traced and coded hands">
   </div>
   <p class="roll-caption">the original roll · drag or scroll sideways</p>
 </div></div>
-<footer id="footer" hidden></footer>
+<!-- Developer notes (formerly the hidden #footer):
+     Left hand = lives in Bangalore, right = outside. A knuckle with a dashed
+     hollow ring means that rating wasn't drawn on the paper; a solid dot with no
+     arcs means a real 0. Pentagon arcs are code placeholders until authored
+     marker glyphs land in the SVG. Glyph ids the scaffold looks for but can't
+     find in the SVG are logged to the console as "Not found in SVG". -->
+
 
 <div id="lb"><span class="lbclose" id="lbclose">×</span><div class="lbcard" id="lbcard"></div></div>
+
+<div class="legend" id="legend" hidden>
+  <div class="lgscrim" id="legendScrim"></div>
+  <div class="lgcard" role="dialog" aria-modal="true" aria-labelledby="legendTitle">
+    <div class="lghead">
+      <h2 id="legendTitle">How to read a hand</h2>
+      <button type="button" class="lgclose" id="legendClose" aria-label="Close">×</button>
+    </div>
+    <div class="lgbody" id="legendBody" tabindex="0">
+      <img class="lgposter" id="legendImg" data-src="legend.jpg" width="1200" height="1800"
+           alt="The instruction poster each person followed. Left hand if you live in Bangalore, right hand if you live outside. Five knuckle points joined into a pentagon: pinky knuckle = develop, index knuckle = collect, thumb knuckle = design, the two wrist points = narrate and analyze. Around each point, 1 to 5 highlighter arcs show how much you enjoy that activity. Fingers: thumb = dog or cat person, index finger = how many dataviz you've made, middle finger = how far you travelled to Vizchitra, ring finger = your name, little finger = morning person or night owl.">
+      <section class="lgnotes" aria-labelledby="legendNotesTitle">
+        <p class="lblabel" id="legendNotesTitle">in the digital version</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="var(--text)" stroke-width="2" stroke-dasharray="3.2 2.6" opacity=".55"/></svg>
+            A dashed, hollow knuckle wasn't drawn on the paper.</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="var(--develop)" stroke="var(--text)" stroke-width="2.4"/></svg>
+            A dot with no arcs means a 0.</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="7" width="22" height="10" rx="2" fill="var(--analyze)" transform="rotate(-2 12 12)"/></svg>
+            On paper the analyze highlighter was green, matching the key above.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>
 
 <!-- The real hand SVG is injected here at build; see #handSvgSource template. -->
 <template id="handSvgSource"><svg width="100%" height="100%" viewBox="0 0 1640 2360" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
@@ -2118,12 +2203,7 @@ function render(rawRows,sourceLabel){
   }
   const withPhoto=data.filter(d=>d.photo).length;
   document.getElementById("status").textContent=`${data.length} hands · ${sourceLabel}`;
-  const miss=[...MISSING];
-  document.getElementById("footer").innerHTML=
-    "Left hand = lives in Bangalore, right = outside. A knuckle with a dashed hollow ring "+
-    "means that rating wasn't drawn on the paper; a solid dot with no arcs means a real 0. "+
-    "Pentagon arcs are code placeholders until authored marker glyphs land in the SVG. "+
-    (miss.length?`<br><b>Not found in SVG (to draw / rename):</b> <code>${miss.join("</code> <code>")}</code>.`:"");
+  if(MISSING.size) console.info("Not found in SVG (to draw / rename):", [...MISSING].join(", "));
   setupScroll(strip);
   // Names are in the DOM now; fit any that overrun their guide path.
   requestAnimationFrame(()=>fitNames(strip));
@@ -2195,7 +2275,7 @@ function setView(mode){
   if(orig) showRoll();
   try{ localStorage; }catch(e){}
 }
-document.querySelectorAll(".vb-btn").forEach(b=>
+document.querySelectorAll(".vb-btn[data-view]").forEach(b=>
   b.addEventListener("click",()=>setView(b.dataset.view)));
 window.addEventListener("resize",()=>{ applyFitScale(); sizeRoll(); });
 
@@ -2207,7 +2287,7 @@ const rollImg=document.getElementById("rollImg");
 function sizeRoll(){
   if(!roll.classList.contains("on")) return;
   const top=roll.getBoundingClientRect().top+window.scrollY;
-  const h=Math.max(260, Math.min(window.innerHeight-top-56, 1379+36));  // 36 = vertical padding
+  const h=Math.max(260, Math.min(window.innerHeight-top-56, +rollImg.getAttribute("height")+36));  // 36 = vertical padding
   roll.style.setProperty("--roll-h",Math.round(h)+"px");
   updateRollEdges();
 }
@@ -2217,7 +2297,7 @@ function updateRollEdges(){
   roll.classList.toggle("at-end", rollScroller.scrollLeft>=max-1);
 }
 function showRoll(){
-  // the 1.4MB photo only downloads the first time this view is opened
+  // the photo only downloads the first time this view is opened
   if(!rollImg.getAttribute("src")){
     rollImg.addEventListener("load",()=>{ rollImg.classList.add("ready"); updateRollEdges(); },{once:true});
     rollImg.src=rollImg.dataset.src;
@@ -2291,6 +2371,51 @@ if(searchEl){
   searchEl.addEventListener("input",e=>runSearch(e.target.value));
   searchEl.addEventListener("keydown",e=>{ if(e.key==="Escape"){ searchEl.value=""; runSearch(""); } });
 }
+
+/* ---- "how to read" legend panel ------------------------------------------ */
+const legend=document.getElementById("legend");
+const legendImg=document.getElementById("legendImg");
+const legendClose=document.getElementById("legendClose");
+const legendBody=document.getElementById("legendBody");
+const legendOpeners=[...document.querySelectorAll('[aria-controls="legend"]')];
+let legendReturnFocus=null;
+function openLegend(opener){
+  if(!legend.hidden) return;
+  legendReturnFocus=opener||document.querySelector(".vb-legend");
+  // the poster only downloads the first time the legend opens
+  if(!legendImg.getAttribute("src")) legendImg.src=legendImg.dataset.src;
+  legend.hidden=false;
+  legendOpeners.forEach(b=>b.setAttribute("aria-expanded","true"));
+  legendBody.scrollTop=0;
+  legendClose.focus();
+  if(location.hash!=="#legend") history.replaceState(null,"",location.pathname+location.search+"#legend");
+}
+function closeLegend(){
+  if(legend.hidden) return;
+  legend.hidden=true;
+  legendOpeners.forEach(b=>b.setAttribute("aria-expanded","false"));
+  if(location.hash==="#legend") history.replaceState(null,"",location.pathname+location.search);
+  if(legendReturnFocus) legendReturnFocus.focus();
+  legendReturnFocus=null;
+}
+legendOpeners.forEach(b=>b.addEventListener("click",()=>openLegend(b)));
+legendClose.addEventListener("click",closeLegend);
+document.getElementById("legendScrim").addEventListener("click",closeLegend);
+document.addEventListener("keydown",e=>{
+  if(legend.hidden) return;
+  if(e.key==="Escape"){ closeLegend(); return; }
+  if(e.key!=="Tab") return;
+  // keep Tab inside the panel: the close button and the scrollable body
+  const stops=[legendClose,legendBody], i=stops.indexOf(document.activeElement);
+  e.preventDefault();
+  stops[(i+(e.shiftKey?stops.length-1:1))%stops.length].focus();
+});
+// focus that lands outside the open panel (e.g. a click on the page) comes back in
+document.addEventListener("focusin",e=>{
+  if(!legend.hidden && !legend.contains(e.target)) legendClose.focus();
+});
+window.addEventListener("hashchange",()=>{ location.hash==="#legend" ? openLegend() : closeLegend(); });
+if(location.hash==="#legend") openLegend();
 
 boot().then(()=>setView("scroll"));
 </script>
