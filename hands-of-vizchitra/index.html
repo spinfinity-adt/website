@@ -138,6 +138,33 @@
     .hov-loader-hand .lp-e,.hov-loader-hand .lp-a{animation:none;}
   }
 
+  /* ---- original view: the photographed paper roll, scrolled sideways -------
+     Same cream band as the hands. The photo is multiplied onto it so its white
+     paper takes the band's tone; edge fades show while there's more to scroll. */
+  .strip.view-original{display:none;}
+  .roll{display:none;position:relative;--roll-h:480px;}
+  .roll.on{display:block;}
+  .roll-scroller{display:flex;height:var(--roll-h);padding:18px 28px;
+    overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
+    background:var(--paper);cursor:grab;outline:none;
+    border-top:1px solid var(--paper-edge);border-bottom:1px solid var(--paper-edge);
+    scrollbar-width:thin;scrollbar-color:var(--paper-edge) transparent;}
+  .roll-scroller::-webkit-scrollbar{height:8px;}
+  .roll-scroller::-webkit-scrollbar-thumb{background:var(--paper-edge);border-radius:6px;}
+  .roll-scroller.dragging{cursor:grabbing;}
+  .roll-scroller:focus-visible{box-shadow:inset 0 0 0 2px var(--accent2);}
+  .roll-scroller img{flex:none;display:block;height:100%;width:auto;max-width:none;
+    mix-blend-mode:multiply;user-select:none;-webkit-user-drag:none;
+    opacity:0;transition:opacity .5s ease;}
+  .roll-scroller img.ready{opacity:1;}
+  .roll::before,.roll::after{content:"";position:absolute;top:1px;height:calc(var(--roll-h) - 2px);
+    width:64px;z-index:1;pointer-events:none;transition:opacity .25s ease;}
+  .roll::before{left:0;background:linear-gradient(to right,var(--paper),transparent);}
+  .roll::after{right:0;background:linear-gradient(to left,var(--paper),transparent);}
+  .roll.at-start::before,.roll.at-end::after{opacity:0;}
+  .roll-caption{font-family:var(--hand);font-weight:700;font-size:11.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);text-align:center;margin:12px 0 0;}
+
   /* ---- view toggle -------------------------------------------------------- */
   .viewbar{display:flex;gap:14px;justify-content:center;align-items:center;
     flex-wrap:wrap;margin:16px 0 2px;}
@@ -161,6 +188,13 @@
     border-radius:999px;padding:5px 15px;cursor:pointer;transition:all .15s;}
   .vb-btn:hover{color:var(--accent2);border-color:var(--accent2);}
   .vb-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2);}
+  /* Phones: three view buttons + search must still share one line (as two did),
+     or the taller toolbar shrinks the fit view. */
+  @media (max-width:520px){
+    .vb-btn{padding:5px 11px;}
+    .vb-search input{width:120px;}
+    .vb-search input:focus{width:150px;}
+  }
 
   /* SCROLL mode: horizontal, but rows stagger so it's a messy band, not a line */
   /* SCROLL mode: horizontal, but rows stagger so it's a messy band, not a line.
@@ -295,13 +329,21 @@
   <div class="vb-views">
     <button data-view="scroll" class="vb-btn active">scroll</button>
     <button data-view="fit" class="vb-btn">fit</button>
+    <button data-view="original" class="vb-btn">original</button>
   </div>
   <div class="vb-search">
     <input id="nameSearch" type="search" placeholder="find your name…" autocomplete="off" />
     <span id="searchCount" class="search-count"></span>
   </div>
 </div>
-<div class="stripwrap"><div class="strip" id="strip"><div class="hov-loader" role="status" aria-label="Loading the hands"><svg class="hov-loader-hand" viewBox="0 0 1640 2360" aria-hidden="true"><defs><clipPath id="hovLoaderClip"><polygon points="241,1205 1035,1105 1130,1713 563,2170 188,1874"/></clipPath></defs><path class="lp-hand" d="M1163 1865L936 2141L887 2183L800 2227L629 2273L496 2330L513 2312L616 2265L818 2208L862 2186L913 2146L1218 1789L1307 1654L1527 1415L1576 1351L1599 1307L1608 1260L1592 1215L1536 1186L1489 1190L1406 1240L1275 1362L1170 1506L1148 1564L1103 1580L1071 1546L1073 1482L1114 1376L1134 1298L1163 1074L1252 782L1264 719L1298 495L1307 382L1300 303L1278 261L1251 243L1219 239L1189 251L1167 274L1135 366L1107 509L1076 618L945 949L922 1043L915 1058L901 1065L888 1056L883 1025L961 609L984 301L985 155L972 91L953 66L925 48L878 48L840 78L818 139L776 445L718 682L666 986L645 1029L617 1036L640 583L683 182L670 136L645 117L597 110L556 133L527 189L479 409L461 570L431 745L421 967L404 1078L386 1122L352 1156L323 1148L314 1134L221 692L183 471L159 429L137 408L105 405L59 413L42 440L34 488L35 646L68 887L125 1107L136 1204L87 1689L78 1882L70 1873L71 1732L125 1199L108 1087L59 898L29 689L23 498L32 433L50 407L95 396L143 398L167 421L192 462L214 556L234 698L275 872L290 984L310 1044L323 1124L344 1145L358 1140L379 1115L394 1069L410 957L419 747L452 556L470 395L520 175L552 121L594 99L642 103L682 130L694 176L653 564L647 743L625 1018L633 1025L655 982L704 694L762 457L803 151L821 88L838 61L864 42L895 32L942 44L977 76L994 138L995 317L975 593L903 960L894 1024L904 1052L941 929L1076 582L1121 377L1156 270L1190 237L1221 229L1253 232L1292 259L1314 319L1313 448L1275 721L1170 1095L1145 1304L1083 1489L1081 1537L1098 1564L1112 1569L1127 1563L1165 1493L1271 1349L1402 1228L1485 1178L1532 1174L1591 1200L1611 1224L1619 1272L1612 1303L1574 1374L1438 1536L1303 1677L1235 1787L1169 1859"/><g clip-path="url(#hovLoaderClip)" style="mix-blend-mode:multiply" stroke-width="62"><path class="lp-a lp-a0" stroke="var(--develop)" d="M487 1021A308 308 0 0 1 45 1443M653 897A515 515 0 0 1 -86 1603"/><path class="lp-a lp-a1" stroke="var(--collect)" d="M1251 1324A308 308 0 0 1 772 944M1397 1472A515 515 0 0 1 596 836"/><path class="lp-a lp-a2" stroke="var(--design)" d="M1034 2006A308 308 0 0 1 1154 1406M969 2202A515 515 0 0 1 1170 1200"/><path class="lp-a lp-a3" stroke="var(--narrate)" d="M264 2096A308 308 0 0 1 871 2171M63 2046A515 515 0 0 1 1078 2171"/><path class="lp-a lp-a4" stroke="var(--analyze)" d="M65 1592A308 308 0 0 1 375 2119M-18 1402A515 515 0 0 1 500 2284"/></g><g stroke-width="50"><path class="lp-e lp-e0" pathLength="1" d="M241 1205L1035 1105"/><path class="lp-e lp-e1" pathLength="1" d="M1035 1105L1130 1713"/><path class="lp-e lp-e2" pathLength="1" d="M1130 1713L563 2170"/><path class="lp-e lp-e3" pathLength="1" d="M563 2170L188 1874"/><path class="lp-e lp-e4" pathLength="1" d="M188 1874L241 1205"/></g><g class="lp-dots" stroke-width="31"><circle cx="241" cy="1205" r="90" fill="var(--develop)"/><circle cx="1035" cy="1105" r="90" fill="var(--collect)"/><circle cx="1130" cy="1713" r="90" fill="var(--design)"/><circle cx="563" cy="2170" r="90" fill="var(--narrate)"/><circle cx="188" cy="1874" r="90" fill="var(--analyze)"/></g></svg></div></div></div>
+<div class="stripwrap"><div class="strip" id="strip"><div class="hov-loader" role="status" aria-label="Loading the hands"><svg class="hov-loader-hand" viewBox="0 0 1640 2360" aria-hidden="true"><defs><clipPath id="hovLoaderClip"><polygon points="241,1205 1035,1105 1130,1713 563,2170 188,1874"/></clipPath></defs><path class="lp-hand" d="M1163 1865L936 2141L887 2183L800 2227L629 2273L496 2330L513 2312L616 2265L818 2208L862 2186L913 2146L1218 1789L1307 1654L1527 1415L1576 1351L1599 1307L1608 1260L1592 1215L1536 1186L1489 1190L1406 1240L1275 1362L1170 1506L1148 1564L1103 1580L1071 1546L1073 1482L1114 1376L1134 1298L1163 1074L1252 782L1264 719L1298 495L1307 382L1300 303L1278 261L1251 243L1219 239L1189 251L1167 274L1135 366L1107 509L1076 618L945 949L922 1043L915 1058L901 1065L888 1056L883 1025L961 609L984 301L985 155L972 91L953 66L925 48L878 48L840 78L818 139L776 445L718 682L666 986L645 1029L617 1036L640 583L683 182L670 136L645 117L597 110L556 133L527 189L479 409L461 570L431 745L421 967L404 1078L386 1122L352 1156L323 1148L314 1134L221 692L183 471L159 429L137 408L105 405L59 413L42 440L34 488L35 646L68 887L125 1107L136 1204L87 1689L78 1882L70 1873L71 1732L125 1199L108 1087L59 898L29 689L23 498L32 433L50 407L95 396L143 398L167 421L192 462L214 556L234 698L275 872L290 984L310 1044L323 1124L344 1145L358 1140L379 1115L394 1069L410 957L419 747L452 556L470 395L520 175L552 121L594 99L642 103L682 130L694 176L653 564L647 743L625 1018L633 1025L655 982L704 694L762 457L803 151L821 88L838 61L864 42L895 32L942 44L977 76L994 138L995 317L975 593L903 960L894 1024L904 1052L941 929L1076 582L1121 377L1156 270L1190 237L1221 229L1253 232L1292 259L1314 319L1313 448L1275 721L1170 1095L1145 1304L1083 1489L1081 1537L1098 1564L1112 1569L1127 1563L1165 1493L1271 1349L1402 1228L1485 1178L1532 1174L1591 1200L1611 1224L1619 1272L1612 1303L1574 1374L1438 1536L1303 1677L1235 1787L1169 1859"/><g clip-path="url(#hovLoaderClip)" style="mix-blend-mode:multiply" stroke-width="62"><path class="lp-a lp-a0" stroke="var(--develop)" d="M487 1021A308 308 0 0 1 45 1443M653 897A515 515 0 0 1 -86 1603"/><path class="lp-a lp-a1" stroke="var(--collect)" d="M1251 1324A308 308 0 0 1 772 944M1397 1472A515 515 0 0 1 596 836"/><path class="lp-a lp-a2" stroke="var(--design)" d="M1034 2006A308 308 0 0 1 1154 1406M969 2202A515 515 0 0 1 1170 1200"/><path class="lp-a lp-a3" stroke="var(--narrate)" d="M264 2096A308 308 0 0 1 871 2171M63 2046A515 515 0 0 1 1078 2171"/><path class="lp-a lp-a4" stroke="var(--analyze)" d="M65 1592A308 308 0 0 1 375 2119M-18 1402A515 515 0 0 1 500 2284"/></g><g stroke-width="50"><path class="lp-e lp-e0" pathLength="1" d="M241 1205L1035 1105"/><path class="lp-e lp-e1" pathLength="1" d="M1035 1105L1130 1713"/><path class="lp-e lp-e2" pathLength="1" d="M1130 1713L563 2170"/><path class="lp-e lp-e3" pathLength="1" d="M563 2170L188 1874"/><path class="lp-e lp-e4" pathLength="1" d="M188 1874L241 1205"/></g><g class="lp-dots" stroke-width="31"><circle cx="241" cy="1205" r="90" fill="var(--develop)"/><circle cx="1035" cy="1105" r="90" fill="var(--collect)"/><circle cx="1130" cy="1713" r="90" fill="var(--design)"/><circle cx="563" cy="2170" r="90" fill="var(--narrate)"/><circle cx="188" cy="1874" r="90" fill="var(--analyze)"/></g></svg></div></div>
+<div class="roll" id="roll">
+  <div class="roll-scroller" id="rollScroller" tabindex="0" aria-label="The original paper roll; scrolls sideways">
+    <img id="rollImg" data-src="original-roll.jpg" width="7348" height="1379" draggable="false"
+         alt="The original paper roll from Vizchitra 2025, covered in traced and coded hands">
+  </div>
+  <p class="roll-caption">the original roll · drag or scroll sideways</p>
+</div></div>
 <footer id="footer" hidden></footer>
 
 <div id="lb"><span class="lbclose" id="lbclose">×</span><div class="lbcard" id="lbcard"></div></div>
@@ -2139,18 +2181,72 @@ function applyFitScale(){
 }
 function setView(mode){
   const strip=document.getElementById("strip");
-  strip.classList.remove("view-field","view-scroll","view-fit");
+  strip.classList.remove("view-field","view-scroll","view-fit","view-original");
   strip.classList.add("view-"+mode);
   document.querySelectorAll(".vb-btn").forEach(b=>
     b.classList.toggle("active", b.dataset.view===mode));
   strip.style.removeProperty("--fit-cols");
   strip.style.removeProperty("--fit-scale");
   if(mode==="fit") applyFitScale();
+  // the photo has no names to search, so the box steps aside (keeping its space)
+  const orig=mode==="original";
+  roll.classList.toggle("on",orig);
+  document.querySelector(".vb-search").style.visibility=orig?"hidden":"";
+  if(orig) showRoll();
   try{ localStorage; }catch(e){}
 }
 document.querySelectorAll(".vb-btn").forEach(b=>
   b.addEventListener("click",()=>setView(b.dataset.view)));
-window.addEventListener("resize",()=>{ applyFitScale(); });
+window.addEventListener("resize",()=>{ applyFitScale(); sizeRoll(); });
+
+/* ---- original view: the photographed roll -------------------------------- */
+const roll=document.getElementById("roll");
+const rollScroller=document.getElementById("rollScroller");
+const rollImg=document.getElementById("rollImg");
+// Fill the screen below the toolbar, like fit, without upscaling the photo.
+function sizeRoll(){
+  if(!roll.classList.contains("on")) return;
+  const top=roll.getBoundingClientRect().top+window.scrollY;
+  const h=Math.max(260, Math.min(window.innerHeight-top-56, 1379+36));  // 36 = vertical padding
+  roll.style.setProperty("--roll-h",Math.round(h)+"px");
+  updateRollEdges();
+}
+function updateRollEdges(){
+  const max=rollScroller.scrollWidth-rollScroller.clientWidth;
+  roll.classList.toggle("at-start", rollScroller.scrollLeft<=1);
+  roll.classList.toggle("at-end", rollScroller.scrollLeft>=max-1);
+}
+function showRoll(){
+  // the 1.4MB photo only downloads the first time this view is opened
+  if(!rollImg.getAttribute("src")){
+    rollImg.addEventListener("load",()=>{ rollImg.classList.add("ready"); updateRollEdges(); },{once:true});
+    rollImg.src=rollImg.dataset.src;
+  }
+  sizeRoll();
+}
+rollScroller.addEventListener("scroll",updateRollEdges,{passive:true});
+// A vertical mouse wheel moves along the roll; at either end the page scrolls.
+rollScroller.addEventListener("wheel",e=>{
+  if(Math.abs(e.deltaY)<=Math.abs(e.deltaX)) return;
+  const max=rollScroller.scrollWidth-rollScroller.clientWidth;
+  if((e.deltaY<0 && rollScroller.scrollLeft<=0) || (e.deltaY>0 && rollScroller.scrollLeft>=max-1)) return;
+  e.preventDefault();
+  rollScroller.scrollLeft+=e.deltaY;
+},{passive:false});
+// Drag with a mouse (touch and trackpads already scroll it natively).
+let rollDrag=null;
+rollScroller.addEventListener("pointerdown",e=>{
+  if(e.pointerType!=="mouse" || e.button!==0) return;
+  rollDrag={x:e.clientX, left:rollScroller.scrollLeft};
+  rollScroller.setPointerCapture(e.pointerId);
+  rollScroller.classList.add("dragging");
+});
+rollScroller.addEventListener("pointermove",e=>{
+  if(rollDrag) rollScroller.scrollLeft=rollDrag.left-(e.clientX-rollDrag.x);
+});
+const endRollDrag=()=>{ rollDrag=null; rollScroller.classList.remove("dragging"); };
+rollScroller.addEventListener("pointerup",endRollDrag);
+rollScroller.addEventListener("pointercancel",endRollDrag);
 
 /* ---- name search --------------------------------------------------------- */
 function runSearch(q){
