@@ -20,6 +20,8 @@
     /* The paper roll the hands were traced on — a content surface (like the
        marker colors), distinct from the theme's --bg page ground. */
     --paper:#f5f1e8; --paper-2:#efe9dc; --paper-edge:#d8cfbd;
+    /* tile size; the script re-sets these, but the loader needs them first */
+    --tw:150px; --th:216px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--hand);}
@@ -79,6 +81,9 @@
     /* seeded jitter: lean + nudge + slight scale => tacked-to-a-wall messiness */
     transform:translate(var(--dx,0), var(--dy,0)) rotate(var(--rot,0)) scale(var(--scl,1));
     transition:transform .18s ease, filter .18s ease;
+    /* off-screen hands skip rendering until scrolled near; size = card + name row */
+    content-visibility:auto;
+    contain-intrinsic-size:auto var(--tw) auto calc(var(--th) + 16px);
   }
   .tile.clickable{cursor:pointer;}
   .tile.clickable:hover{
@@ -94,8 +99,50 @@
   .tile:hover .nm{opacity:.9;}
   .tile .nm.unk{color:var(--muted);font-style:italic;}
   .tile .hint{display:none;}
+  /* the pair outline is drawn outside the tile box, which content-visibility
+     would clip; pair hands are rare, so they just render normally */
+  .tile.pair{content-visibility:visible;}
   .tile.pair .card::after{content:"";position:absolute;inset:-4px -8px;
     border:1px dashed var(--border);border-radius:12px;pointer-events:none;}
+
+  /* ---- loading hand: shown only while the first render is pending --------
+     A simplified outline of the same hand, with the knuckles where
+     readAnchors() measures them. Fades in after 150ms so cached loads never
+     flash; render() replaces it. Static under prefers-reduced-motion. */
+  .hov-loader{grid-column:1/-1;justify-self:stretch;display:flex;align-items:center;
+    justify-content:center;height:calc(var(--th) * 3 + 60px);
+    opacity:0;animation:hov-appear .25s ease .15s forwards;}
+  @keyframes hov-appear{to{opacity:1}}
+  .hov-loader-hand{width:calc(var(--tw) * 1.15);height:auto;overflow:visible;}
+  .hov-loader-hand .lp-hand{fill:none;stroke:var(--text);stroke-width:22;stroke-linejoin:round;}
+  .hov-loader-hand .lp-e{fill:none;stroke:var(--text);stroke-linecap:round;stroke-dasharray:1;
+    animation-duration:3.6s;animation-timing-function:ease-out;animation-iteration-count:infinite;}
+  .hov-loader-hand .lp-a{fill:none;stroke-linecap:round;opacity:.5;
+    animation-duration:3.6s;animation-timing-function:ease-in-out;animation-iteration-count:infinite;}
+  .hov-loader-hand .lp-dots circle{stroke:var(--text);opacity:.92;}
+  @keyframes hov-e0{0%,4.2%{stroke-dashoffset:1;opacity:1}12.5%,84.7%{stroke-dashoffset:0;opacity:1}94.4%,100%{stroke-dashoffset:0;opacity:0}}
+  .lp-e0{animation-name:hov-e0}
+  @keyframes hov-e1{0%,12.5%{stroke-dashoffset:1;opacity:1}20.8%,84.7%{stroke-dashoffset:0;opacity:1}94.4%,100%{stroke-dashoffset:0;opacity:0}}
+  .lp-e1{animation-name:hov-e1}
+  @keyframes hov-e2{0%,20.8%{stroke-dashoffset:1;opacity:1}29.2%,84.7%{stroke-dashoffset:0;opacity:1}94.4%,100%{stroke-dashoffset:0;opacity:0}}
+  .lp-e2{animation-name:hov-e2}
+  @keyframes hov-e3{0%,29.2%{stroke-dashoffset:1;opacity:1}37.5%,84.7%{stroke-dashoffset:0;opacity:1}94.4%,100%{stroke-dashoffset:0;opacity:0}}
+  .lp-e3{animation-name:hov-e3}
+  @keyframes hov-e4{0%,37.5%{stroke-dashoffset:1;opacity:1}45.8%,84.7%{stroke-dashoffset:0;opacity:1}94.4%,100%{stroke-dashoffset:0;opacity:0}}
+  .lp-e4{animation-name:hov-e4}
+  @keyframes hov-a0{0%,47.2%{opacity:0}56.9%{opacity:.55}68.1%{opacity:.35}84.7%{opacity:.5}94.4%,100%{opacity:0}}
+  .lp-a0{animation-name:hov-a0}
+  @keyframes hov-a1{0%,50.6%{opacity:0}60.3%{opacity:.55}71.4%{opacity:.35}84.7%{opacity:.5}94.4%,100%{opacity:0}}
+  .lp-a1{animation-name:hov-a1}
+  @keyframes hov-a2{0%,53.9%{opacity:0}63.6%{opacity:.55}74.7%{opacity:.35}84.7%{opacity:.5}94.4%,100%{opacity:0}}
+  .lp-a2{animation-name:hov-a2}
+  @keyframes hov-a3{0%,57.2%{opacity:0}66.9%{opacity:.55}78.1%{opacity:.35}84.7%{opacity:.5}94.4%,100%{opacity:0}}
+  .lp-a3{animation-name:hov-a3}
+  @keyframes hov-a4{0%,60.6%{opacity:0}70.3%{opacity:.55}81.4%{opacity:.35}84.7%{opacity:.5}94.4%,100%{opacity:0}}
+  .lp-a4{animation-name:hov-a4}
+  @media (prefers-reduced-motion:reduce){
+    .hov-loader-hand .lp-e,.hov-loader-hand .lp-a{animation:none;}
+  }
 
   /* ---- view toggle -------------------------------------------------------- */
   .viewbar{display:flex;gap:14px;justify-content:center;align-items:center;
@@ -260,7 +307,7 @@
     <span id="searchCount" class="search-count"></span>
   </div>
 </div>
-<div class="stripwrap"><div class="strip" id="strip"></div></div>
+<div class="stripwrap"><div class="strip" id="strip"><div class="hov-loader" role="status" aria-label="Loading the hands"><svg class="hov-loader-hand" viewBox="0 0 1640 2360" aria-hidden="true"><defs><clipPath id="hovLoaderClip"><polygon points="241,1205 1035,1105 1130,1713 563,2170 188,1874"/></clipPath></defs><path class="lp-hand" d="M1163 1865L936 2141L887 2183L800 2227L629 2273L496 2330L513 2312L616 2265L818 2208L862 2186L913 2146L1218 1789L1307 1654L1527 1415L1576 1351L1599 1307L1608 1260L1592 1215L1536 1186L1489 1190L1406 1240L1275 1362L1170 1506L1148 1564L1103 1580L1071 1546L1073 1482L1114 1376L1134 1298L1163 1074L1252 782L1264 719L1298 495L1307 382L1300 303L1278 261L1251 243L1219 239L1189 251L1167 274L1135 366L1107 509L1076 618L945 949L922 1043L915 1058L901 1065L888 1056L883 1025L961 609L984 301L985 155L972 91L953 66L925 48L878 48L840 78L818 139L776 445L718 682L666 986L645 1029L617 1036L640 583L683 182L670 136L645 117L597 110L556 133L527 189L479 409L461 570L431 745L421 967L404 1078L386 1122L352 1156L323 1148L314 1134L221 692L183 471L159 429L137 408L105 405L59 413L42 440L34 488L35 646L68 887L125 1107L136 1204L87 1689L78 1882L70 1873L71 1732L125 1199L108 1087L59 898L29 689L23 498L32 433L50 407L95 396L143 398L167 421L192 462L214 556L234 698L275 872L290 984L310 1044L323 1124L344 1145L358 1140L379 1115L394 1069L410 957L419 747L452 556L470 395L520 175L552 121L594 99L642 103L682 130L694 176L653 564L647 743L625 1018L633 1025L655 982L704 694L762 457L803 151L821 88L838 61L864 42L895 32L942 44L977 76L994 138L995 317L975 593L903 960L894 1024L904 1052L941 929L1076 582L1121 377L1156 270L1190 237L1221 229L1253 232L1292 259L1314 319L1313 448L1275 721L1170 1095L1145 1304L1083 1489L1081 1537L1098 1564L1112 1569L1127 1563L1165 1493L1271 1349L1402 1228L1485 1178L1532 1174L1591 1200L1611 1224L1619 1272L1612 1303L1574 1374L1438 1536L1303 1677L1235 1787L1169 1859"/><g clip-path="url(#hovLoaderClip)" style="mix-blend-mode:multiply" stroke-width="62"><path class="lp-a lp-a0" stroke="var(--develop)" d="M487 1021A308 308 0 0 1 45 1443M653 897A515 515 0 0 1 -86 1603"/><path class="lp-a lp-a1" stroke="var(--collect)" d="M1251 1324A308 308 0 0 1 772 944M1397 1472A515 515 0 0 1 596 836"/><path class="lp-a lp-a2" stroke="var(--design)" d="M1034 2006A308 308 0 0 1 1154 1406M969 2202A515 515 0 0 1 1170 1200"/><path class="lp-a lp-a3" stroke="var(--narrate)" d="M264 2096A308 308 0 0 1 871 2171M63 2046A515 515 0 0 1 1078 2171"/><path class="lp-a lp-a4" stroke="var(--analyze)" d="M65 1592A308 308 0 0 1 375 2119M-18 1402A515 515 0 0 1 500 2284"/></g><g stroke-width="50"><path class="lp-e lp-e0" pathLength="1" d="M241 1205L1035 1105"/><path class="lp-e lp-e1" pathLength="1" d="M1035 1105L1130 1713"/><path class="lp-e lp-e2" pathLength="1" d="M1130 1713L563 2170"/><path class="lp-e lp-e3" pathLength="1" d="M563 2170L188 1874"/><path class="lp-e lp-e4" pathLength="1" d="M188 1874L241 1205"/></g><g class="lp-dots" stroke-width="31"><circle cx="241" cy="1205" r="90" fill="var(--develop)"/><circle cx="1035" cy="1105" r="90" fill="var(--collect)"/><circle cx="1130" cy="1713" r="90" fill="var(--design)"/><circle cx="563" cy="2170" r="90" fill="var(--narrate)"/><circle cx="188" cy="1874" r="90" fill="var(--analyze)"/></g></svg></div></div></div>
 <footer id="footer" hidden></footer>
 
 <div id="lb"><span class="lbclose" id="lbclose">×</span><div class="lbcard" id="lbcard"></div></div>
@@ -1296,52 +1343,84 @@
 </svg></template>
 
 <!-- Offline sample so the scaffold renders without the live sheet. Real rows override. -->
-<script id="sampleCsv" type="text/plain">id,name,name_uncertain,lives_in_bangalore,pentagon drawn,enjoy_develop,enjoy_collect,enjoy_design,enjoy_narrate,enjoy_analyze,pet,viz_count,travel,chronotype,notes,photo_Link
-text — also the image filename (001.jpg),fourth/ring finger,flag if illegible/guessed,"which hand: yes=left, no=right",,pinky knuckle · lavender · 1-5,index knuckle · yellow · 1-5,thumb knuckle · pink · 1-5,wrist 1 · orange · 1-5,wrist 2 · teal · 1-5,leftmost/thumb,second/index finger,middle finger,rightmost/pinky,"doodles, custom marks, oddities",
-001,SURBHI & ZAINA,,,,,,,,,,,,,,https://lh3.googleusercontent.com/pw/AP1GczMvzRT9S86hew1Z1_3NAUxQtRCItuQFyabw1j5ALYkVohL2Mbno-eO_aokDTT-uPKvdiB3J3YD3mrTP-flLXNHXO8tYqQa7-bTP2H0S4kLN6NKA9ukaAUWZBTn96herhaw5Vz3MYLEMtwiDsidMNnKw=w3024-h1702-s-no-gm?authuser=0
-002,ABHINAV,,yes/left,,4,1,4,3,3,cat,11-50,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczMEwrafRs7lo0lxeNW-2FnxPZFr5mN8uKJuBSaby5dxDQxgGBRFoJoOqbD_ao1A79_ABfaDktUKfcuN-i6fYujXB_Pd5B5C06qyRf90vuYc4TUmaIrXFUfBV1jjk8UfjE-VtPAfwK2Jp2VEFw0JL_AI=w830-h1476-s-no-gm?authuser=0
-003,URMILA,,no/right,,5,0,0,0,0,both,51-100,under_10km,night,,https://lh3.googleusercontent.com/pw/AP1GczPx9vJNoshgAoJnmoGDh2zEcZeuRKaIAApxx0Pjs329bixnnI0FsJPJbeXymIiW-h8n69Vz0R4vhlzJTH3oWv3B0Kfjq6sXFkbJsmDsLeXtONszMsEGLtRSdpn6SVnmswGFxJND-L_c10lOmYHYTQJR=w1514-h852-s-no-gm?authuser=0
-004,UNNATI S.,,yes/left,,1,5,4,5,5,both,101-200,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczNZeky9WOIx5z6I7xWnLWgY2u0pHgWqdZ7ATEEkFeAPbalOcEq7xhXXcTbQCxzXN0bBGBOqgW5n2n5vqDoCadJw_DVfC9qHP-lxj_wQl0QzIU7sMPVzo1APGXEtfXMX9yW3EyH3QCjEB0xOIjszdlZs=w1514-h852-s-no-gm?authuser=0
-005,SRUTHI,,no/right,,5,4,5,5,5,both,51-100,south_india,night,"has some green scribbles on each finger, and has mentioned a quote ""May our travels bear fruit""",https://lh3.googleusercontent.com/pw/AP1GczOQ2zsrVn2klYXzq6Qxqa9s1FxBe-55oO1hkpwX416XSCw4tVN_GkM1orfOoKWAa8PPmHbanBjsrNzyC65OjK7f9kasgYkckaMVtw_S5Ar30DiWSgN1qbIQcujRYabez6JmIpl0onR9fK-ZvAFJTnho=w1514-h852-s-no-gm?authuser=0
-006,nithya,,yes/left,,0,0,5,3,2,cat,none,10-25km,night,"has a cute face, mug and a flower drawn next to it",https://lh3.googleusercontent.com/pw/AP1GczOftuONdjgrPMHZ8PYqK5u8-3UeCPm0Hz5MCc8AOhzz7W7zn7oGJB9t8-ZontC2RXXCWyAspYOa4tb43dozJ_SuER-mXjJ6zvx1yMpabf2zBT7IJ-kmwz8-f2AcWoQFT_tN5ds8fcI2zAUIAxSZpsTe=w830-h1476-s-no-gm?authuser=0
-007,BUDHA,,yes/left,,,,,,,,,,,only hand name and pentagon drawn but there's a cute smiley inside the pentagon,
-008,ANUPAMA,,yes/left,,1,2,4,2,1,cat,none,10-25km,morning,,
-009,RASHI,,no/right,,,,,,,both,1-10,south_india,morning,,https://lh3.googleusercontent.com/pw/AP1GczPzvWbJvUuBz9XNJCk-qN1DNoa5YttYpeI0HIHRpRg5-iOgiYn5AifH-_MUilRvbTARYo_I_f6qVsZqykisGvdZlVuPrV3QV5jBWI48KtTqVDE-O4CFQD5QGvJTtmLAKoistbB5OxzcopU9NTv1ElIU=w830-h1476-s-no-gm?authuser=0
-010,ANKUR,,yes/left,,,5,5,5,5,cat,none,north_india,morning,,https://lh3.googleusercontent.com/pw/AP1GczM_DPWkGXCbgkCw2ukPfNSeopdbREfquuMNSbejnuJVnOF7D-ub0Fb2X6eeaPcOEdg7q0rwdLY-DoQvWSRqZirMmhYauCUP0VklUaxiwqXZfANHK3a4w_mvWOqJ2NcNGQF7Sino-EjrUG9UGFKke5di=w830-h1476-s-no-gm?authuser=0
-011,JAINA,,yes/left,,,,,,,dog,none,10-25km,morning,cute wifi symbol collage inside the pentagon,https://lh3.googleusercontent.com/pw/AP1GczNjDiBRjzsWMwVdwUbZJLj4VdG_3AsslekU2s-AjBY3yI-kKr08RE7Gp9tgVvBBzBUWHTt7RA0rc8YV3d1QMf4l9mhzT6vLRpciZqPkbcXFQoIMwn-nywHE6MStF3-XErQKAhPhtug-QUxHXtbLPFZw=w830-h1476-s-no-gm?authuser=0
-012,NITISHA,,yes/left,,,,,5,,none,none,outside_india,morning,,https://lh3.googleusercontent.com/pw/AP1GczM_yevi-OVtAJciO9GduMA89Pa582I71t7y_Wgft2ZtUo1jQIE95g2zio17nY70z3p73Ux7zd17u71e-pscOY-wm7zwrfrfF_lhU8lEVCfX4-rwnafnhTPc4JhLIXqh4MlatL_yitBxIoQ8m4tEg566=w830-h1476-s-no-gm?authuser=0
-013,TANVI,,yes/left,,,,,3,2,none,51-100,10-25km,morning,,https://lh3.googleusercontent.com/pw/AP1GczOhT19CMvsFdCfLRSxkBd1zMMqcxbU8uHFWJ5WN6QEqDBWO5IrKDmtDvw3qoFInER-Sd7fVg7iKDyRw39rttKZI9ZgCHb8EJgxCEwCewztEpJNxSGCPRBa-rhfljVeyjLwQqT8HUsuKOvlgbYtNjl2u=w830-h1476-s-no-gm?authuser=0
-014,,,,,,,,,,,,,,,https://lh3.googleusercontent.com/pw/AP1GczMbTOhSSR1NlDoIWCsVypegOkiOjPjfXeSUOWeigQMqSxN6ksCCy_RCPP3yVQ_Z0LMwmJcFLADe2TIp7D8HwIfjBeSzm9JJEnKAebKB1UWMHIDBJ8lHne0VQ0-hfUBTySrxzMqMxnssiO-JkDEaqc5c=w830-h1476-s-no-gm?authuser=0
-015,TAN,,no/right,yes,,,,,,both,11-50,outside_india,both,"very cute orange, pink and yellow hexagons drawn",https://lh3.googleusercontent.com/pw/AP1GczN_P6GHM731ZpBJ7T5OmLPwlOI0iwRPMxbHX_nmRwr1mXw3ioTfj9yw3EglXes0d8tXI7NwV3lgFToYTOl7ldy3MOcEBzOMGj--0czRZeloGTU-pNimcITER7tUk4m4UyMBZMfUZEEqJCAKoL0Sj17N=w1514-h852-s-no-gm?authuser=0
-016,UPASNA,,yes/left,,1,2,5,3,4,cat,11-50,10-25km,morning,,https://lh3.googleusercontent.com/pw/AP1GczPBJ0ZvXq5hgSGYyRvnTPEoEvB1NCpgHDAFH9T9HqluVnFazbLib0IdyqfBafK0RlXCKJbW9Ccf2oiQTjF4nv5Zyqaj4y2gEHmM5eGrI7gjgpxYkIOUpW-yOKjDKz3GUE5pXU4KX6DDbsVAfubHnpV5=w830-h1476-s-no-gm?authuser=0
-017,KAVI,,yes/left,,0,0,5,0,2,both,11-50,under_10km,night,,https://lh3.googleusercontent.com/pw/AP1GczP-9kxPBx8n9S-f7P8BiC2lrxbB9MAWKFBTdAMto0_VdKVtt2UHcdmWu-XDXCSNzH0AWXtIrfZiQDF6hgFjKYSMNfJ1hG0MWec4F9wzxpV6UtSz1myDm5mNOM6JEZipzy6oU4acbe0Mtj5P7tzJzDnk=w830-h1476-s-no-gm?authuser=0
-018,SAKSHI,,yes/left,,0,3,5,2,4,cat,lost_count,under_10km,night,,https://lh3.googleusercontent.com/pw/AP1GczPt5LZ5yNoJr-sFyhC80HpcO0FzRcfao-_14_m91CPYJEcHBu4sOrUElM5lKAEwKGv62KhlYaSPHGv8Es8U9DiSnz-89ZsWsxlucP1VmicNP5pRexowNu8rVktgj3J7fLVe6Di-9PgGr5z4_jYGaUso=w464-h825-s-no-gm?authuser=0
-019,IPSHITA,,yes/left,,2,4,5,5,2,cat,11-50,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczN7InvQbyLrKut41WH5jVYdZI5pQYq8PKhD0RkgD6wPqOw5V0respsiLnzD0n2xeDbDdpic9GIGL-u3fyeYCCXCYCfK5vfobdjuOUO_hVhRiLiDkYnWFmtLUN-FF3ZtSB1ZCigUr5BlwsKa7jMF5Lz7=w464-h825-s-no-gm?authuser=0
-020,,,,,0,1,4,5,5,,,,,,https://lh3.googleusercontent.com/pw/AP1GczNAgA9IufWOaWSQVo2u0xjYCuxPRbgVIpKYTsJnwWe3Fe4okMEX4KHhZ2FpIsGV6eUHNXvWEyV-WVF3yL18PjeI1dDsIwuURSV41Hx2cthJMzNGaOcd9XRippP5Mn627oQ4oKRAbfPp9bjihgTrcHVN=w464-h825-s-no-gm?authuser=0
-021,VAIDEHI,,yes/left,,4,2,5,5,0,cat,101-200,under_10km,morning,,https://lh3.googleusercontent.com/pw/AP1GczPw1sML360NyY3oQbjhwj_LUyv_bW-GNKG4eLcogMS3hMbFmMNFUQqLjECLcMV-2ZcAnwJ76ZcCGkeRSxLuFbLd2HPNOvdp699LICdTqdwAwRgFzuvt_w-684fpyPGLPdS90PizpkavQQVKvOcs7ccC=w464-h825-s-no-gm?authuser=0
-022,NEHA,,yes/left,,0,4,5,5,3,none,11-50,under_10km,morning,"the pinky has some fun illustrations which I interpret as a ghost/tshirt, the word Hyd above that and maybe charminar on top? I could be absolutely wrong, but I love that this participant added their own vibes!",https://lh3.googleusercontent.com/pw/AP1GczOv1IEyEtyTGv9bfP8USgb71sfasjw_B1I4bMUeKpVImoXebc_5JAXhiAPZIhjfOFalv0H-Tpo9_ytxh9C_9AtCjtHMqdJftYWpASxCcSP1RFhNnunYkdjSYa8mPsZYmO1lQkmdNfUQRdXeTUmZyqkw=w830-h1476-s-no-gm?authuser=0
-023,pvg,TRUE,yes/left,,4,4,4,4,4,dog,none,outside_india,both,,https://lh3.googleusercontent.com/pw/AP1GczNGwADkKmKwHW78mKPWvC7NVDCkXOUHmeeEONjAqAg_3DkxuR0FbURhyqoxL-YqVZnbDgUJ0_eHH8jm3QZhD3_RE3NGsjFmD4OVirG1jI4F5ioEF51GxuuoMHhPu3_5KLv6zJ-tVdi_kvdir5FjPlVv=w1514-h852-s-no-gm?authuser=0
-024,ANAGHA,,yes/left,,3,3,5,4,5,dog,1-10,south_india,morning,,https://lh3.googleusercontent.com/pw/AP1GczN8GAATB_VYDbLgNRS86PrAY5GQdp7Yz_cpA7XwYyh5soo-nbWS4ZXIfcMheHLB9VK3hE8Ov8yVq_u5PjXi3pTlSG8DfVOg5f9q5WI0XS6UtexKyVbkZXznO8IDh2uUVXOVd51mVefxxQgMAhG6QutG=w1514-h852-s-no-gm?authuser=0
-025,KASHVI,,yes/left,yes,,,,,,cat,lost_count,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczP3recs5mgdNc489ldqu-qOkpMKaBEh48WFFUOS244AJE_HJPvXklVD1NJFKm0GiRTzkKVbngWZHp0HzmEuvoMBL1cpGPE63J-SdW9vFDKGJ0ret75EU56qHC5dsd8pZ5YSTEw8abp2X2AY60E9capR=w1514-h852-s-no-gm?authuser=0
-026,KAUSHIK,,yes/left,,4,5,6,3,4,both,11-50,10-25km,morning,,https://lh3.googleusercontent.com/pw/AP1GczNQGcFLWDSN2I-aU3xF4SYSq4qfOo2b6Uj1JP3Boy1ym8fUT64JCu0IdaKjbgXu63mZaVhJCx-TXULdz6YMjQV68j9mqIVu1F_5zTUYij4sNPKAEUSssUuyCsTmVsO-UEiya9KdXByB9vzM6kjwodx0=w957-h539-s-no-gm?authuser=0
-027,MOHIT,,yes/left,,2,2,5,3,2,cat,lost_count,outside_india,night,,https://lh3.googleusercontent.com/pw/AP1GczNAFiz6gFp14nEepv4R8qBCqMx6yJBuxjw2T8bYIjM_kKY6UfsLdSO-Kyk9ylRBpZCbRAzHmG_FmTNjn6NhBneJI7-wpOM9NlyjFFC1U2Vc8uO58gBP2881rW4PC7sc8y-MJM2ja1wpRiksB_Q4Qn0S=w957-h539-s-no-gm?authuser=0
-028,SHARMILA DEVI,,yes/left,,,,,,,both,none,10-25km,morning,"Pentagon has multiple pink and green arcs overlapping, all circles are coloured yellow",https://lh3.googleusercontent.com/pw/AP1GczOxz0lJRXVw7_YmPf2NDHs_lrGWCv_dt28bHGCzrxyCuKnMC4K1qJsgFZik7YZmXYB-zGf-Cvu20xVWy7q5oBZEiXt6uwvJkTmLS7AhHCKNmfDfZwI6f_n4cZJJq1h1hte1cRfzqN7bsGN4i7ZqW80c=w1403-h789-s-no-gm?authuser=0
-029,PRAKRUTI,,yes/left,,2,3,2,2,2,dog,none,outside_india,morning,,https://lh3.googleusercontent.com/pw/AP1GczP51Mby_RUzlU7DxbvYGelQqvZn6sQF7aNKE_B8ICA3_HVLlK-Km3xq6c1OJp37dxScTfTe8KQLtRcqc5vbJVU3Wd15ohNY1FapOO9KT7H91CermcVVtimVOxboRcISlxpSa8EdRbZc5LcrC8QhAITA=w957-h539-s-no-gm?authuser=0
-030,SHUBHANGI,,yes/left,no,,3,4,4,4,both,11-50,under_10km,both,,https://lh3.googleusercontent.com/pw/AP1GczOFwiOTh8kZBfTki4PPvd1SbjjwM5iB6fKCnPkZ-gO1MN6OGIC1OOJLEh8QPuE4Upc5LEWZL0TPOLNVFM_nkHKtb67kLBIWWp-3t_xPvb-lL3Z9EyFwltys0DYwup1G_a2GYdcrBVqufaiT-gVj2pbQ=w957-h539-s-no-gm?authuser=0
-031,JYOTI,,yes/left,no,5,5,5,5,4,cat,51-100,under_10km,both,,
-032,PHANI,,no/right,,4,1,4,3,1,cat,lost_count,north_india,night,,https://lh3.googleusercontent.com/pw/AP1GczMmqz7oBPWduFb4N0hNlgf54Z8TUVRes02y4Nw-GiN7N4L5i5zhsErAYA0fPMkKmZev5pw8imAkOI8TWCyCk6yNI9IoDbIfPcM4ceBjoxmFkrcyxUIRYtQ4r2oRlg4UAP3N-2_FbCdHS_9dbbKMgRdp=w957-h539-s-no-gm?authuser=0
-033,AMBITA,,,,,,,,,,,,,fully offbeat offscript but so pretty,https://lh3.googleusercontent.com/pw/AP1GczMj5W5g-4OmN_s6-as4798NTPNTiRALT_LWIzpdfekXTDbYrCdWJKHnM-dxVAZdbI3jmk9vFxDVB7G3TXX8v-c_CohwB-zeMPVo3Zgf0wIcPgNeZD1MQjdChTyqWm-16gP0BvXSglL6hCTfzaSYfAXH=w957-h539-s-no-gm?authuser=0
-034,ebrup,,,,,,,,,,,,,"offbeat offscript, love the fingerprints and triangle!",https://lh3.googleusercontent.com/pw/AP1GczPdtpcq3iATP1OaURypK7GiOwlm8JLA73mbASEheH6ibjsRiHyqXPtWC_CAAS2aa19sQkEijmSDSllmjfx8RKvpXGKOfG7LI_rDLE6DzPNSUL_T6HvT9qbx5NucgZ7J_b6OaloX0iM5LQqO7T02dJeu=w957-h539-s-no-gm?authuser=0
-035,CHANDRA,,yes/left,,2,1,6,2,2,cat,51-100,under_10km,none,,https://lh3.googleusercontent.com/pw/AP1GczNwdY2fP_szHaa462peyHmBeudW5e3n78AUqXCod8_sNiGFdbE6-fJDl0TUYY-2XU_Wkz73FeHFUA24xFia6dp7a6Z4fHP_6RyfD_lF2KgZmma0bUQq-gNkP2V3kBA-xxZ_REyaSzhP_O5E8q2S-O3O=w957-h539-s-no-gm?authuser=0
-036,ANGAPPAN,,yes/left,no,0,3,3,3,0,dog,1-10,under_10km,night,pentagon not connected,https://lh3.googleusercontent.com/pw/AP1GczN7tv96-TGdghIPTFcPqS405BL42Rtaz-LPpYSbz5bLlBhtBKUgV-zJxOsBVys0Ckc1yGmJ4Y_KJAn-ujpsh8XQy4ux-pr25W6l43ibUCm4-Am2XAUc9cGVjrIhSTE6T6gWQcZ6W7XniNb1E8TsAero=w957-h539-s-no-gm?authuser=0
-037,AISHWARYA,,yes/left,,3,5,5,3,5,both,lost_count,under_10km,night,"the ring finger (one indicating how many vizzes made) has help written next to it, love it!",https://lh3.googleusercontent.com/pw/AP1GczNyOjg4rl0hPgy7SpznaRsGLmf3sJxCF4MeQg6vuHi0ogcHyDWyoXcXCJb-M5As5PYOTyH5NmxgIO24z05r5U5iMB54sRygrWZu_YoClHcs9Up6wVB9Xv4IjByzgPqAet2kX7DRQMp-vK7ZrLZCoiqo=w957-h539-s-no-gm?authuser=0
-038,ISHITA,,no/right,yes,,,,,,both,1-10,north_india,night,"There's a cute note saying ""I missed a finger XP"" pointing from pinky to thumb",https://lh3.googleusercontent.com/pw/AP1GczMkDp2_lQTggoXx5uEgSvtuGCOK6_oiEAEKf2a8hBxtIXHa6rMBtKsbdKOSJTTR5LPHcdPWs_YU2SrZ35jmh-y_96xxKKddyvHo37bkQyVCBg3BHsRKsDxHYd4P6DXmkHxZxOpSD3l6GiDLv0zrf_LF=w957-h539-s-no-gm?authuser=0
-039,SRISHMA SUNKU,,,,,,3,5,,,,,,,https://lh3.googleusercontent.com/pw/AP1GczP3E3gnLQMww2RXASD2A6JzOAYpSs4q87WRO9CjrjMzK-I0gttIasBenzz8hSjjt3wQ1GnbKrS8KJ5_mWxDGhFhWP0zFX8f-C4ZE1xDGnLd2_OTuOkoTxv_wT0KYD0MovxvGbVrNpnCjNuzJElFUkr4=w464-h825-s-no-gm?authuser=0
-040,CHANDINI,,no/right,,,,5,4,5,none,1-10,south_india,night,,https://lh3.googleusercontent.com/pw/AP1GczMNIakLLRdPfNzQPeJJ3rZORCh4BbCht8SGRLA9vQW18ijQBtHxC1huWyzDi0_ZYE4sW1-w33GwpK-huUIhRvf3Ezz58w_HClKc7naEpHSsOBPDuUSIXg-P7xPIOYUv2TxgIQSDrU8WHJEJI6yVmqC3=w957-h539-s-no-gm?authuser=0
-041,DEEPIKA,,yes/left,,5,5,5,5,5,dog,51-100,10-25km,both,,https://lh3.googleusercontent.com/pw/AP1GczP9umVjNq28wOyGzvqpZl8i8tjbp-RyiN-zso8n0dUfNVMlYM9pjF_Fl1mSw3a4VcGTwkVi5Gk1AHgGfc4wIR_dfpyERMYjTe4esdqiGmgYQ0TGqK4w1wJ8w_8Q_q5MKm3hS9p6eOEUC3Cf5aBaBWW1=w957-h539-s-no-gm?authuser=0
-042,JUNAID,,yes/left,no,3,5,6,7,5,dog,11-50,under_10km,both,,https://lh3.googleusercontent.com/pw/AP1GczPKf4xtrAcAj-92kxz2ZSfRxhFe83cf6zXK0uWwjURp6S_IZb_TeoKbYAL6GpaL9NL7pU5XlQwdW7DDZuniMcTlMKW56qbkiWPyZakNkLaxXDBwjjcAa18V8C_C1BHXJKHCHdTDThfsGt5aPFw1kanq=w957-h539-s-no-gm?authuser=0
-043,SAHA,,yes/left,,6,2,2,4,5,dog,11-50,under_10km,morning,,https://lh3.googleusercontent.com/pw/AP1GczNZOhVqLLeNupHpBwqjZ6pZpjl3hbrENtfNVXr0St3I3hSwm2uQePUjgKvlA-YGDmxGSp7UzdmIxxsEpGtT7elxfYQs1lCSBFqc6bcXuEW2ao_ru2NqMRqJ0HVh5-jygFtcz_3EYkETip0niqlOBAyy=w957-h539-s-no-gm?authuser=0
-044,CHANDANA,,yes/left,,3,4,5,4,3,cat,11-50,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczOWkZOD-Q89yfGR7Ho_wxyiSsiYPVYUsaEEkTuZRUKB-fAUQV-rvVZHiZ8hYodIcXUU42JL-houfughuxoQrXNV8HrpISVI2KSurGiLXjYt3zMyDogL68JZclhgKgWjZwYuH8lwShb5-gZUI1ZHaF3Q=w957-h539-s-no-gm?authuser=0</script>
+<script id="sampleCsv" type="text/plain">id,name,lives_in_bangalore,pentagon drawn,enjoy_develop,enjoy_collect,enjoy_design,enjoy_narrate,enjoy_analyze,pet,viz_count,travel,chronotype,notes,photo_Link
+text — also the image filename (001.jpg),fourth/ring finger,"which hand: yes=left, no=right",,pinky knuckle · lavender · 1-5,index knuckle · yellow · 1-5,thumb knuckle · pink · 1-5,wrist 1 · orange · 1-5,wrist 2 · teal · 1-5,leftmost/thumb,second/index finger,middle finger,rightmost/pinky,"doodles, custom marks, oddities",
+001,SURBHI & ZAINA,,,,,,,,,,,,,https://lh3.googleusercontent.com/pw/AP1GczMvzRT9S86hew1Z1_3NAUxQtRCItuQFyabw1j5ALYkVohL2Mbno-eO_aokDTT-uPKvdiB3J3YD3mrTP-flLXNHXO8tYqQa7-bTP2H0S4kLN6NKA9ukaAUWZBTn96herhaw5Vz3MYLEMtwiDsidMNnKw=w3024-h1702-s-no-gm?authuser=0
+002,ABHINAV,yes/left,,4,1,4,3,3,cat,11-50,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczMEwrafRs7lo0lxeNW-2FnxPZFr5mN8uKJuBSaby5dxDQxgGBRFoJoOqbD_ao1A79_ABfaDktUKfcuN-i6fYujXB_Pd5B5C06qyRf90vuYc4TUmaIrXFUfBV1jjk8UfjE-VtPAfwK2Jp2VEFw0JL_AI=w830-h1476-s-no-gm?authuser=0
+003,URMILA,no/right,,5,0,0,0,0,both,51-100,under_10km,night,,https://lh3.googleusercontent.com/pw/AP1GczPx9vJNoshgAoJnmoGDh2zEcZeuRKaIAApxx0Pjs329bixnnI0FsJPJbeXymIiW-h8n69Vz0R4vhlzJTH3oWv3B0Kfjq6sXFkbJsmDsLeXtONszMsEGLtRSdpn6SVnmswGFxJND-L_c10lOmYHYTQJR=w1514-h852-s-no-gm?authuser=0
+004,UNNATI S.,yes/left,,1,5,4,5,5,both,101-200,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczNZeky9WOIx5z6I7xWnLWgY2u0pHgWqdZ7ATEEkFeAPbalOcEq7xhXXcTbQCxzXN0bBGBOqgW5n2n5vqDoCadJw_DVfC9qHP-lxj_wQl0QzIU7sMPVzo1APGXEtfXMX9yW3EyH3QCjEB0xOIjszdlZs=w1514-h852-s-no-gm?authuser=0
+005,SRUTHI,no/right,,5,4,5,5,5,both,51-100,south_india,night,"has some green scribbles on each finger, and has mentioned a quote ""May our travels bear fruit""",https://lh3.googleusercontent.com/pw/AP1GczOQ2zsrVn2klYXzq6Qxqa9s1FxBe-55oO1hkpwX416XSCw4tVN_GkM1orfOoKWAa8PPmHbanBjsrNzyC65OjK7f9kasgYkckaMVtw_S5Ar30DiWSgN1qbIQcujRYabez6JmIpl0onR9fK-ZvAFJTnho=w1514-h852-s-no-gm?authuser=0
+006,nithya,yes/left,,0,0,5,3,2,cat,none,10-25km,night,"has a cute face, mug and a flower drawn next to it",https://lh3.googleusercontent.com/pw/AP1GczOftuONdjgrPMHZ8PYqK5u8-3UeCPm0Hz5MCc8AOhzz7W7zn7oGJB9t8-ZontC2RXXCWyAspYOa4tb43dozJ_SuER-mXjJ6zvx1yMpabf2zBT7IJ-kmwz8-f2AcWoQFT_tN5ds8fcI2zAUIAxSZpsTe=w830-h1476-s-no-gm?authuser=0
+007,BUDHA,yes/left,,,,,,,,,,,only hand name and pentagon drawn but there's a cute smiley inside the pentagon,https://lh3.googleusercontent.com/pw/AP1GczNoqInTjk0khmzf6ssGzCU_XquT8j6cjZWVifP_r1bVDp5dSuWD87NajKTq6Z64MyVEuADDwhA-hDyWZqYFuUVhH42pxMypN_zLHMLf0k8MiisxaMY1D3j-zfow50pfUxF9BF3RVMA8Qfc6ToYL8yFf=w882-h1568-s-no-gm?authuser=0
+008,ANUPAMA,yes/left,,1,2,4,2,1,cat,none,10-25km,morning,,https://lh3.googleusercontent.com/pw/AP1GczN6ZVRqs28mQP1JgPpe_kjqTJkkR_DK6ssl3sAPFbSr_LObOne5e3fJAqVvJElODxiVsxUhumXyq93zvLHWdbjM0EQ0mGHDAZ7-yuisJKl2b6Z3OoKujCcdDqOxbo52qAyHeBm-Zi7acIw97ny5Gzn6=w882-h1568-s-no-gm?authuser=0
+009,RASHI,no/right,,,,,,,both,1-10,south_india,morning,,https://lh3.googleusercontent.com/pw/AP1GczPzvWbJvUuBz9XNJCk-qN1DNoa5YttYpeI0HIHRpRg5-iOgiYn5AifH-_MUilRvbTARYo_I_f6qVsZqykisGvdZlVuPrV3QV5jBWI48KtTqVDE-O4CFQD5QGvJTtmLAKoistbB5OxzcopU9NTv1ElIU=w830-h1476-s-no-gm?authuser=0
+010,ANKUR,yes/left,,0,5,5,5,5,cat,none,north_india,morning,,https://lh3.googleusercontent.com/pw/AP1GczM_DPWkGXCbgkCw2ukPfNSeopdbREfquuMNSbejnuJVnOF7D-ub0Fb2X6eeaPcOEdg7q0rwdLY-DoQvWSRqZirMmhYauCUP0VklUaxiwqXZfANHK3a4w_mvWOqJ2NcNGQF7Sino-EjrUG9UGFKke5di=w830-h1476-s-no-gm?authuser=0
+011,JAINA,yes/left,,,,,,,dog,none,10-25km,morning,cute wifi symbol collage inside the pentagon,https://lh3.googleusercontent.com/pw/AP1GczNjDiBRjzsWMwVdwUbZJLj4VdG_3AsslekU2s-AjBY3yI-kKr08RE7Gp9tgVvBBzBUWHTt7RA0rc8YV3d1QMf4l9mhzT6vLRpciZqPkbcXFQoIMwn-nywHE6MStF3-XErQKAhPhtug-QUxHXtbLPFZw=w830-h1476-s-no-gm?authuser=0
+012,NITISHA,yes/left,,0,0,0,5,0,none,none,outside_india,morning,,https://lh3.googleusercontent.com/pw/AP1GczM_yevi-OVtAJciO9GduMA89Pa582I71t7y_Wgft2ZtUo1jQIE95g2zio17nY70z3p73Ux7zd17u71e-pscOY-wm7zwrfrfF_lhU8lEVCfX4-rwnafnhTPc4JhLIXqh4MlatL_yitBxIoQ8m4tEg566=w830-h1476-s-no-gm?authuser=0
+013,TANVI,yes/left,,0,0,0,3,2,none,51-100,10-25km,morning,,https://lh3.googleusercontent.com/pw/AP1GczOhT19CMvsFdCfLRSxkBd1zMMqcxbU8uHFWJ5WN6QEqDBWO5IrKDmtDvw3qoFInER-Sd7fVg7iKDyRw39rttKZI9ZgCHb8EJgxCEwCewztEpJNxSGCPRBa-rhfljVeyjLwQqT8HUsuKOvlgbYtNjl2u=w830-h1476-s-no-gm?authuser=0
+014,,,,,,,,,,,,,,https://lh3.googleusercontent.com/pw/AP1GczMbTOhSSR1NlDoIWCsVypegOkiOjPjfXeSUOWeigQMqSxN6ksCCy_RCPP3yVQ_Z0LMwmJcFLADe2TIp7D8HwIfjBeSzm9JJEnKAebKB1UWMHIDBJ8lHne0VQ0-hfUBTySrxzMqMxnssiO-JkDEaqc5c=w830-h1476-s-no-gm?authuser=0
+015,TAN,no/right,yes,,,,,,both,11-50,outside_india,both,"very cute orange, pink and yellow hexagons drawn",https://lh3.googleusercontent.com/pw/AP1GczN_P6GHM731ZpBJ7T5OmLPwlOI0iwRPMxbHX_nmRwr1mXw3ioTfj9yw3EglXes0d8tXI7NwV3lgFToYTOl7ldy3MOcEBzOMGj--0czRZeloGTU-pNimcITER7tUk4m4UyMBZMfUZEEqJCAKoL0Sj17N=w1514-h852-s-no-gm?authuser=0
+016,UPASNA,yes/left,,1,2,5,3,4,cat,11-50,10-25km,morning,,https://lh3.googleusercontent.com/pw/AP1GczPBJ0ZvXq5hgSGYyRvnTPEoEvB1NCpgHDAFH9T9HqluVnFazbLib0IdyqfBafK0RlXCKJbW9Ccf2oiQTjF4nv5Zyqaj4y2gEHmM5eGrI7gjgpxYkIOUpW-yOKjDKz3GUE5pXU4KX6DDbsVAfubHnpV5=w830-h1476-s-no-gm?authuser=0
+017,KAVI,yes/left,,0,0,5,0,2,both,11-50,under_10km,night,,https://lh3.googleusercontent.com/pw/AP1GczP-9kxPBx8n9S-f7P8BiC2lrxbB9MAWKFBTdAMto0_VdKVtt2UHcdmWu-XDXCSNzH0AWXtIrfZiQDF6hgFjKYSMNfJ1hG0MWec4F9wzxpV6UtSz1myDm5mNOM6JEZipzy6oU4acbe0Mtj5P7tzJzDnk=w830-h1476-s-no-gm?authuser=0
+018,SAKSHI,yes/left,,0,3,5,2,4,cat,lost_count,under_10km,night,,https://lh3.googleusercontent.com/pw/AP1GczPt5LZ5yNoJr-sFyhC80HpcO0FzRcfao-_14_m91CPYJEcHBu4sOrUElM5lKAEwKGv62KhlYaSPHGv8Es8U9DiSnz-89ZsWsxlucP1VmicNP5pRexowNu8rVktgj3J7fLVe6Di-9PgGr5z4_jYGaUso=w464-h825-s-no-gm?authuser=0
+019,IPSHITA,yes/left,,2,4,5,5,2,cat,11-50,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczN7InvQbyLrKut41WH5jVYdZI5pQYq8PKhD0RkgD6wPqOw5V0respsiLnzD0n2xeDbDdpic9GIGL-u3fyeYCCXCYCfK5vfobdjuOUO_hVhRiLiDkYnWFmtLUN-FF3ZtSB1ZCigUr5BlwsKa7jMF5Lz7=w464-h825-s-no-gm?authuser=0
+020,,yes/left,,0,1,4,5,5,,,,,,https://lh3.googleusercontent.com/pw/AP1GczNAgA9IufWOaWSQVo2u0xjYCuxPRbgVIpKYTsJnwWe3Fe4okMEX4KHhZ2FpIsGV6eUHNXvWEyV-WVF3yL18PjeI1dDsIwuURSV41Hx2cthJMzNGaOcd9XRippP5Mn627oQ4oKRAbfPp9bjihgTrcHVN=w464-h825-s-no-gm?authuser=0
+021,VAIDEHI,yes/left,,4,2,5,5,0,cat,101-200,under_10km,morning,,https://lh3.googleusercontent.com/pw/AP1GczPw1sML360NyY3oQbjhwj_LUyv_bW-GNKG4eLcogMS3hMbFmMNFUQqLjECLcMV-2ZcAnwJ76ZcCGkeRSxLuFbLd2HPNOvdp699LICdTqdwAwRgFzuvt_w-684fpyPGLPdS90PizpkavQQVKvOcs7ccC=w464-h825-s-no-gm?authuser=0
+022,NEHA,yes/left,,0,4,5,5,3,none,11-50,under_10km,morning,"the pinky has some fun illustrations which I interpret as a ghost/tshirt, the word Hyd above that and maybe charminar on top? I could be absolutely wrong, but I love that this participant added their own vibes!",https://lh3.googleusercontent.com/pw/AP1GczOv1IEyEtyTGv9bfP8USgb71sfasjw_B1I4bMUeKpVImoXebc_5JAXhiAPZIhjfOFalv0H-Tpo9_ytxh9C_9AtCjtHMqdJftYWpASxCcSP1RFhNnunYkdjSYa8mPsZYmO1lQkmdNfUQRdXeTUmZyqkw=w830-h1476-s-no-gm?authuser=0
+023,pvg,yes/left,,4,4,4,4,4,dog,none,outside_india,both,,https://lh3.googleusercontent.com/pw/AP1GczNGwADkKmKwHW78mKPWvC7NVDCkXOUHmeeEONjAqAg_3DkxuR0FbURhyqoxL-YqVZnbDgUJ0_eHH8jm3QZhD3_RE3NGsjFmD4OVirG1jI4F5ioEF51GxuuoMHhPu3_5KLv6zJ-tVdi_kvdir5FjPlVv=w1514-h852-s-no-gm?authuser=0
+024,ANAGHA,yes/left,,3,3,5,4,5,dog,1-10,south_india,morning,,https://lh3.googleusercontent.com/pw/AP1GczN8GAATB_VYDbLgNRS86PrAY5GQdp7Yz_cpA7XwYyh5soo-nbWS4ZXIfcMheHLB9VK3hE8Ov8yVq_u5PjXi3pTlSG8DfVOg5f9q5WI0XS6UtexKyVbkZXznO8IDh2uUVXOVd51mVefxxQgMAhG6QutG=w1514-h852-s-no-gm?authuser=0
+025,KASHVI,yes/left,yes,,,,,,cat,lost_count,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczP3recs5mgdNc489ldqu-qOkpMKaBEh48WFFUOS244AJE_HJPvXklVD1NJFKm0GiRTzkKVbngWZHp0HzmEuvoMBL1cpGPE63J-SdW9vFDKGJ0ret75EU56qHC5dsd8pZ5YSTEw8abp2X2AY60E9capR=w1514-h852-s-no-gm?authuser=0
+026,KAUSHIK,yes/left,,4,5,6,3,4,both,11-50,10-25km,morning,,https://lh3.googleusercontent.com/pw/AP1GczNQGcFLWDSN2I-aU3xF4SYSq4qfOo2b6Uj1JP3Boy1ym8fUT64JCu0IdaKjbgXu63mZaVhJCx-TXULdz6YMjQV68j9mqIVu1F_5zTUYij4sNPKAEUSssUuyCsTmVsO-UEiya9KdXByB9vzM6kjwodx0=w957-h539-s-no-gm?authuser=0
+027,MOHIT,yes/left,,2,2,5,3,2,cat,lost_count,outside_india,night,,https://lh3.googleusercontent.com/pw/AP1GczNAFiz6gFp14nEepv4R8qBCqMx6yJBuxjw2T8bYIjM_kKY6UfsLdSO-Kyk9ylRBpZCbRAzHmG_FmTNjn6NhBneJI7-wpOM9NlyjFFC1U2Vc8uO58gBP2881rW4PC7sc8y-MJM2ja1wpRiksB_Q4Qn0S=w957-h539-s-no-gm?authuser=0
+028,SHARMILA DEVI,yes/left,,,,,,,both,none,10-25km,morning,"Pentagon has multiple pink and green arcs overlapping, all circles are coloured yellow",https://lh3.googleusercontent.com/pw/AP1GczOxz0lJRXVw7_YmPf2NDHs_lrGWCv_dt28bHGCzrxyCuKnMC4K1qJsgFZik7YZmXYB-zGf-Cvu20xVWy7q5oBZEiXt6uwvJkTmLS7AhHCKNmfDfZwI6f_n4cZJJq1h1hte1cRfzqN7bsGN4i7ZqW80c=w1403-h789-s-no-gm?authuser=0
+029,PRAKRUTI,yes/left,,2,3,2,2,2,dog,none,outside_india,morning,,https://lh3.googleusercontent.com/pw/AP1GczP51Mby_RUzlU7DxbvYGelQqvZn6sQF7aNKE_B8ICA3_HVLlK-Km3xq6c1OJp37dxScTfTe8KQLtRcqc5vbJVU3Wd15ohNY1FapOO9KT7H91CermcVVtimVOxboRcISlxpSa8EdRbZc5LcrC8QhAITA=w957-h539-s-no-gm?authuser=0
+030,SHUBHANGI,yes/left,no,0,3,4,4,4,both,11-50,under_10km,both,,https://lh3.googleusercontent.com/pw/AP1GczOFwiOTh8kZBfTki4PPvd1SbjjwM5iB6fKCnPkZ-gO1MN6OGIC1OOJLEh8QPuE4Upc5LEWZL0TPOLNVFM_nkHKtb67kLBIWWp-3t_xPvb-lL3Z9EyFwltys0DYwup1G_a2GYdcrBVqufaiT-gVj2pbQ=w957-h539-s-no-gm?authuser=0
+031,JYOTI,yes/left,no,5,5,5,5,4,cat,51-100,under_10km,both,,https://lh3.googleusercontent.com/pw/AP1GczMOMJHlPTFkjWhU7wbkBqNHfHDueA4H8Jeintj_pb2KiNGHCF-y6QBExxtrQXPGtk1Jbvk-PeYuzPo7o53C4qAQYCOLsZoBoYJ9s2fcky8ZO7pUxJy05Uu9_yaVFqR0YCROuafnfQwkP8Mv5PB5NGHz=w3024-h1702-s-no-gm?authuser=0
+032,PHANI,no/right,,4,1,4,3,1,cat,lost_count,north_india,night,,https://lh3.googleusercontent.com/pw/AP1GczMmqz7oBPWduFb4N0hNlgf54Z8TUVRes02y4Nw-GiN7N4L5i5zhsErAYA0fPMkKmZev5pw8imAkOI8TWCyCk6yNI9IoDbIfPcM4ceBjoxmFkrcyxUIRYtQ4r2oRlg4UAP3N-2_FbCdHS_9dbbKMgRdp=w957-h539-s-no-gm?authuser=0
+033,AMBITA,yes/left,,,,,,,,,,,fully offbeat offscript but so pretty,https://lh3.googleusercontent.com/pw/AP1GczMj5W5g-4OmN_s6-as4798NTPNTiRALT_LWIzpdfekXTDbYrCdWJKHnM-dxVAZdbI3jmk9vFxDVB7G3TXX8v-c_CohwB-zeMPVo3Zgf0wIcPgNeZD1MQjdChTyqWm-16gP0BvXSglL6hCTfzaSYfAXH=w957-h539-s-no-gm?authuser=0
+034,ebrup,yes/left,,,,,,,,,,,"offbeat offscript, love the fingerprints and triangle!",https://lh3.googleusercontent.com/pw/AP1GczPdtpcq3iATP1OaURypK7GiOwlm8JLA73mbASEheH6ibjsRiHyqXPtWC_CAAS2aa19sQkEijmSDSllmjfx8RKvpXGKOfG7LI_rDLE6DzPNSUL_T6HvT9qbx5NucgZ7J_b6OaloX0iM5LQqO7T02dJeu=w957-h539-s-no-gm?authuser=0
+035,CHANDRA,yes/left,,2,1,6,2,2,cat,51-100,under_10km,none,,https://lh3.googleusercontent.com/pw/AP1GczNwdY2fP_szHaa462peyHmBeudW5e3n78AUqXCod8_sNiGFdbE6-fJDl0TUYY-2XU_Wkz73FeHFUA24xFia6dp7a6Z4fHP_6RyfD_lF2KgZmma0bUQq-gNkP2V3kBA-xxZ_REyaSzhP_O5E8q2S-O3O=w957-h539-s-no-gm?authuser=0
+036,ANGAPPAN,yes/left,no,0,3,3,3,0,dog,1-10,under_10km,night,pentagon not connected,https://lh3.googleusercontent.com/pw/AP1GczN7tv96-TGdghIPTFcPqS405BL42Rtaz-LPpYSbz5bLlBhtBKUgV-zJxOsBVys0Ckc1yGmJ4Y_KJAn-ujpsh8XQy4ux-pr25W6l43ibUCm4-Am2XAUc9cGVjrIhSTE6T6gWQcZ6W7XniNb1E8TsAero=w957-h539-s-no-gm?authuser=0
+037,AISHWARYA,yes/left,,3,5,5,3,5,both,lost_count,under_10km,night,"the ring finger (one indicating how many vizzes made) has help written next to it, love it!",https://lh3.googleusercontent.com/pw/AP1GczNyOjg4rl0hPgy7SpznaRsGLmf3sJxCF4MeQg6vuHi0ogcHyDWyoXcXCJb-M5As5PYOTyH5NmxgIO24z05r5U5iMB54sRygrWZu_YoClHcs9Up6wVB9Xv4IjByzgPqAet2kX7DRQMp-vK7ZrLZCoiqo=w957-h539-s-no-gm?authuser=0
+038,ISHITA,no/right,yes,,,,,,both,1-10,north_india,night,"There's a cute note saying ""I missed a finger XP"" pointing from pinky to thumb",https://lh3.googleusercontent.com/pw/AP1GczMkDp2_lQTggoXx5uEgSvtuGCOK6_oiEAEKf2a8hBxtIXHa6rMBtKsbdKOSJTTR5LPHcdPWs_YU2SrZ35jmh-y_96xxKKddyvHo37bkQyVCBg3BHsRKsDxHYd4P6DXmkHxZxOpSD3l6GiDLv0zrf_LF=w957-h539-s-no-gm?authuser=0
+039,SRISHMA SUNKU,yes/left,,0,0,3,5,0,,,,,,https://lh3.googleusercontent.com/pw/AP1GczP3E3gnLQMww2RXASD2A6JzOAYpSs4q87WRO9CjrjMzK-I0gttIasBenzz8hSjjt3wQ1GnbKrS8KJ5_mWxDGhFhWP0zFX8f-C4ZE1xDGnLd2_OTuOkoTxv_wT0KYD0MovxvGbVrNpnCjNuzJElFUkr4=w464-h825-s-no-gm?authuser=0
+040,CHANDINI,no/right,,0,0,5,4,5,none,1-10,south_india,night,,https://lh3.googleusercontent.com/pw/AP1GczMNIakLLRdPfNzQPeJJ3rZORCh4BbCht8SGRLA9vQW18ijQBtHxC1huWyzDi0_ZYE4sW1-w33GwpK-huUIhRvf3Ezz58w_HClKc7naEpHSsOBPDuUSIXg-P7xPIOYUv2TxgIQSDrU8WHJEJI6yVmqC3=w957-h539-s-no-gm?authuser=0
+041,DEEPIKA,yes/left,,5,5,5,5,5,dog,51-100,10-25km,both,,https://lh3.googleusercontent.com/pw/AP1GczP9umVjNq28wOyGzvqpZl8i8tjbp-RyiN-zso8n0dUfNVMlYM9pjF_Fl1mSw3a4VcGTwkVi5Gk1AHgGfc4wIR_dfpyERMYjTe4esdqiGmgYQ0TGqK4w1wJ8w_8Q_q5MKm3hS9p6eOEUC3Cf5aBaBWW1=w957-h539-s-no-gm?authuser=0
+042,JUNAID,yes/left,no,3,5,6,7,5,dog,11-50,under_10km,both,,https://lh3.googleusercontent.com/pw/AP1GczPKf4xtrAcAj-92kxz2ZSfRxhFe83cf6zXK0uWwjURp6S_IZb_TeoKbYAL6GpaL9NL7pU5XlQwdW7DDZuniMcTlMKW56qbkiWPyZakNkLaxXDBwjjcAa18V8C_C1BHXJKHCHdTDThfsGt5aPFw1kanq=w957-h539-s-no-gm?authuser=0
+043,SAHA,yes/left,,6,2,2,4,5,dog,11-50,under_10km,morning,,https://lh3.googleusercontent.com/pw/AP1GczNZOhVqLLeNupHpBwqjZ6pZpjl3hbrENtfNVXr0St3I3hSwm2uQePUjgKvlA-YGDmxGSp7UzdmIxxsEpGtT7elxfYQs1lCSBFqc6bcXuEW2ao_ru2NqMRqJ0HVh5-jygFtcz_3EYkETip0niqlOBAyy=w957-h539-s-no-gm?authuser=0
+044,CHANDANA,yes/left,,3,4,5,4,3,cat,11-50,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczOWkZOD-Q89yfGR7Ho_wxyiSsiYPVYUsaEEkTuZRUKB-fAUQV-rvVZHiZ8hYodIcXUU42JL-houfughuxoQrXNV8HrpISVI2KSurGiLXjYt3zMyDogL68JZclhgKgWjZwYuH8lwShb5-gZUI1ZHaF3Q=w957-h539-s-no-gm?authuser=0
+045,vibhxre,yes/left,,4,1,13,4,3,both,11-50,10-25km,none,They have put smiley faces instead of coloring in the circles for the pentagon! And the design arcs are filled in all the way. ,https://lh3.googleusercontent.com/pw/AP1GczOywiSKTr1GbuqVxcGiUT67vm9iHcsCBFk-vbA5QfFKQZf_h3Zf9Q_oqTWyqZuTxJdFIgjCOp6PLMAJ60UKwOuudOR3RIyfCWceYqj2Ve3Sfz4BDwp6HJaqmzsoF4rEifZ-h1TxAql_oIB7wgmDkUWU=w3024-h1702-s-no-gm?authuser=0
+046,arya,yes/left,,3,2,5,3,5,cat,1-10,north_india,night,,https://lh3.googleusercontent.com/pw/AP1GczNR5xM526KxtcP1WZxni8Ee2uRZ-saER9tYfbEG-bQy9NF5RUALPVPuCtc3j4gtxJi-kGsjkGmpKhJVqNNyNvKQLWf27RFdGwYDuTM4woyrR4HS91RnhfnkO-67XG85m4fW_GtODH0DnGvtzCqKqp0O=w3024-h1702-s-no-gm?authuser=0
+047,yashita,yes/left,,3,1,5,2,4,none,51-100,under_10km,night,,https://lh3.googleusercontent.com/pw/AP1GczOvTah4WQ1vjx0G3kDBp6HU4-QE8i1a6vbjyBI4p48PIxMEEAMZIiNmojCyyESTGeWEtjg3Dm8e3cgx8yS5GmPlL6hrBkuFwFFP6Iir-IwJosZ8traSZbkfmJyzuoU6g3uSz6TlQ96tOhSUR4b9nJHB=w3024-h1702-s-no-gm?authuser=0
+048,shreya,yes/left,,0,0,5,5,2,dog,11-50,under_10km,night,,https://lh3.googleusercontent.com/pw/AP1GczOpoysb5SXSKcVFF-NScrSYynphjpaDeIFiK3T0pauJAU1rrd6Sz18dc5ttDZ1msq1lTe-Xua9rb5vecw_DomHes01j6Mcln5BZR-ltDwuvHoPsTYjwksg7cMhfUd9OcwE74TmiwcYLtcBKXKTnpVTw=w3024-h1702-s-no-gm?authuser=0
+049,shashank,no/right,,5,3,6,3,2,dog,lost_count,none,night,"the dog has a speech bubble saying ""Bow!""",https://lh3.googleusercontent.com/pw/AP1GczOYfiYR1OGHqcdCCpP6frnBsLZjNqUP6KvqEGM7VozNgfmpv8PbCUm5DaJGPbtSzTSaEP-QkgOnT-HkEWXvcKc8LSikqg3lcM-G5XVpq3Tn4wVwNvWgJyD2tcjz2_G15063KN_8eSwMe6cK-c0d4HII=w3024-h1702-s-no-gm?authuser=0
+050,kavitha,yes/left,,3,1,4,3,3,both,51-100,,morning,,https://lh3.googleusercontent.com/pw/AP1GczOBOl94US4ACPCUxwHdc9kB9tJREfGaVmHBcEwOgP4dc9x5HQTly23yBH63dEAA6WK000YywryjdCpJX6Xb8hkWkIRRqxD4j3_3mB5VXIxI6ZHpPi_ZErqQd8CAClng0at26jmOrRYwaF6NZCEeco1I=w3024-h1702-s-no-gm?authuser=0
+051,Geetika P.,no/right,,6,3,3,3,3,both,lost_count,north_india,both,"they have drawn circles at each finger knuckle, making it look like a fun triangle!",https://lh3.googleusercontent.com/pw/AP1GczPYF79xmX3Ec7I4hT36ePaOWpmDYKg6AJjIlaPA0euWdpWNot9KOVPiMwZAc3J8EeODhjITGzpNnYa0v7NDizFpHeYJ00O3YLa2MMUVRpTsSuXffF-FYWMcUkM2u63yHKtot5xkEx7JzHP3e1ALX08F=w882-h1568-s-no-gm?authuser=0
+052,Sudha,no/right,yes,,,,,,none,1-10,south_india,morning,"they have drawn lines from knuckles of thumb, pinky and left wrist, making a triangle instead of a pentagon. The pink and orange highlighter sun is a fun touch!",https://lh3.googleusercontent.com/pw/AP1GczMTdpHQBXL3MGynFaRoCrfOIa0OaFXJTH_K0sUmRWH_Do53R76wmYBtDB-Kcr6_hGZvABULzk4cgmnYi9rg_IYdIDTmYer-9LYOUB_B_G8k2NBeJ0FU4RqpQKMtrJDzSIWg78pr1Ll8ucHtL4Gf1GaO=w882-h1568-s-no-gm?authuser=0
+053,Ravi,yes/left,,3,2,3,4,1,BIKE,11-50,under_10km,night,A handrawn Bike instead of cat or dog was fun to see!,https://lh3.googleusercontent.com/pw/AP1GczNPph0xjn4OtGSvHiLYZQA1PK8f11HGufGL50Al1OfeteYMbgjZUfGDXa5YgNr-uFFzD0ZCbAfXiDDE3ZOuw-bquvh51rmDxkQXpGJvAzfStOXwW7Kr_nuV1-F9_jPyooRHdGYMwrOTEHdygyFGUz8q=w882-h1568-s-no-gm?authuser=0
+054,Nehal S.,yes/left,,0,5,5,5,3,cat,1-10,under_10km,night,,https://lh3.googleusercontent.com/pw/AP1GczPJDxnZZGTpVkrb02HqzzBFBqm60dpr9Fh12EUra3wAdPhCEy1z8VHfqTqTZK-9skSo_caO_QTB9YKlKulQXtOOCy1LhZUGkInxBypvCr55cBtjjc1zLa5FhrjrbOkTKZO_1DQQYtfEHRELE_JfdW-U=w882-h1568-s-no-gm?authuser=0
+055,Sari,yes/left,,4,4,4,4,4,dog,51-100,outside_india,morning,"They've drawn three suns along the finger, and written dataviz in green across the middle of the pentagon",https://lh3.googleusercontent.com/pw/AP1GczND0BapnUJpDFLz2L2ELMW7d_gtXBkkT9bq9o7Efd7-Y69pmedHwc9uXyYgq5bjiyH00C9YAkmM-L2M848BXTJv0MPDjWrgmC7k3eGHV7acf9L9-5ZkQjdcVn7O03xM-9I_48n8tzBBRqQTqjuLlhmK=w882-h1568-s-no-gm?authuser=0
+056,Saba,yes/left,,0,5,5,2,5,dog,none,10-25km,morning,The dog is so cute!,https://lh3.googleusercontent.com/pw/AP1GczPQhp-rSeMBfi68GznHpwp66E1X-8i2psa6r2NpmkQOYhHe8MwtMq-q4IgTp0WCvgn5d87Pfe_dPyLoW-QYI3G34i7_0x8A5NhC2s9wSynW8037rKq2D5EZs_a2Hv3wujViqJimBB8l8nmaKqpA1vZO=w882-h1568-s-no-gm?authuser=0
+057,Shalini,yes/left,,1,5,5,5,2,dog,none,south_india,morning,hollow outline knuckles,https://lh3.googleusercontent.com/pw/AP1GczORsVJzDB_BzjmbMBya6TWm8Uu0xWN7JW9KaKMxfObh9SZFtsI9dzAwbMTWHWT9XWcZKyGId8Poffkvh5cTHPvOs0elQT1zSafPUdrx9dSftZgvyJM
+058,ANUSHKA,yes/left,,0,2,3,3,0,none,1-10,under_10km,morning,name written in Hindi (अनुष्का) is fun! ,https://lh3.googleusercontent.com/pw/AP1GczMPQcDGwYpXi1R8hKs6kDgBLYASLeh2N-fQDAnxUfhZCMjzUu7hfY2_zW8gQ38LSfKW1cKiIanY5d994Tr3VwskOsDm9Q714Pq7P202xz9L3rG8f0c
+059,KADAMBARI,yes/left,,4,2,7,3,5,cat,11-50,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczM_ph_4ATbrnJSyqN6KwobWt3QvJt8MYqjR8fSCwbNU35lJPerMN9Vo4hE53YtwxHg_UBF8YHJ-Pkd7xFa_hJ3PL4Fe2ZInyaQEMeZg-qpp8xQzc3M
+060,VIVEK,yes/left,,0,4,4,5,3,,none,under_10km,,,https://lh3.googleusercontent.com/pw/AP1GczOrid1AsGSsV0NN-VhAk5m6uuww4gxHpzKkDC6GRxMyY5NruIFYC92yDBxzmup8FoWHZmD0qJzgnnGd87E2otxsIMIP_ThzF2QxJzcWqyPELd5d_60
+061,,yes/left,,0,0,5,0,0,,,,,,https://lh3.googleusercontent.com/pw/AP1GczO5V7brlU1s1Ilpc56bIVNxqcWtVfciK9jI7AgNRHKX6lWJiDID673eta6KumgxEPaiUtROntP5gWdAe8GuSonBV4PJi1dw9Tq4AOV86UELpLwgBa8
+062,S@M,no/right,,0,0,3,5,3,cat,1-10,north_india,night,,https://lh3.googleusercontent.com/pw/AP1GczPLzhW2nctNrAoaqbjzY6scPmd03FZIsyoqFEWr1Ib-K2MDWc34q8zYm_ZIn6JUo1dhja4hi5WOJUAB-VZlcKcIdXWCWBh2hbK4YEs3zjlK3qEt0_8
+063,ADITI,yes/left,,4,3,5,3,5,cat,1-10,under_10km,morning,That's me! :D,https://lh3.googleusercontent.com/pw/AP1GczPTkooqn35WVmTZeS8c-f0QWJvviTTxYYqlcocVv64XTHKICqMn_9aNPAWHiMWimNKl8Xv_DgUcvNYAwSG5dVla0JHckOHOACU5TGU0jUjDZwvbhb0
+064,JAGS,yes/left,,2,4,3,5,5,dog,1-10,south_india,morning,"This is my husband, check out his cool work at nonsensei.in!",https://lh3.googleusercontent.com/pw/AP1GczOPFKk5cy4PZ8m-qixMk1cRZbSrnXVtkjzMxjjYtkZDGKfs3LTVW4W25V8DOSMQEYko3XmnIlmRnAYKY6_DOTFG9qHg8W8ZyfsU3hW8tySumWBxi3s
+065,RUSHIKESH,no/right,,,4,4,0,3,cat,none,north_india,,,https://lh3.googleusercontent.com/pw/AP1GczNPgLQYIMNu57pLRrtUhcTcUEdI9pR0o8PB2rRSRBr1XaB4mvofsTQLeg5XkqRjaXU8i77nP43BnXJoRN4jRAbrDNHJ2Cmi-Wfle679LjtbQzbLD_gBzmSqVZHla30yJEBR-l3QBKTpGP0ZDi8caaI5=w882-h1568-s-no-gm?authuser=0
+066,DIVYANSHU,yes/left,,5,0,4,0,5,dog,1-10,under_10km,night,I like the arcs going outside the pentagon,https://lh3.googleusercontent.com/pw/AP1GczOpP9VgB2CnwHLQXzDz2mJ6m1246dd80IeB9T6GTDCtf2Jmc3mOdJjUEVTIdXc7vBV1FoPSt2UY6Sjc3mLFKAyh_MMspoxaEjXEFjfifEBFiH8awok
+067,DIV :),yes/left,,0,2,5,0,6,both,11-50,under_10km,morning,,https://lh3.googleusercontent.com/pw/AP1GczNx4ELNBUEF8Btcv2ZHD3YF5e4WjnVrUqLUE2XUmExPNsHquGgGmtRqbjxLezJJLDCjvcNxCz4-FjcvYTbm0oTn5q5AhKQMjfdb9Fw4AfBoLgQVUHM
+068,ANUSHKA,yes/left,,1,2,3,5,2,both,11-50,10-25km,night,the cat and dog are adorablee,https://lh3.googleusercontent.com/pw/AP1GczMy06skt9coqdAL3HQbODNzHpF-RlY1E9ZXw41N4twL-PxF5ewD7wMM0anDhbHW1Hm8ViaizELfV7G0Y7446yT4YX0LIW_w5-q5tnbdJRf5M8MLs2E
+069,PRAYASH,no/right,,5,5,1,2,2,none,101-200,south_india,night,:/ on the thumb instead of cat/dog!,https://lh3.googleusercontent.com/pw/AP1GczMrkIYZgPmCvIHD5liSUtbdIuUNE27PuEfSHD3CMz1dQ3G78_u9qEK8EDfpcNZ1MgNmMIJwZQe2EEkoZRawt2WyYtWu19kupRcUNtoV-e580YxMRec
+070,CHIPPY,yes/left,yes,0,0,0,5,0,dog,none,10-25km,morning,,https://lh3.googleusercontent.com/pw/AP1GczN2wranh8vHJKHNCgDdS-JSz1dBj4gL0i9dfrAPUZYCv45hfx20ID66dIiiPNH0Ghg2hdUCTDSfqI6LdnN0Tlkr0i5KM2Rihfg04gFvkTjLuNBi9F8
+071,GARIMA,yes/left,yes,0,2,0,3,3,dog,1-10,under_10km,morning,"hollow knuckles, tiny arcs",https://lh3.googleusercontent.com/pw/AP1GczMBN5vxALjEETMkbzu6TOsCfkvOWej1Yyc8g4gc9La-JAtf5GbKdj6ix3c_z4yY7m7LTV_SCdRwWh51hysz_vWaiMMjvjMf4hmtJl5QWdK8Ds9xOuc
+072,OIN,yes/left,,3,6,8,6,5,dog,lost_count,10-25km,night,"the two smiley faces are cutee, and I like how the knuckles are coloured",https://lh3.googleusercontent.com/pw/AP1GczMYGz5ZXGWPRI-3JyejY07Vt_GCvbrb0Y4PBQf5wdy8yKSptwEbqrrpOU3We9A6f2MsgXsNmzOmZTtT8MM2YgzARt_3ES-r8cxepacW8wHc7Fg0hKk
+073,,yes/left,yes,,,,,,,,,,coloured knuckles but no arcs; pink heart in the middle <3,https://lh3.googleusercontent.com/pw/AP1GczPmkXBfFNNDncJn-buJRKaNU4ZL11G65D_xKKwxzKLKROZkWJezlCQpwQDhCy2ABQWyy-VGI3oeGqyhpaXfq7mKCibI9WtBo11biErw08KUeBqVEeA
+074,AMITESH,yes/left,yes,1,3,5,5,3,dog,11-50,10-25km,night,,https://lh3.googleusercontent.com/pw/AP1GczMK84OmTPQ6-5DWRSlHGXT3PWJOTVzgQhweDKemdzD-v21X-Ie-DW0xXMU2gXn4jAt3IZPaGWAb4BZ5hb4j3ifcX_sTWOfZKX0NHo64ORXWplQfyls
+075,KADAMBARI,yes/left,,1,2,4,4,5,dog,11-50,under_10km,morning,,https://lh3.googleusercontent.com/pw/AP1GczOT5obmeex3Zyt0z2S5aX1H5LpIV6POrJ-nHZmzmgfj_SWdcJtaNrVmdm6bWYtfJEecwiWQ_Gbb3mDpFj4Z3ZmpGeTg67RsqiOSVrbOgXM6AlQ88-U
+076,,yes/left,,4,4,5,5,4,,,,,no name or finger glyphs; full pentagon,https://lh3.googleusercontent.com/pw/AP1GczNdDWnudCEJf-dP74RpqMd9qcmY5jg8lnTDc50-TnxUpqyWC36Ze-cYwFP10OI6TWhw7kBZaGG85e_hXHGsob4sd7UaIqB6cmEIc5FcORicqXkzfDo</script>
 
 <script>
 /* Minimal CSV fallback if the PapaParse CDN is blocked (keeps offline preview
@@ -1369,6 +1448,16 @@ const CSVParse = (window.Papa && Papa.parse) ? (t)=>Papa.parse(t,{header:true,sk
    ============================================================================ */
 
 const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTc0BJUydiWxnGDh_y0_Jl7FaPysPX9CJnsmQ7IAn2zss2FarDqCyJGxWLDcLeZ5fSScWHmFyEeC47r/pub?output=csv";
+// The sheet serves CRLF; the embedded/cached copies are compared as LF.
+const normCsv=t=>(t||"").replace(/\r\n?/g,"\n").trim();
+// Fetch the live sheet right away, in parallel with fonts and the first render.
+const LIVE_CSV=fetch(CSV_URL,{mode:"cors"})
+  .then(r=>r.ok?r.text():null).then(t=>t&&normCsv(t)).catch(()=>null);
+const FONTS_READY=(document.fonts&&document.fonts.ready
+  ? document.fonts.ready : Promise.resolve()).catch(()=>{});
+const CSV_CACHE_KEY="hov-sheet-csv";
+function readCachedCsv(){ try{ return normCsv(localStorage.getItem(CSV_CACHE_KEY)); }catch(e){ return ""; } }
+function saveCachedCsv(t){ try{ localStorage.setItem(CSV_CACHE_KEY,t); }catch(e){} }
 const VB={w:6834,h:9834};           // SVG viewBox
 const TW=150, TH=Math.round(TW*VB.h/VB.w);   // tile size (keeps SVG aspect)
 document.documentElement.style.setProperty('--tw',TW+'px');
@@ -1484,20 +1573,32 @@ function isHint(d){return low(d.id).startsWith("text")||/image filename/.test(lo
 function isEmpty(d){return !(d.id||d.name||d.photo||d.pet||d.viz||d.travel||d.chrono
   ||d.develop!=null||d.collect!=null||d.design!=null||d.narrate!=null||d.analyze!=null);}
 
-/* ---- SVG source + one-time anchor read ----------------------------------
-   We read knuckle centers ONCE from a hidden measuring copy using getBBox()
-   in real viewBox space, then reuse those centers for every tile (all hands
-   share the same outline geometry; flip is handled by mirroring the arc x). */
+/* ---- SVG source + one-time master ----------------------------------------
+   The 330KB markup is parsed ONCE into a hidden measuring copy. There we read
+   knuckle centers using getBBox() in real viewBox space, apply the static paper
+   styling, and collapse the traced outline's fragments. Every tile then clones
+   that master (all hands share the same outline geometry; flip is handled by
+   mirroring). */
 const SVG_MARKUP = document.getElementById("handSvgSource").innerHTML;
 let ANCHORS=null;          // {develop:{x,y,col}, ...}  + _centroid, _missing
+let MASTER=null;           // paper-treated hand <svg>; buildHand clones it
 const MISSING=new Set();   // ids the scaffold looked for but couldn't find
 
-function readAnchors(){
+function prepareMaster(){
   const probe=document.createElement("div");
   probe.style.cssText="position:absolute;left:-99999px;top:0;width:400px;height:600px;";
   probe.innerHTML=SVG_MARKUP;
   document.body.appendChild(probe);
   const svg=probe.querySelector("svg");
+  ANCHORS=readAnchors(svg);
+  paperTreatment(svg);      // getBBox needs layout, so do it in the probe
+  probe.remove();
+  svg.removeAttribute("width");svg.removeAttribute("height");
+  svg.setAttribute("preserveAspectRatio","xMidYMid meet");
+  return svg;
+}
+
+function readAnchors(svg){
   // sync VB to whatever this SVG actually uses (hand-all.svg = 1640x2360)
   const vb=(svg.getAttribute("viewBox")||"").split(/[\s,]+/).map(Number);
   if(vb.length===4 && vb[2] && vb[3]){ VB.w=vb[2]; VB.h=vb[3];
@@ -1532,26 +1633,22 @@ function readAnchors(){
   A._centroid={x:pts.reduce((s,p)=>s+p.x,0)/pts.length,
                y:pts.reduce((s,p)=>s+p.y,0)/pts.length};
   for(const want of ["dog","moon","both-pet","both-chrono"]) if(!resolveEl(svg,want)) MISSING.add(want);
-  probe.remove();
   return A;
 }
 
 /* ---- per-row hand ---------------------------------------------------------
-   Clone the SVG, apply paper ink treatment, toggle glyphs for this row,
+   Clone the master, set this hand's ink weight, toggle glyphs for this row,
    overlay pentagon arcs. Returns an <svg> element. */
 function buildHand(d){
-  const wrap=document.createElement("div");
-  wrap.innerHTML=SVG_MARKUP;
-  const svg=wrap.querySelector("svg");
-  svg.removeAttribute("width");svg.removeAttribute("height");
-  svg.setAttribute("preserveAspectRatio","xMidYMid meet");
+  const svg=MASTER.cloneNode(true);
 
   // Per-hand ink weight: some people pressed harder / used a fatter pen. Seeded
   // by id+name so it's stable across renders and independent of the tile jitter.
   const s2=[...(d.id+"~"+d.name)].reduce((a,c)=>((a<<5)-a+c.charCodeAt(0))|0,7);
   const inkMul=0.8+((Math.sin(s2*7.13)*0.5+0.5)*0.55);  // ~0.80–1.35
+  for(const el of svg.querySelectorAll("[data-ink]"))
+    el.style.strokeWidth=Math.round(el.dataset.ink*inkMul)+"px";
 
-  paperTreatment(svg, inkMul);
   toggleGlyphs(svg,d);
   drawPentagon(svg,d);      // arcs drawn in BASE coords, appended to svg root
 
@@ -1566,20 +1663,24 @@ function buildHand(d){
     svg.appendChild(grp);
   }
   drawName(svg,d);          // name added AFTER mirror -> upright letters, no flip
+  // Glyphs hidden for this row never render; drop them so the tile only
+  // carries what it draws.
+  for(const el of svg.querySelectorAll("[style]")) if(el.style.display==="none") el.remove();
   return svg;
 }
 
 /* Recolor the drawn SVG for paper: knuckle fills -> soft ink rings, hand line
    stays ink. We keep each knuckle a faint tinted ring so the color mapping is
-   still legible under the arcs. */
-function paperTreatment(svg, inkMul=1){
-  const round=(v)=>Math.round(v*inkMul);
+   still legible under the arcs. Runs once, on the master. Stroke widths that
+   follow the per-hand ink weight are tagged data-ink="<base px>" and scaled
+   in buildHand. */
+function paperTreatment(svg){
   for(const kn of KNUCKLES){
     const el=resolveEl(svg,kn.id); if(!el) continue;
     const e=el.querySelector("ellipse")||el;
     e.style.fill="var(--paper)";
     e.style.stroke="var(--text)";
-    e.style.strokeWidth=round(26)+"px";
+    e.dataset.ink=26;
   }
   // Kill the SVG-level default fill that makes the outline read as a black
   // silhouette; render the hand as ink LINE work so inside-glyphs stay visible.
@@ -1590,11 +1691,12 @@ function paperTreatment(svg, inkMul=1){
       const ba=a.getBBox(),bb=b.getBBox();return (bb.width*bb.height)-(ba.width*ba.height);});
     // largest path = the hand outline: no fill, firm ink stroke
     if(paths[0]){paths[0].style.fill="none";paths[0].style.stroke="var(--text)";
-      paths[0].style.strokeWidth=round(20)+"px";paths[0].style.strokeLinejoin="round";}
+      paths[0].dataset.ink=20;paths[0].style.strokeLinejoin="round";}
     // remaining paths inside #hand are drawn detail (glyph line work): ink stroke,
     // keep them unfilled so they read as pen marks on paper.
     paths.slice(1).forEach(p=>{p.style.fill="none";p.style.stroke="var(--text)";
-      if(!p.style.strokeWidth)p.style.strokeWidth=round(14)+"px";});
+      if(!p.style.strokeWidth)p.dataset.ink=14;});
+    mergePaths(paths.slice(1));
   }
   // Glyph groups (pets, chrono, distance, viz) sit as siblings of #hand.
   // IMPORTANT: these are finished hand-drawn glyphs with their OWN fills and
@@ -1615,12 +1717,36 @@ function paperTreatment(svg, inkMul=1){
                     "distance-travelled",...VIZ_LAYERS]){
     const el=resolveEl(svg,gid); if(!el) continue;
     el.querySelectorAll("path,ellipse,circle,line,polyline,polygon").forEach(p=>{
-      const cs=getComputedStyle(p);
+      // Inline styles only. This used to also consult getComputedStyle, but it
+      // ran on detached clones where that returns "", so attribute/inherited
+      // fills (e.g. the solid viz bulb) have always stayed pure black. Reading
+      // inline styles keeps that exact look now that this runs on an attached copy.
       // recolor dark fills to ink, keep light/none fills as-is
-      if(isDark(p.style.fill||cs.fill)) p.style.fill="var(--text)";
+      if(isDark(p.style.fill)) p.style.fill="var(--text)";
       // recolor dark strokes to ink; leave stroke width/caps as authored
-      if(isDark(p.style.stroke||cs.stroke)) p.style.stroke="var(--text)";
+      if(isDark(p.style.stroke)) p.style.stroke="var(--text)";
     });
+  }
+}
+
+/* The traced outline is ~940 path fragments that all end up styled the same.
+   Unfilled strokes in one opaque color render identically as one path, so
+   concatenate each run of identically-attributed siblings into a single <path>.
+   Only absolute-moveto paths are merged (a leading relative "m" would shift). */
+function mergePaths(paths){
+  const groups=new Map();
+  for(const p of paths){
+    if(!/^\s*M/.test(p.getAttribute("d")||"")) continue;
+    const attrs=[...p.attributes].filter(a=>a.name!=="d").map(a=>a.name+"="+a.value).sort().join(";");
+    let byParent=groups.get(p.parentNode);
+    if(!byParent) groups.set(p.parentNode, byParent=new Map());
+    if(!byParent.has(attrs)) byParent.set(attrs,[]);
+    byParent.get(attrs).push(p);
+  }
+  for(const byParent of groups.values()) for(const run of byParent.values()){
+    if(run.length<2) continue;
+    run[0].setAttribute("d", run.map(p=>p.getAttribute("d")).join(" "));
+    for(const p of run.slice(1)) p.remove();
   }
 }
 
@@ -1807,6 +1933,7 @@ function drawPentagon(svg,d){
    reading direction). If present we bind the name to a copy of it, so placement
    and flip are exact and it rides inside the mirror group automatically. If it's
    absent we fall back to an estimated index-finger centerline. */
+const PATH_LEN=new Map();     // name-guide d -> length (every hand shares the guide)
 function drawName(svg,d){
   const NS="http://www.w3.org/2000/svg";
   // Always hide the authored guide line first, even for blank/pair hands, so the
@@ -1843,8 +1970,12 @@ function drawName(svg,d){
   path.setAttribute("id",pathId); path.setAttribute("d",dP); path.setAttribute("fill","none");
   defs.appendChild(path); svg.appendChild(defs);
 
-  const tmp=document.createElementNS(NS,"path"); tmp.setAttribute("d",dP);
-  svg.appendChild(tmp); let L=300; try{L=tmp.getTotalLength();}catch(e){} tmp.remove();
+  let L=PATH_LEN.get(dP);
+  if(L===undefined){
+    const tmp=document.createElementNS(NS,"path"); tmp.setAttribute("d",dP);
+    svg.appendChild(tmp); L=300; try{L=tmp.getTotalLength();}catch(e){} tmp.remove();
+    PATH_LEN.set(dP,L);
+  }
 
   const text=document.createElementNS(NS,"text");
   const tp=document.createElementNS(NS,"textPath");
@@ -1866,24 +1997,51 @@ function drawName(svg,d){
   svg.appendChild(text);
 }
 /* After tiles are in the DOM, shrink any name that overruns its guide path so
-   long names (AISHWARYA, CHANDANA, ANGAPPAN…) fit instead of getting clipped. */
+   long names (AISHWARYA, CHANDANA, ANGAPPAN…) fit instead of getting clipped.
+   Each name is measured on a copy inside one off-screen svg the size of a
+   card, not in its own tile, so tiles skipped by content-visibility:auto aren't
+   forced to lay out. Needs the web font loaded (see FONTS_READY). */
 function fitNames(root){
-  const texts=(root||document).querySelectorAll(".tile svg text[data-fitlen]");
-  texts.forEach(text=>{
-    const avail=parseFloat(text.getAttribute("data-fitlen"))||0;
-    let fs=parseFloat(text.getAttribute("data-fs"))||100, ls=1, guard=0;
+  const texts=[...(root||document).querySelectorAll(".tile svg text[data-fitlen]:not([data-fitted])")];
+  if(!texts.length) return;
+  const NS="http://www.w3.org/2000/svg", XL="http://www.w3.org/1999/xlink";
+  const card=(root||document).querySelector(".tile .card");
+  const m=document.createElementNS(NS,"svg");
+  m.setAttribute("viewBox",`0 0 ${VB.w} ${VB.h}`);
+  m.setAttribute("preserveAspectRatio","xMidYMid meet");
+  m.style.cssText=`position:absolute;left:-99999px;top:0;`+
+    `width:${(card&&card.offsetWidth)||TW}px;height:${(card&&card.offsetHeight)||TH}px;`;
+  document.body.appendChild(m);
+  texts.forEach(orig=>{
+    orig.setAttribute("data-fitted","");
+    const avail=parseFloat(orig.getAttribute("data-fitlen"))||0;
     if(!avail) return;
+    const tp=orig.querySelector("textPath");
+    const guide=tp&&orig.parentNode.querySelector(`[id="${cssEscape((tp.getAttribute("href")||"").slice(1))}"]`);
+    if(!guide) return;
+    // Chrome measures text at its on-screen scale, so match the tile's jitter.
+    const tile=orig.closest(".tile");
+    m.style.transform=tile?getComputedStyle(tile).transform:"";
+    const gp=guide.cloneNode(true); gp.id="fitnames-probe-path"; m.appendChild(gp);
+    const text=orig.cloneNode(true); m.appendChild(text);
+    const ctp=text.querySelector("textPath");
+    ctp.setAttribute("href","#"+gp.id); ctp.setAttributeNS(XL,"xlink:href","#"+gp.id);
+    let fs=parseFloat(text.getAttribute("data-fs"))||100, ls=1, guard=0;
     const apply=()=>text.style.cssText=
       `font-family:var(--hand);font-weight:700;fill:var(--text);`+
       `font-size:${fs.toFixed(1)}px;letter-spacing:${ls}px;`;
-    let len=0; try{len=text.getComputedTextLength();}catch(e){return;}
+    let len=0; try{len=text.getComputedTextLength();}catch(e){len=0;}
+    let changed=false;
     while(len>avail && fs>26 && guard++<40){
       fs *= avail/len * 0.99;
       if(fs<60) ls=0.3;
-      apply();
+      apply(); changed=true;
       try{len=text.getComputedTextLength();}catch(e){break;}
     }
+    if(changed) orig.setAttribute("style",text.getAttribute("style"));
+    gp.remove(); text.remove();
   });
+  m.remove();
 }
 /* Reflect a simple M/L path's x coords about width W. */
 /* Reflect the x of every coordinate pair in a simple M/L path about width W.
@@ -1903,7 +2061,13 @@ function flipPathX(d, W){
 }
 function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
-function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+// Memoized: the palette never changes at runtime, and an uncached read inside
+// the render loop forces a style recalc of the half-built strip each time.
+const CSS_VARS={};
+function cssVar(name){
+  if(!(name in CSS_VARS)) CSS_VARS[name]=getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return CSS_VARS[name];
+}
 
 /* ---- lightbox ------------------------------------------------------------- */
 const PET={dog:"Dog person",cat:"Cat person",both:"Cats & dogs",other:"Animal person",none:"No pets"};
@@ -2007,28 +2171,51 @@ function render(rawRows,sourceLabel){
     "Pentagon arcs are code placeholders until authored marker glyphs land in the SVG. "+
     (miss.length?`<br><b>Not found in SVG (to draw / rename):</b> <code>${miss.join("</code> <code>")}</code>.`:"");
   setupScroll(strip);
-  // Names are in the DOM now; fit any that overrun their guide path.
-  requestAnimationFrame(()=>fitNames(strip));
+  // Names are in the DOM now; once the web font is in, fit any that overrun
+  // their guide path (before the next paint when the font is already cached).
+  FONTS_READY.then(()=>requestAnimationFrame(()=>fitNames(strip)));
 }
 
+/* Render instantly from the last sheet this browser saw (else the embedded
+   sample), then swap in the live sheet, which has been loading since the
+   script started, but only if it changed. */
 async function boot(){
-  try{ if(document.fonts&&document.fonts.ready) await document.fonts.ready; }catch(e){}
-  ANCHORS=readAnchors();
-  let rows=null;
-  try{const r=await fetch(CSV_URL,{mode:"cors"});
-    if(r.ok)rows=CSVParse(await r.text());}catch(e){rows=null;}
-  if(rows&&rows.length){ render(rows,"live from the sheet"); document.getElementById("pastePanel").classList.add("hidden"); }
-  else{
-    // offline: use embedded sample so the scaffold always shows something
-    const sample=document.getElementById("sampleCsv").textContent.trim();
-    if(sample && !sample.startsWith("__")){
-      const rr=CSVParse(sample);
-      render(rr,"offline sample (paste your CSV to replace)");
-    }else{
+  MASTER=prepareMaster();
+  const cached=readCachedCsv();
+  const sample=normCsv(document.getElementById("sampleCsv").textContent);
+  let shown="";
+  for(const [text,label] of [[cached,"cached copy of the sheet"],
+                             [sample,"offline sample (paste your CSV to replace)"]]){
+    if(!text || text.startsWith("__")) continue;
+    const rows=CSVParse(text);
+    if(rows.length){ render(rows,label); shown=text; break; }
+  }
+  setView("scroll");
+
+  const live=await LIVE_CSV;
+  const liveRows=live?CSVParse(live):[];
+  if(liveRows.length){
+    saveCachedCsv(live);
+    document.getElementById("pastePanel").classList.add("hidden");
+    if(live!==shown) rerender(liveRows,"live from the sheet");
+    else document.getElementById("status").textContent=
+      document.getElementById("status").textContent.replace(/·.*$/,"· live from the sheet");
+  }else{
+    if(!shown){
+      document.getElementById("strip").innerHTML="";
       document.getElementById("status").textContent="Couldn't load the sheet.";
     }
     document.getElementById("pastePanel").classList.remove("hidden");
   }
+}
+// Re-render in place, keeping the visitor's scroll position, view, and search.
+function rerender(rows,label){
+  const strip=document.getElementById("strip");
+  const x=strip.scrollLeft;
+  render(rows,label);
+  strip.scrollLeft=x;
+  applyFitScale();
+  if(searchEl && searchEl.value.trim()) runSearch(searchEl.value);
 }
 document.getElementById("renderBtn").onclick=()=>{
   const rows=CSVParse(document.getElementById("csvText").value);
@@ -2121,7 +2308,7 @@ if(searchEl){
   searchEl.addEventListener("keydown",e=>{ if(e.key==="Escape"){ searchEl.value=""; runSearch(""); } });
 }
 
-boot().then(()=>setView("scroll"));
+boot();
 </script>
 <div id="sf-footer-mount"></div>
 </body>

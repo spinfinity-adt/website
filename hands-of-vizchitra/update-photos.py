@@ -13,6 +13,10 @@ Usage, after adding new entries to the sheet:
 
 Already-downloaded ids are skipped, so re-running is cheap. The page falls
 back to the sheet's remote link for any id with no local photo yet.
+
+It also refreshes the CSV embedded in index.html (<script id="sampleCsv">),
+which first-time visitors see before the live sheet arrives, so keeping it
+current means their first paint is already the real data.
 """
 import csv
 import io
@@ -27,6 +31,8 @@ CSV_URL = ("https://docs.google.com/spreadsheets/d/e/"
 SIZE = "w1600"  # googleusercontent size hint — plenty for the lightbox
 HERE = Path(__file__).resolve().parent
 PHOTOS = HERE / "photos"
+PAGE = HERE / "index.html"
+SAMPLE_OPEN = '<script id="sampleCsv" type="text/plain">'
 
 
 def fetch(url):
@@ -58,12 +64,29 @@ def to_jpeg(data, dest):
         tmp.unlink(missing_ok=True)
 
 
+def refresh_sample(text):
+    """Replace the page's embedded CSV with text. Returns True if it changed."""
+    text = text.replace("\r\n", "\n").replace("\r", "\n").strip()
+    if "</script" in text.lower():
+        print("  sheet text contains </script — not embedding it")
+        return False
+    html = PAGE.read_text(encoding="utf-8")
+    start = html.index(SAMPLE_OPEN) + len(SAMPLE_OPEN)
+    end = html.index("</script>", start)
+    if html[start:end].strip() == text:
+        return False
+    PAGE.write_text(html[:start] + text + html[end:], encoding="utf-8")
+    return True
+
+
 def main():
     force = "--force" in sys.argv
     push = "--push" in sys.argv
     PHOTOS.mkdir(exist_ok=True)
 
-    rows = list(csv.DictReader(io.StringIO(fetch(CSV_URL).decode("utf-8"))))
+    sheet = fetch(CSV_URL).decode("utf-8")
+    sample_changed = refresh_sample(sheet)
+    rows = list(csv.DictReader(io.StringIO(sheet)))
     got, skipped, failed, nolink = [], [], [], []
     for row in rows:
         rid = (row.get("id") or "").strip()
@@ -92,11 +115,14 @@ def main():
         print("  no photo link yet:", ", ".join(nolink))
     if failed:
         print("  FAILED:", "\n          ".join(failed))
+    print("embedded sample CSV:", "updated" if sample_changed else "already current")
 
-    if push and got and not failed:
-        subprocess.run(["git", "-C", str(HERE.parent), "add", str(PHOTOS)], check=True)
+    if push and (got or sample_changed) and not failed:
+        subprocess.run(["git", "-C", str(HERE.parent), "add", str(PHOTOS), str(PAGE)], check=True)
+        what = [f"{len(got)} photo(s)"] if got else []
+        what += ["embedded CSV"] if sample_changed else []
         subprocess.run(["git", "-C", str(HERE.parent), "commit",
-                        "-m", f"hands-of-vizchitra: sync {len(got)} photo(s) from sheet"],
+                        "-m", f"hands-of-vizchitra: sync {' + '.join(what)} from sheet"],
                        check=True)
         subprocess.run(["git", "-C", str(HERE.parent), "push"], check=True)
         print("pushed.")
