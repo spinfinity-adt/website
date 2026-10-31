@@ -11,6 +11,25 @@
 /* Content is copied verbatim from the Notion page "Hoop School: Math Edition!".
    Only the styling is new; it uses the theme-paper tokens from /styles.css. */
 .hs{position:relative;z-index:10;padding-bottom:5rem}
+/* one centred container that the content fills (same as /climate-stripes):
+   text sits beside its visual 50/50 and stacks below 1100px */
+:root{--wrap:1320px}
+.hs .container{max-width:var(--wrap);margin:0 auto;padding:0 var(--gutter)}
+.side-by-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 clamp(32px,4vw,64px);align-items:start;margin-top:2rem}
+.side-by-side>:first-child,.side-by-side>.col-text>:first-child{margin-top:0}
+.side-by-side>figure{margin:0;position:sticky;top:5.5rem}
+.side-by-side .notebook{max-width:none}
+.intro>figure{grid-column:2;grid-row:1}
+.intro>.col-text{grid-column:1;grid-row:1}
+@media(max-width:1100px){
+  .side-by-side{grid-template-columns:minmax(0,1fr)}
+  .intro>figure,.intro>.col-text{grid-column:auto;grid-row:auto}
+  .side-by-side>figure{margin-bottom:1.5rem;position:static}
+}
+/* the other editions as a row of cards across the width */
+.hs ul.editions{list-style:none;margin:1rem 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.hs ul.editions li{margin:0;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.15rem}
+@media(max-width:900px){.hs ul.editions{grid-template-columns:1fr}}
 .hs-cover{width:100%;height:clamp(180px,30vw,340px);object-fit:cover;display:block;border-radius:0 0 var(--radius) var(--radius)}
 .hs h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3rem);line-height:1.05;color:var(--accent2);margin:2rem 0 1.5rem}
 .hs h2{font-family:var(--display);font-weight:700;font-size:clamp(1.4rem,3vw,1.85rem);line-height:1.15;color:var(--text);margin:3rem 0 1rem}
@@ -102,16 +121,18 @@ body.pop-lock{overflow:hidden}
 <!-- Cover image: hotlinked from the published Notion page. For a permanent version, download it to images/hoop-school-cover.jpg and change the src. -->
 <img class="hs-cover" src="/images/hoop-school-math.jpg" alt="">
 
-<main class="frame hs">
-<div class="measure" style="max-width:900px">
+<main class="hs">
+<div class="container">
 
 <h1>Hoop School: Math Edition!</h1>
 
+<div class="side-by-side intro">
 <figure>
   <!-- REPLACE with the vlog file, e.g. <div class="media"><video src="images/HoopSchoolMathEditionVlog.mp4" controls playsinline></video></div> -->
   <div class="media todo-media">HoopSchoolMathEditionVlog.mp4</div>
   <figcaption>One of the students of Hoop School made this vlog post class! I think it communicates the energy of Hoop School really well. And it’s also a lovely coincidence that Hips Don’t Lie started playing in the background, because I have a (dormant) YouTube Channel called Hoops Don’t Lie!</figcaption>
 </figure>
+<div class="col-text">
 
 <h2>What is Hoop School?</h2>
 
@@ -125,10 +146,15 @@ body.pop-lock{overflow:hidden}
 
 <p>A large part of this project also involved thinking through the methodological and ethical implications of working with children, and how to protect their privacy and identities while still doing justice to the created knowledge, and recognizing the value of each individual voice.</p>
 
+</div>
+</div>
+
+<div class="side-by-side">
 <figure class="notebook">
   <!-- Notebook image: hotlinked from the published Notion page. For a permanent version, download it to images/FinalCover.jpg and change the src. -->
   <div class="media"><img src="https://aditibhat.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F2110167c-4f39-479c-ae79-046c5082c999%2FFinalCover.jpg?table=block&id=01f7ca7a-13bd-4050-9100-54681a36d8d2&spaceId=478e6666-be50-4f38-9eb4-e755fa2977cf&width=1200&userId=&cache=v2" alt=""></div>
 </figure>
+<div class="col-text">
 
 <p><i><b>Image Caption:</b></i> This is a picture of one of my students’ notebooks, taken on the last day. I wrote each student a letter of love and gratitude, highlighting their strengths through specific anecdotes, and pointing out a skill that makes them good at math. Each student also received a picture of them from the classes. In this image, the picture on the right has been replaced with snippets from the student’s notebook.</p>
 
@@ -140,10 +166,12 @@ body.pop-lock{overflow:hidden}
 </ul>
 
 <p style="margin-top:1.2rem">This form of joyful, embodied, visual, and kinesthetic knowledge generation of math concepts is what Hoop School is all about!</p>
+</div>
+</div>
 
 <p style="margin-top:2rem">Three more editions have also taken place, please reach out if you would like to know more about them.</p>
 
-<ul>
+<ul class="editions">
   <li>The first edition of Hoop School focused on emotional regulation with students of an NGO Swapaksh Foundation. There were 13 students from 12-17, and together we got in touch with ourselves and our emotions through the hoop!</li>
   <li>I worked with Scooled and TALC (The Alternative Learning Community) and built Hoop School for a group of Neurodiverse students.</li>
   <li>I conducted two sessions of ’Science with a Spin’ with Naxxatra Sciences. We designed and played STEM games (focusing mainly on Math and Physics) with the STEM Club of National Hill View Public School (NHVPS).</li>
