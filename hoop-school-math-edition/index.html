@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" href="/favicon.png">
+<title>Hoop School: Math Edition! — Spinfinity</title>
+<link rel="stylesheet" href="/styles.css"/>
+<style>
+/* Content is copied verbatim from the Notion page "Hoop School: Math Edition!".
+   Only the styling is new; it uses the theme-paper tokens from /styles.css. */
+.hs{position:relative;z-index:10;padding-bottom:5rem}
+.hs-cover{width:100%;height:clamp(180px,30vw,340px);object-fit:cover;display:block;border-radius:0 0 var(--radius) var(--radius)}
+.hs h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3rem);line-height:1.05;color:var(--accent2);margin:2rem 0 1.5rem}
+.hs h2{font-family:var(--display);font-weight:700;font-size:clamp(1.4rem,3vw,1.85rem);line-height:1.15;color:var(--text);margin:3rem 0 1rem}
+.hs p,.hs li{font-family:var(--hand);font-size:1.05rem;line-height:1.75;color:var(--text)}
+.hs p+p{margin-top:1em}
+.hs ul{margin:1rem 0 0 1.3rem}
+.hs li+li{margin-top:.6rem}
+.hs a{color:var(--accent2)}
+
+/* coloured section headings (Notion highlighted H2s) */
+.band{display:inline-block;font-family:var(--hand);font-weight:800;font-size:clamp(1.05rem,2.2vw,1.3rem);letter-spacing:.06em;padding:.35rem .9rem;border-radius:6px;margin:3rem 0 1.2rem}
+.band.orange{background:rgba(255,189,53,.22);color:var(--accent2)}
+.band.pink{background:rgba(130,103,190,.14);color:var(--accent1-text)}
+.band.yellow{background:rgba(255,189,53,.22);color:var(--accent4)}
+.band.yellow2{background:rgba(255,189,53,.22);color:var(--accent1-text)}
+.band.green{background:rgba(63,167,150,.16);color:var(--accent2)}
+
+/* video + image */
+.media{border-radius:var(--radius);overflow:hidden;background:var(--card-bg);border:1px solid var(--border)}
+.media img,.media video{display:block;width:100%;height:auto}
+.todo-media{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;text-align:center;padding:1.5rem;border:2px dashed var(--accent4);background:rgba(130,103,190,.06);font-family:var(--hand);font-size:.9rem;color:var(--muted)}
+figure{margin:1.5rem 0}
+figure figcaption{font-family:var(--hand);font-size:.95rem;line-height:1.65;color:var(--muted);margin-top:.7rem}
+.notebook{max-width:560px}
+
+/* Notion columns -> grid (keeps the original column ratios) */
+.cols{display:grid;gap:1rem;align-items:start}
+.col{display:flex;flex-direction:column;gap:1rem}
+@media(max-width:700px){.cols{grid-template-columns:1fr!important}}
+
+/* Notion callouts -> brand cards */
+.callout{display:flex;gap:.8rem;align-items:flex-start;border-radius:12px;padding:1rem 1.1rem;font-family:var(--hand);font-size:.98rem;line-height:1.6;color:var(--text);border:1.5px solid var(--edge);background:var(--tint)}
+.callout .ic{flex:0 0 auto;line-height:1.6;font-size:1.05rem;color:var(--edge)}
+.callout .ic::before{content:"\2665"}
+.callout b{font-weight:800;color:var(--label)}
+.k-purple{--edge:#8267BE;--tint:rgba(130,103,190,.08);--label:#502064}
+.k-orange{--edge:#FFBD35;--tint:rgba(255,189,53,.12);--label:#502064}
+.k-pink{--edge:#c58bd6;--tint:rgba(197,139,214,.10);--label:#502064}
+.k-green{--edge:#3FA796;--tint:rgba(63,167,150,.09);--label:#2E7A6E}
+.k-yellow{--edge:#FFBD35;--tint:rgba(255,189,53,.12);--label:#2E7A6E}
+.k-blue{--edge:#3FA796;--tint:rgba(63,167,150,.06);--label:#2E7A6E}
+.k-gray{--edge:var(--border);--tint:var(--card-bg);--label:var(--text)}
+.callout img.cat{width:22px;height:22px;flex:0 0 auto}
+
+/* gallery */
+.day-group{margin-top:2.2rem}
+.day-group h3{font-family:var(--display);font-weight:700;font-size:1.2rem;color:var(--text);display:flex;align-items:baseline;gap:.6rem;margin-bottom:1rem}
+.day-group h3 span{font-family:var(--hand);font-size:.85rem;font-weight:700;color:var(--muted)}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem}
+.card{display:block;text-decoration:none!important;color:var(--text)!important;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.05rem 1.1rem;transition:all .22s ease}
+.card:hover{border-color:var(--accent2);transform:translateY(-3px);box-shadow:0 4px 0 rgba(80,32,100,.12)}
+.card .name{font-family:var(--display);font-weight:700;font-size:1.05rem;line-height:1.2;margin-bottom:.6rem}
+.card .row{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.35rem}
+.tag{display:inline-block;font-family:var(--hand);font-size:.74rem;font-weight:700;padding:.12rem .55rem;border-radius:20px;border:1px solid var(--c);color:var(--t);background:var(--b)}
+.t-type{--c:#8267BE;--t:#502064;--b:rgba(130,103,190,.08)}
+.t-skill{--c:#FFBD35;--t:#232730;--b:rgba(255,189,53,.14)}
+.t-math{--c:#3FA796;--t:#2E7A6E;--b:rgba(63,167,150,.08)}
+.t-emb{--c:#c58bd6;--t:#502064;--b:rgba(197,139,214,.10)}
+
+/* activity pop-up */
+.pop{position:fixed;inset:0;z-index:10000;display:none;align-items:flex-start;justify-content:center;background:rgba(35,39,48,.55);padding:clamp(0px,4vh,48px) clamp(0px,3vw,32px);overflow-y:auto}
+.pop.open{display:flex}
+.pop-box{position:relative;background:var(--bg);width:100%;max-width:820px;border-radius:var(--radius);padding:clamp(1.4rem,4vw,2.4rem);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+@media(max-width:600px){.pop{padding:0}.pop-box{border-radius:0;min-height:100%}}
+.pop-close{position:sticky;top:0;float:right;margin:-.6rem -.6rem 0 0;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--card-bg);font-size:1.3rem;line-height:1;cursor:pointer;color:var(--text);z-index:2}
+.pop-close:hover{border-color:var(--accent2);color:var(--accent2)}
+.pop h2{font-family:var(--display);font-weight:700;font-size:clamp(1.4rem,3vw,1.9rem);color:var(--accent2);margin:0 0 .8rem;padding-right:3rem}
+.pop .tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:1.4rem}
+.pop-body p,.pop-body li{font-family:var(--hand);font-size:1.02rem;line-height:1.75;color:var(--text)}
+.pop-body p{margin:0 0 1em}
+.pop-body h4{font-family:var(--display);font-weight:700;font-size:1.15rem;margin:1.4rem 0 .6rem}
+.pop-body ul,.pop-body ol{margin:0 0 1em 1.3rem}
+.pop-body figure{margin:0 0 1.2rem}
+.pop-body img,.pop-body video{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--border);background:var(--card-bg)}
+.pop-body figcaption{font-family:var(--hand);font-size:.9rem;color:var(--muted);margin-top:.5rem}
+.pop-body .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.8rem;margin-bottom:1.2rem}
+.pop-body .grid figure{margin:0}
+.pop-body .file{display:inline-block;font-family:var(--hand);font-weight:700;color:var(--accent2);border:1.5px solid var(--accent4);border-radius:30px;padding:.4rem 1rem;text-decoration:none;margin-bottom:1em}
+.pop-body .vid-missing{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border:2px dashed var(--accent4);border-radius:10px;background:rgba(130,103,190,.06);font-family:var(--hand);font-size:.9rem;color:var(--muted);text-align:center;padding:1rem}
+.pop-body [hidden]{display:none!important}
+body.pop-lock{overflow:hidden}
+</style>
+</head>
+<body class="theme-paper">
+
+<div id="sf-nav-mount"></div>
+<script src="/nav.js"></script>
+
+<!-- Cover image: hotlinked from the published Notion page. For a permanent version, download it to images/hoop-school-cover.jpg and change the src. -->
+<img class="hs-cover" src="/images/hoop-school-math.jpg" alt="">
+
+<main class="frame hs">
+<div class="measure" style="max-width:900px">
+
+<h1>Hoop School: Math Edition!</h1>
+
+<figure>
+  <!-- REPLACE with the vlog file, e.g. <div class="media"><video src="images/HoopSchoolMathEditionVlog.mp4" controls playsinline></video></div> -->
+  <div class="media todo-media">HoopSchoolMathEditionVlog.mp4</div>
+  <figcaption>One of the students of Hoop School made this vlog post class! I think it communicates the energy of Hoop School really well. And it’s also a lovely coincidence that Hips Don’t Lie started playing in the background, because I have a (dormant) YouTube Channel called Hoops Don’t Lie!</figcaption>
+</figure>
+
+<h2>What is Hoop School?</h2>
+
+<p>I picked up a hula* hoop at the age of six, and that was the start of a complex relationship with the art form - a manifestation of embodied cognition. It created a space for me to connect with myself, and for my mind and body to come together to achieve an understanding and mastery of a trick; science and mathematics in motion and emotion.</p>
+
+<p>Although Mathematics is considered to be a logical and rational subject, our connections with it are deeply emotional. The experience of math is  quite often connected with the teacher who taught it; the right teacher can open your heart to it, but when math is taught in a disembodied manner, students tend to shut out.</p>
+
+<p>In my engineering education, I fell out of love with math; it didn’t feel like my body, my emotions and my being had a place. Through my master’s thesis, I have co-created a hoop-math pedagogy that challenges the mind-body duality predisposing traditional STEM education. This was built in the Just Futures Co-Lab at Srishti Manipal with a group of female students and volunteers from U&amp;I, an NGO whose aim is to provide holistic education to underprivileged children.</p>
+
+<p>Six sessions of “Hoop School: Math Edition!” took place over two weeks. Each session had an underlying math concept that was understood in a generative, rather than formulaic manner. We explored math through hoop moves, drawing, journaling prompts, and collaborative games. With each person being an active participant instead of a passive consumer, we challenged the banking model of education<sup>2</sup>.  We generated knowledge in an engaged pedagogy through our bodies, while integrating ways of knowing with habits of being. Concepts were understood kinesthetically, through diagramming and visual representations, and in discussion and movement circles; circles showed up in more ways than one in this pedagogy.</p>
+
+<p>A large part of this project also involved thinking through the methodological and ethical implications of working with children, and how to protect their privacy and identities while still doing justice to the created knowledge, and recognizing the value of each individual voice.</p>
+
+<figure class="notebook">
+  <!-- Notebook image: hotlinked from the published Notion page. For a permanent version, download it to images/FinalCover.jpg and change the src. -->
+  <div class="media"><img src="https://aditibhat.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F2110167c-4f39-479c-ae79-046c5082c999%2FFinalCover.jpg?table=block&id=01f7ca7a-13bd-4050-9100-54681a36d8d2&spaceId=478e6666-be50-4f38-9eb4-e755fa2977cf&width=1200&userId=&cache=v2" alt=""></div>
+</figure>
+
+<p><i><b>Image Caption:</b></i> This is a picture of one of my students’ notebooks, taken on the last day. I wrote each student a letter of love and gratitude, highlighting their strengths through specific anecdotes, and pointing out a skill that makes them good at math. Each student also received a picture of them from the classes. In this image, the picture on the right has been replaced with snippets from the student’s notebook.</p>
+
+<ul>
+  <li>The top left snippet demonstrates how this student has understood mathematical concepts such as properties of a circle, degrees and rotations through hoop tricks. Each student had their own unique way of visually representing these concepts. She has also made an illustration of herself hooping with the clouds.</li>
+  <li>The drawing on the top right is a response to an activity asking them to visualize and draw math as a person; the student named her math-being ‘numb’ because sometimes ‘numb’ers make her feel numb.</li>
+  <li>The bottom-left drawing is a representation of her performing different tricks in our playground with the rows of plants on either side.</li>
+  <li>The last drawing is of the chest roll - where you roll the hoop from one hand to the other over your chest; the arms act as a tangent to the circle, which is what she has marked.</li>
+</ul>
+
+<p style="margin-top:1.2rem">This form of joyful, embodied, visual, and kinesthetic knowledge generation of math concepts is what Hoop School is all about!</p>
+
+<p style="margin-top:2rem">Three more editions have also taken place, please reach out if you would like to know more about them.</p>
+
+<ul>
+  <li>The first edition of Hoop School focused on emotional regulation with students of an NGO Swapaksh Foundation. There were 13 students from 12-17, and together we got in touch with ourselves and our emotions through the hoop!</li>
+  <li>I worked with Scooled and TALC (The Alternative Learning Community) and built Hoop School for a group of Neurodiverse students.</li>
+  <li>I conducted two sessions of ’Science with a Spin’ with Naxxatra Sciences. We designed and played STEM games (focusing mainly on Math and Physics) with the STEM Club of National Hill View Public School (NHVPS).</li>
+</ul>
+
+<p style="margin-top:2rem">This page is a collection of the activities that took place in Hoop School: Math Edition! Each activity is tagged with different themes which have been outlined below.</p>
+
+<h2>Tag Descriptions</h2>
+
+<div class="band orange">ACTIVITY TYPE</div>
+<div class="cols" style="grid-template-columns:43.75fr 56.25fr">
+  <div class="col">
+    <div class="callout k-purple"><span class="ic"></span><div><b>MAGIC CIRCLE (Games)</b> - The concept of a Magic Circle in Play is “to step inside a concrete or metaphorical circle where special rules apply”. We took that quite literally here! Pairs competed together so as to encourage collaboration with healthy competition.</div></div>
+    <div class="callout k-orange"><span class="ic"></span><div><b>LEARNING CIRCLE</b> - where we stood in a circle and learnt a hoop move, or discussed a math concept, or sometimes did both!</div></div>
+  </div>
+  <div class="col">
+    <div class="callout k-orange"><span class="ic"></span><div><b>MOVEMENT CIRCLE</b> - Where we held hands, formed a circle and tried out moves together in the spirit of collaborative embodiment.</div></div>
+    <div class="callout k-purple"><span class="ic"></span><div><b>SELF-REFLECTION CIRCLE</b> - A space for us to freely express and introspect our learnings and feelings.</div></div>
+  </div>
+</div>
+
+<div class="band pink">MATH CONCEPTS EXPLORED</div>
+<div class="cols" style="grid-template-columns:68.75fr 31.25fr">
+  <div class="col">
+    <div class="callout k-pink"><span class="ic"></span><div><b>PROPERTIES OF A CIRCLE:</b> ◍ circumference, ◍ radius, ◍ diameter through hoops of different sizes</div></div>
+    <div class="callout k-green"><span class="ic"></span><div><b>DEGREES AND ANGLES:</b> ◍ How many degrees are there in a circle ◍ How a circle can be translated into angles</div></div>
+    <div class="callout k-pink"><span class="ic"></span><div><b>PLANES:</b> Introduction to coordinate geometry, axes, xy-yz-xz planes</div></div>
+    <div class="callout k-green"><span class="ic"></span><div><b>BALANCE, CENTERS:</b> Kinesthetic understanding of center points and balancing points on the body</div></div>
+  </div>
+  <div class="col">
+    <div class="callout k-green"><span class="ic"></span><div><b>RATIOS:</b> ◐ number of rotations ◐ speed ◐ ease of hooping ◐ What is pi?</div></div>
+    <div class="callout k-pink"><span class="ic"></span><div><b>ROTATIONS:</b> ◐ Rotating the hoop by 90°, 180°, 270°, 360° in 2D and 3D space</div></div>
+    <div class="callout k-green"><span class="ic"></span><div><b>2D and 3D VISUALIZATION</b><b>:</b> What is 3D? How to represent 3D images in 2D space</div></div>
+    <div class="callout k-pink"><span class="ic"></span><div><b>TANGENTS:</b> ◍ A straight line that has  ◍ one point of intersection with the circle ◍ at 90 degrees</div></div>
+  </div>
+</div>
+
+<div class="band yellow">HOOP-MATH SUPERPOWERS ACTIVATED</div>
+<p>In Mathematics for Human Flourishing, Francis Su takes the reader through Math virtues which are built in the pursuit of mathematics when it is grounded in basic human needs. I found a resonance with these through hooping as well! I’ve also added some mathematical thinking modes that can be cultivated through hooping. These superpowers as I like to call them, are in this edition arising from my embodied cognition and lived experience. In further editions of hoop school, I would like to have activities that gauge these and record them more collectively.</p>
+<div class="cols" style="grid-template-columns:1fr 1fr;margin-top:1.2rem">
+  <div class="col">
+    <div class="callout k-yellow"><span class="ic"></span><div><b>PERCEPTION</b></div></div>
+    <div class="callout k-pink"><span class="ic"></span><div><b>ABILITY TO CHANGE PERSPECTIVES AND REFLECT</b></div></div>
+    <div class="callout k-yellow"><span class="ic"></span><div><b>MODELING</b></div></div>
+    <div class="callout k-pink"><span class="ic"></span><div><b>MAKING CONNECTIONS</b></div></div>
+    <div class="callout k-yellow"><span class="ic"></span><div><b>DISPOSITION TOWARDS BEAUTY</b></div></div>
+  </div>
+  <div class="col">
+    <div class="callout k-purple"><span class="ic"></span><div><b>SPATIAL REASONING</b></div></div>
+    <div class="callout k-yellow"><span class="ic"></span><div><b>INTERPRETATION, DEFINITION</b></div></div>
+    <div class="callout k-pink"><span class="ic"></span><div><b>BALANCING (equations and hoops!)</b></div></div>
+    <div class="callout k-yellow"><span class="ic"></span><div><b>GEOMETRIC REASONING</b></div></div>
+    <div class="callout k-pink"><span class="ic"></span><div><b>ENDURANCE, PERSEVERANCE</b></div></div>
+  </div>
+</div>
+
+<div class="band green">HOOP SKILLS LEARNT</div>
+<div class="cols" style="grid-template-columns:1fr 1fr">
+  <div class="col">
+    <div class="callout k-purple"><span class="ic"></span><div><b>WAIST HOOPING: Standing, Walking, Running, Racing</b></div></div>
+    <div class="callout k-green"><span class="ic"></span><div><b>ISOLATIONS: Two Handed, One handed, Ghosting, Iso-pop</b></div></div>
+    <div class="callout k-purple"><span class="ic"></span><div><b>ESCALATORS</b></div></div>
+    <div class="callout k-green"><span class="ic"></span><div><b>WEAVES</b></div></div>
+    <div class="callout k-purple"><span class="ic"></span><div><b>WALK THE DOG</b></div></div>
+  </div>
+  <div class="col">
+    <div class="callout k-green"><span class="ic"></span><div><b>BARREL ROLL: Two Handed, One Handed, Partner, Racing</b></div></div>
+    <div class="callout k-purple"><span class="ic"></span><div><b>WAIST HOOPING: Standing, Walking, Running</b></div></div>
+    <div class="callout k-green"><span class="ic"></span><div><b>PALM HOOPING: Front (Wall Plane), Side (Wheel Plan), Top (Floor Plane)</b></div></div>
+    <div class="callout k-purple"><span class="ic"></span><div><b>BALANCE: Palm, Forehead, Arm, Partner</b></div></div>
+    <div class="callout k-green"><span class="ic"></span><div><b>CHEST ROLL</b></div></div>
+  </div>
+</div>
+
+<div class="band yellow2">EMBODIMATH STRATEGIES</div>
+<p><a href="https://www.frontiersin.org/articles/10.3389/feduc.2020.00147/full" target="_blank" rel="noopener">The future of embodied design in mathematics teaching and learning</a> had 6 strategies that really helped me design activities for the course. I took the liberty of calling them ‘embodimath’ strategies, as that’s a mnemonic that my brain coined.</p>
+<div class="cols" style="grid-template-columns:56.25fr 43.75fr;margin-top:1.2rem">
+  <div class="callout k-blue"><span class="ic"></span><div><b>ACTION-BASED EMBODIMENT:</b> Embodied designs set students up for correct intuitive responses before presenting them with analytic procedures that validate yet enhance these intuitions.</div></div>
+  <div class="callout k-blue"><span class="ic"></span><div><b>PERCEPTION-BASED EMBODIMENT:</b> These designs target a/b concepts, such as likelihood (favorable events/possible events), slope (rise/run), density (total object area/total area), and proportional equivalence in geometrical similitude (a:b = c:d).</div></div>
+</div>
+<div class="cols" style="grid-template-columns:1fr 1fr 1fr;margin-top:1rem">
+  <div class="callout k-yellow"><span class="ic"></span><div><b>ACTION-COGNITION TRANSDUCTION:</b> Action and cognition enjoy reciprocity: Just as cognitive processes can induce motor behaviors for performing goal-directed actions, performing actions can induce cognitive states that perform reasoning, problem solving and learning.</div></div>
+  <div class="callout k-blue"><span class="ic"></span><div><b>GESTURE SCHEMATIZING</b> - Learners’ gestures can reveal knowledge not in speech, emerging or transitional knowledge, and how learners schematize information.</div></div>
+  <div class="callout k-yellow"><span class="ic"></span><div><b>COLLABORATIVE GESTURE:</b> The presence of multiple learners fundamentally changes the nature of how mathematical ideas can be embodied, in a way that is not describable as the sum of each individual’s actions.</div></div>
+</div>
+<div class="cols" style="grid-template-columns:56.25fr 43.75fr;margin-top:1rem">
+  <div class="callout k-yellow"><span class="ic"></span><div><b>GROUNDING ABSTRACTION:</b> Abstract mathematical symbols are treated as physical objects distributed in space - grounding of abstraction in perceptual-motor actions.</div></div>
+  <div class="callout k-yellow"><span class="ic"></span><div><b>VOLUNTARY MATHEMIZATION:</b> In mathematics in particular, well-designed games can provoke players to voluntarily mathematize the digital context in a process called theorycrafting. (Making them speak in mathematical terms without realizing it!)</div></div>
+</div>
+
+<div class="callout k-gray" style="margin-top:2.5rem"><img class="cat" src="https://cdn4.iconfinder.com/data/icons/animals-57/500/cat_animal_-512.png" alt=""><div><b>To know more about an activity, click on the card, and it will lead you to more information!</b></div></div>
+
+<div id="gallery"></div>
+
+</div>
+</main>
+
+<div id="sf-footer-mount"></div>
+
+<script>
+// Activity cards: names and tags exactly as in the Notion "Hoop-Math Activities" gallery (By Day view).
+// Each card links to its published Notion page.
+const N = id => "https://aditibhat.notion.site/" + id;
+const DAYS = [
+ { day:"1: Hula Hooping is Not a WAIST of Time!", items:[
+  {n:"Don’t Break The Hoop Chain!", id:"1c55b16042e6485e9e2b0bd5eb3f93fe", type:["Movement Circle","Magic Circle: Game"], skill:["Hoop Orientation"], math:["3D Space Orientation"], emb:["Collaborative Gesture Embodiment"]},
+  {n:"Running Around in Circles", id:"33cdff8e18b24454b1509b213fc61de8", type:["Magic Circle: Game"], skill:["Waist Hooping"], math:["Circumference~Diameter~Radius","Bigger Hoops -> Slower Rotation -> Easier Spinning","Ratios"], emb:["Collaborative Gesture Embodiment","Voluntary Mathemization","Action-Based","Action-Cognition Transduction","Perception-Based"]},
+  {n:"Circumference, Radius, Diameter", id:"56297db23ef24798806d85ad3511ee67", type:["Math Learning Circle"], skill:["Waist Hooping"], math:["Circumference~Diameter~Radius"], emb:["Grounding Abstraction","Action-Cognition Transduction","Gesture - Schematizing Information","Perception-Based"]},
+  {n:"Draw Your Future Self", id:"9168c83d16be4fad94e94d1cdb33cc31", type:["Self-Reflection Circle"], skill:[], math:[], emb:["Action-Based"]},
+  {n:"Waist Hooping Practice", id:"9367052b832347e196b43a85fb825245", type:["Learning Circle: Hoop Skill"], skill:["Waist Hooping"], math:["Bigger Hoops -> Slower Rotation -> Easier Spinning","Ratios","Circumference~Diameter~Radius"], emb:[]},
+  {n:"Jumping Through Hoops!", id:"eddb1fd92b5b4f08ad2ead0fe20fae74", type:["Magic Circle: Game"], skill:["Waist Hooping"], math:["Bigger Hoops -> Slower Rotation -> Easier Spinning","Ratios","Circumference~Diameter~Radius"], emb:["Action-Cognition Transduction","Perception-Based"]},
+  {n:"Hoop Hoop Relay!", id:"f42f2da49b8448a5bd59c5249fe7d9ef", type:["Magic Circle: Game"], skill:["Waist Hooping","Waist Hooping + Running"], math:["Bigger Hoops -> Slower Rotation -> Easier Spinning","Circumference~Diameter~Radius","Ratios"], emb:["Action-Cognition Transduction","Collaborative Gesture Embodiment"]}
+ ]},
+ { day:"2: We're on a ROLL!", items:[
+  {n:"Musical Hoops + Statue! - Barrel Roll Version", id:"543fd70d5dd34403968113d978c5fe0b", type:["Magic Circle: Game","Partner Exploration"], skill:["Barrel Roll"], math:["Degrees","Rotations","Angles","3D Space Orientation"], emb:["Action-Based","Action-Cognition Transduction","Collaborative Gesture Embodiment"]},
+  {n:"Degrees, Rotations", id:"5f69aecd6af44403a5c723f4432eedc8", type:["Math Learning Circle"], skill:["Barrel Roll"], math:["Degrees","Rotations","Circumference~Diameter~Radius"], emb:["Gesture - Schematizing Information","Grounding Abstraction","Action-Cognition Transduction"]},
+  {n:"Draw the Tricks you learnt today - Day 2", id:"a3f151f8762a4bf08f36a273b769f437", type:["Learning Circle: Hoop Skill","Math Learning Circle"], skill:["Barrel Roll"], math:["Degrees","Rotations","Circumference~Diameter~Radius"], emb:[]},
+  {n:"Barrel Roll Learning - 2Hand - Barrel Roll Circle", id:"a853e9e2d4524ab6bad7a421e4f1c89e", type:["Learning Circle: Hoop Skill","Movement Circle"], skill:["Barrel Roll"], math:["Degrees","Rotations","Circumference~Diameter~Radius"], emb:["Collaborative Gesture Embodiment","Action-Cognition Transduction","Grounding Abstraction"]},
+  {n:"Discover One Handed Barrel Roll", id:"ad0c8478c5c94a7f88a9450a9915cde0", type:["Partner Exploration"], skill:[], math:["Degrees","Rotations"], emb:["Grounding Abstraction","Collaborative Gesture Embodiment","Action-Based"]},
+  {n:"Barrel Race!", id:"b117a7a9feab44f7a651fdfc14a7155f", type:["Magic Circle: Game","Partner Exploration","Individual Exploration"], skill:["Barrel Roll"], math:["Degrees","Rotations","Circumference~Diameter~Radius"], emb:["Collaborative Gesture Embodiment","Grounding Abstraction","Action-Based"]},
+  {n:"Circumference, Radius, Diameter", id:"dbaff6a9cab24a6d8fbc81fd3f82756c", type:["Math Learning Circle"], skill:["Waist Hooping","Ghosting Isolation"], math:["Circumference~Diameter~Radius"], emb:["Gesture - Schematizing Information"]}
+ ]},
+ { day:"3: Free Flow", items:[
+  {n:"Hoop Handshake Circle!", id:"11e3e2df56b449b783ea5a626a19ae11", type:["Movement Circle"], skill:["Palm Hooping"], math:["Planes"], emb:[]},
+  {n:"Palm Hooping - Top, Side, Front", id:"580edd9b5c894e36b67653571e152b3e", type:["Learning Circle: Hoop Skill"], skill:["Palm Hooping"], math:["3D Space Orientation","Planes"], emb:["Gesture - Schematizing Information","Grounding Abstraction","Action-Based"]},
+  {n:"Draw the Tricks you learnt today", id:"6f74865d91e148f4a3a163f79e87c737", type:["Math Learning Circle","Learning Circle: Hoop Skill"], skill:["Palm Hooping","Escalators","Weaves"], math:["Planes","3D Space Orientation"], emb:["Gesture - Schematizing Information","Action-Cognition Transduction"]},
+  {n:"Weaves Learning", id:"b23079db8bb64588ad6a3b6054864a23", type:["Learning Circle: Hoop Skill"], skill:["Weaves"], math:["3D Space Orientation","Planes","Rotations"], emb:["Grounding Abstraction","Action-Based"]},
+  {n:"Escalators Learning", id:"f325dfa0f17f4516a35fed911aeff0d3", type:["Learning Circle: Hoop Skill"], skill:["Escalators"], math:["3D Space Orientation","Planes"], emb:["Action-Based"]}
+ ]},
+ { day:"4: In PLANE sight!", items:[
+  {n:"Rebekah Says - Planes Version!", id:"47673d3e24a547018a0140c27e5590fb", type:["Magic Circle: Game","Individual Exploration"], skill:["Palm Hooping","Planes"], math:["3D Space Orientation","Planes"], emb:["Gesture - Schematizing Information","Grounding Abstraction","Action-Based"]},
+  {n:"2D-3D Learning - Draw the trick live", id:"9b0984ba267c4b8a9af80f76789afbcf", type:["Math Learning Circle"], skill:["Ghosting Isolation","Chest Roll","Iso-pop","Weaves"], math:[], emb:["Gesture - Schematizing Information","Grounding Abstraction","Action-Cognition Transduction","Collaborative Gesture Embodiment"]},
+  {n:"Planes - Partner Version", id:"bd17b1b6d8b2441bb55d3fad0f9eeff7", type:["Magic Circle: Game","Partner Exploration"], skill:["Planes","Palm Hooping"], math:[], emb:[]},
+  {n:"Iso-pop Explorations", id:"d0d841dcf9384df1b6423a9539b1554c", type:["Individual Exploration","Partner Exploration","Learning Circle: Hoop Skill"], skill:["Iso-pop"], math:["Planes","3D Space Orientation","Circumference~Diameter~Radius","Tangents to the circle"], emb:["Collaborative Gesture Embodiment","Action-Based"]}
+ ]},
+ { day:"5: Let’s go off on a tangent!", items:[
+  {n:"Palm Balance", id:"03ee30f82a404351b5ac06b60040e0c1", type:["Learning Circle: Hoop Skill"], skill:["Palm Balance"], math:["Balance","Tangents to the circle","Centers"], emb:["Action-Cognition Transduction","Gesture - Schematizing Information"]},
+  {n:"Chord and Tangent Discussion", id:"18167da3833f47dcaaa159d77a2726b2", type:["Math Learning Circle"], skill:["Palm Balance","Walk the Dog","Chest Roll"], math:[], emb:[]},
+  {n:"Walk the Dog", id:"27ec929bec094ae5a53e8a4dd0a42afc", type:["Learning Circle: Hoop Skill"], skill:["Walk the Dog"], math:["Tangents to the circle","Planes"], emb:["Grounding Abstraction","Action-Cognition Transduction"]},
+  {n:"Forehead Balance", id:"441f7d3adf694d85a09ecd537b30aa78", type:["Learning Circle: Hoop Skill"], skill:["Forehead Balance"], math:[], emb:["Collaborative Gesture Embodiment","Action-Based","Action-Cognition Transduction"]},
+  {n:"Chest Roll", id:"4a923d35f6544e91b07354082869b8fd", type:["Learning Circle: Hoop Skill"], skill:["Chest Roll"], math:[], emb:["Gesture - Schematizing Information","Action-Cognition Transduction","Action-Based"]},
+  {n:"Partner Balance Races!", id:"6e53316ced8144f287a63a680a521f2b", type:["Magic Circle: Game","Partner Exploration"], skill:["Palm Balance","Body Balance","Forehead Balance","Arm Balance"], math:[], emb:[]},
+  {n:"“Pointer Finger” Balance", id:"910e0919c6b448c5bc045b1c03ff3b0d", type:["Learning Circle: Hoop Skill"], skill:["\"Pointer Finger\" Balance"], math:[], emb:[]},
+  {n:"Partner Balance Explorations", id:"95559675a7604cf78ddfb8cd14c33664", type:["Learning Circle: Hoop Skill"], skill:["Forehead Balance","Arm Balance"], math:[], emb:[]},
+  {n:"Arm Balance", id:"a7cc5c1b40e1443f9a50ad7feef0f74f", type:["Learning Circle: Hoop Skill"], skill:["Arm Balance"], math:["Tangents to the circle"], emb:[]},
+  {n:"Individual Balance Race", id:"c0823519e46c4685a99a39396c406984", type:["Magic Circle: Game"], skill:["Palm Balance"], math:["3D Space Orientation","Balance","Centers","Tangents to the circle"], emb:["Action-Cognition Transduction","Gesture - Schematizing Information"]}
+ ]},
+ { day:"6: Passing with Flying Colours!", items:[
+  {n:"Throwing Hoops in the air! - Passed with Flying Hoops", id:"280d407fe4c44ceba90c00b91bddb3fd", type:["Free Flow"], skill:[], math:[], emb:[]},
+  {n:"Trace the path of the Hoop", id:"2a28a425cda44eecb9a188d47d50ffe8", type:["Math Learning Circle"], skill:[], math:["Circumference~Diameter~Radius","Rotations","Planes","3D Space Orientation","Tangents to the circle"], emb:[]},
+  {n:"Thank you letters for me!", id:"328c5f7ac71542e896532bade0116dcb", type:["Expressions"], skill:[], math:[], emb:[]},
+  {n:"Letters to my students", id:"9f1e77c869bb473eb9fcd00c66e6441b", type:["Expressions"], skill:[], math:[], emb:[]},
+  {n:"Dance Party", id:"c8466a347eae4a6a9da2a22f360e91fb", type:["Expressions"], skill:[], math:[], emb:[]},
+  {n:"Imagine Math as a person and write to it", id:"cb9a8c9f3abf4a24a616eb7850d2cfeb", type:["Self-Reflection Circle"], skill:[], math:[], emb:[]},
+  {n:"Student Drawings", id:"e8420d2d7efa4dc6af823633579a0903", type:["Expressions"], skill:[], math:[], emb:[]}
+ ]}
+];
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const row = (arr,cls) => arr.length ? `<div class="row">${arr.map(t=>`<span class="tag ${cls}">${esc(t)}</span>`).join("")}</div>` : "";
+document.getElementById("gallery").innerHTML = DAYS.map(g => `
+  <section class="day-group">
+    <h3>${esc(g.day)} <span>${g.items.length}</span></h3>
+    <div class="gallery">${g.items.map(a => `
+      <a class="card" href="${N(a.id)}" data-id="${a.id}" target="_blank" rel="noopener">
+        <div class="name">${esc(a.n)}</div>
+        ${row(a.type,"t-type")}${row(a.skill,"t-skill")}${row(a.math,"t-math")}${row(a.emb,"t-emb")}
+      </a>`).join("")}
+    </div>
+  </section>`).join("");
+</script>
+
+<div class="pop" id="pop" role="dialog" aria-modal="true" aria-labelledby="pop-title">
+  <div class="pop-box">
+    <button class="pop-close" id="pop-close" aria-label="Close">×</button>
+    <h2 id="pop-title"></h2>
+    <div class="tags" id="pop-tags"></div>
+    <div class="pop-body" id="pop-body"></div>
+  </div>
+</div>
+
+<script>
+// Activity page content, copied exactly from each published Notion activity page.
+// Block codes: t = paragraph, b = bullet, h = sub-heading, i = image, v = video, f = file.
+// Image paths: "o…" = older Notion uploads, "n…" = newer uploads (both load through the published Notion site).
+const ACT = {"1c55b16042e6485e9e2b0bd5eb3f93fe":[["i","ob02f2e7f-935f-44f0-b6d2-0aa57ae936cb/DBTHC.jpg","fe5c3ae8-9ac5-4757-ada7-f683b8801da3"],["t",[["How we played:",["b"]],[" Everyone stood in a circle and held hands. The goal was to pass one hoop across the chain, while still holding hands throughout."]]],["t",[["Description:",["b"]],[" We used this as an introduction game, when the hoop reached a person,\nthey had to say their name, and name a round object!\nI started the round, and the object I said was quite obviously, a hoop. They playfully\nsaid that that’s too obvious and asked me to name another object - and I said Earth\nbecause that’s one of the meanings of my name!"]]],["t",[["The objects they named after that were sun, moon, bangle, pizza, Jessy’s face (name changed), cookie, cake and watch.\nThis is a pretty popular game, and they had already played this game before, so they\ndidn’t seem very excited by it. A twist I could’ve incorporated would’ve been to have multiple hoops in the circle."]]]],"33cdff8e18b24454b1509b213fc61de8":[["i","o2be9b20a-2d58-448b-9812-aa11d0dc88a0/RAIC.jpg","49664071-6d76-47ab-b834-7a428c311554"],["t",[["How we played:",["b"]],["\n◐ Arrange pairs of hoops in an arc, kind of like a two strips of a rainbow. Let there be\na range of sizes.\n◐ Start the music, and each pair jumps through the hoops together.\n◐ When the music stops, one person picks up the hoop they are standing in. Music\nstarts again for 30s. The other team-mate notes down the size of that hoop and\nthe number of rotations done in that time.\n◐ Start the music again, and switch roles this time!\n◐ Repeat the whole activity 3-4 times\n◐ Whichever team gets the highest rotations wins"]]],["i","ob553f31f-15d3-4a1d-b0d7-1a5b412f9a59/RAIC.png","a34b4a28-e24d-4e69-925d-ecb4ed0c1034"],["t",[["For this game, the girls realised that bigger hoops generate lesser rotations, so they switched to smaller ones to optimise their scores! They also tried moving their waists faster to get more rotations. "]]],["t",[["This activity has lot of embodimath strategies coming into play."]]],["b",[["The girls coming up with these explanations is an an example of "],["voluntary mathemization",["b"]],[". "]]],["b",[["It is also "],["Action-based and Action-Cognition Transduction",["b"]],[" with the movement inducing the sensorimotor state for the concept to be understood."]]],["b",[["And it is also "],["perception based",["b"]],[" as the ratio between size and rotation is in the form of a/b."]]]],"56297db23ef24798806d85ad3511ee67":[["i","oec2400e6-16f5-4e9a-b395-8abefa405258/Circumference.jpg","e0de9430-e6a1-48ff-b2b1-e3dd1df81914"],["t",[["At the end of the day, we all sat in a circle for a debrief and to check in with each on how the day went. The girls were happy and tired after the many activities and games of running around we had. I asked them what they learnt and asked them what they experienced with the bigger hoop and the smaller hoop, and if there was any change. They had understood pretty well that bigger hoops are slower and easier, while small hoops generate more rotations."]]],["t",[["\nAt this point, the opportunity to discuss the properties of the circle relating to size - cicrumference, radius and diameter was right there! Especially because in the game running around in circles- they were asked to write down the numbers on the tape of the hoop and count rotations. But I was really hesitant and scared to bring up the math angle, because I think I had put a lot of pressure on myself and I was scared that they would not respond to it."]]],["t",[["\nI am so glad that Chaits noticed this opportunity and stepped in for me! He started the discussion with a simple question, “What is the number on the tape that you noted down durinng Running Around in Circles?”. They guessed things like size and length, but one student said “Cir..cle”. We got excited hearing “Cir” because we hoped she’d say circumference. Suddenly a student said Circumference, and we celebrated. It turns out, our reaction to “Cir” made her think of it. We discussed Circumference, Radius and Diameter after this. I used a measuring tape and asked them to tell me the readings. We then saw if it matched the numbers on the tape. We affected how these properties affected ease of hooping and number of rotations. During this discussion, I could visibly see some of the older girls shut down and lose interest, but it was nice to see the others be curious and respond! "]]],["t",[["Overall, it was a great start to our classes, and I was incredibly grateful to both Chaitanya and Rebekah for co-facilitating with me; their participation and facilitation made the start all the more meaningful!"]]]],"9168c83d16be4fad94e94d1cdb33cc31":[["t",[["Prompt given: ",["b"]]]],["t",[["Imagine yourself in the future doing something you love, and something that makes you happy. It doesn’t have to be realistic, it can be something impossible! You don’t have to mention professions, but if you want to, that’s fine too!"]]],["t",[["Student responses:",["b"]]]],["i","o7d93856f-9f67-43d1-8dc1-60d41708f51c/Future_Self.png","61801227-124d-4756-970a-67786bc80c7f"],["t",[["To encourage them to draw, I also showed them my response to the prompt:"]]],["i","ofb2e1d35-6015-4b6a-a21f-ed21669243d4/me.jpg","848cac39-d877-48b5-aa1f-c95d20d4f33f"]],"9367052b832347e196b43a85fb825245":[["i","o2e0c48d7-ddc7-4cbe-b5e3-74640391d8b1/WaistHoopingPractice.jpg","398d6a17-ce60-4d3b-b72f-5f6e28110690"],["t",[["The girls were able to waist hoop pretty easily, especially because there were hoops of multiple sizes available. And it appeared that due to my earlier visits to the center, they had already practiced and gotten the hang of it! Some of them took a break from waist hooping and decided to toss the hoops in the air, the picture above is a still of that."]]]],"eddb1fd92b5b4f08ad2ead0fe20fae74":[["i","o83ea4183-021b-44ec-ad27-64c69cefb6dc/Jumping_Through_Hoops.jpg","da834e5a-0691-4570-aca5-2bd51b9f0844"],["h",[["How to play the game:"]]],["b",[["Lay out the hoops in one line, arc or spiral depending on the space you have, anything with two ends."]]],["b",[["Divide the group into two teams and have each team stand on either end of the hoop arrangement"]]],["b",[["One person from each team starts jumping through the hoops. Once these two people collide, get into a waist hoop competition with the hoop you are in!"]]],["b",[["Whoever wins gets to proceed jumping, while the other team has to send in a new person."]]],["b",[["A team wins once their team member successfully reaches the other side"]]],["b",[["You can also have one person from each team note down the diameter of the hoop, and count how many rotations they make before they fall!"]]],["h",[["Notes"]]],["t",[["The original version of this game has Rock Paper Scissors instead of a Waist Competition. I made this change so that students can see:"]]],["b",[["how bigger hoops are easier to hoop with, so you can hoop for longer"]]],["b",[["how smaller hoops give you more rotations per minute"]]],["t",[["Another variation of this game could be that whoever makes more rotations per second proceeds. In the Waist Hooping Competition version, bigger hoops are better. But in this version, smaller hoops will get you more rotations"]]],["t",[["By the end of the game, this is the understanding that the participants will gain:"]]],["b",[["Bigger hoops (larger circumference or diameter) -> easier to hoop with -> lesser number of rotations"]]],["b",[["Smaller hoops (smaller circumference or diameter) -> difficult to hoop with -> more number of rotations"]]],["t",[["The concept of ratios can be introduced through the number of rotations. Gears and ratios can also be shown by using bigger and smaller hoops as examples!"]]],["i","n1494d0e3-b026-4546-9837-3cba2644ac07/Untitled.jpeg","b05ac309-b705-44b3-a467-45b77b7c5600"],["t",[["The girls quickly learnt that they should avoid smaller hoops and choose bigger hoops. In this picture you can see a participant and Chaitanya arguing over who should get the smaller hoop!"]]]],"f42f2da49b8448a5bd59c5249fe7d9ef":[["i","o4e614b12-c0fd-467e-9d4e-905bb53d19bb/Hoop_Relay.jpg","4e56a896-5f25-41e1-b46c-c7f7340a535e"],["t",[["How to play:",["b"]]]],["t",[["Make two teams, and use the hoop as a baton! Each participant has to run using the hoop, and pass it on to the next person. It’s okay if it falls, you can pick it up and start running again!\n\nSome girls had just learnt waist hooping on that day, so they were a bit underconfident, but it was nice to see them surprise themselves!"]]]],"543fd70d5dd34403968113d978c5fe0b":[["i","ne6c14f6e-b7b1-4e93-bfdc-ebfc983c5793/Untitled.jpeg","30759b4e-d184-41ed-a06c-2825bfd6229d"],["t",[["We also played musical hoops and statue! For the statue game, they had to continue doing the barrel roll until the music stopped. Being frozen at different angles would help them kinesthetically\nexpereince what different angles feel like in the body!"]]]],"5f69aecd6af44403a5c723f4432eedc8":[["v","RotationsDegreesDemo.mp4"],["t",[["One of the students had drawn this star on my hand, so I used that as an anchor. As I performed the barrel roll, I paused at each point and asked them how many degrees the hoop had rotated. By the end of this activity, all of them were answering correctly, especially the ones who looked bored the previous day!"]]]],"a3f151f8762a4bf08f36a273b769f437":[["i","o0a1bbcd1-8f0e-4b0f-a440-44594f5a03a6/Anitha_Page_5_Image_0001.jpg","ca1fe9e3-6c9c-4d6e-a37a-6380d85766c0"],["i","o31d26172-4f73-4cfd-87cd-24ea2b561242/Anu_Priya_Page_05_Image_0001.jpg","3c6055d7-7ab6-488f-b3f7-bf92a95a7cc2"],["i","o62afa9ea-3920-4c2a-ba02-72073c0b30dd/Banu_Page_4_Image_0001.jpg","571ff36f-e3e7-49c3-9f4d-8e00550951e3"],["i","obf2ed068-4d41-4ab3-a770-dbe9d45678a9/Banu_Page_5_Image_0001.jpg","64fd8b83-113a-4f48-b03e-52783c16d3c2"],["i","o7fadd462-a40b-4674-9ec4-75c5834980b1/Janani_Page_03.png","58fc82ab-4dcb-4306-a593-962b279b7cab"],["i","oba1aebcd-d431-43a9-a758-4a0c4ad2537c/Janani_Page_04.png","44eb0a9e-618c-4756-97cd-5584d1a1a7c2"],["i","ode1aef95-679f-4d60-8db0-479c06f466ce/Jennifer_Page_4_Image_0001.jpg","66840f7f-15c3-4345-8513-f45328b6c4cf"],["i","o827f9798-3010-4609-86d5-0609724b432e/Mahima_Page_4.jpg","d475a2c2-3635-4aa9-8493-adb188ef77f5"],["i","o56da7131-d0c2-4d24-a32e-4604ba662dea/Mogana_Page_4_Image_0001.jpg","418ff7d2-6cda-4888-acb0-c59341faea0a"],["i","o1a999a93-ce7b-4448-88b7-96d6c0c4ada3/Nirmala_Page_04.jpg","df484280-0d46-4aae-bfb1-e55f4c4b88f8"],["i","o30b92b7f-23f4-44c3-bb83-f7b2370a6cd1/Nithya_Page_4_Image_0001.jpg","7e535d6d-b79e-4799-bdaf-b5a0d1f02ea0"],["i","o9dce48cc-45af-40df-8ac2-6d253277b8d4/Refuge_Notebooks_Page_16_Image_0001.jpg","85ecd105-7e2f-435c-8803-2fb61b003336"],["i","o0e2dea45-6419-4f05-bee9-6c2b5f722c75/Refuge_Notebooks_Page_20_Image_0001.jpg","9e893b9e-ca20-407f-adb2-3884b45f4098"],["i","o8bec4bd0-c754-4598-93dd-6450f5aa668d/Refuge_Notebooks_Page_33_Image_0001.jpg","da69b720-4faf-434b-baf1-5f39bacfee98"]],"a853e9e2d4524ab6bad7a421e4f1c89e":[["v","BarrellRollCircle.mp4"],["i","o7b3315a5-fad2-42a2-a8ef-a84bb63bbf85/1HBR.jpg","bba565d3-95ad-49e9-a0bb-ad2280881ed3"],["i","o3cdddabc-10ea-4ec1-b50e-b3f69c496801/Barrell_Roll_Circle.jpg","133dbc4f-9e2b-4fc9-aad9-5feb55f46106"],["t",[["We practiced the Barrel Roll in multiple ways! First I taught them the two-handed version by doing the move with them by holding the hoop so they can experience the movement."]]]],"ad0c8478c5c94a7f88a9450a9915cde0":[["v","PartnerExploration.mp4"],["i","o97caa823-904f-45ad-a553-0834dc832670/BarrellRollPartner.jpg","3e10d943-55e6-453e-8c37-24046ff43034"],["t",[["I asked them to figure out the one handed version for themselves, and then try out a partner version! They experimented with keeping the holding the hoop at different points, and seeing\nwhere it worked best. This way of approaching a problem from different angles (quite literally in this case) is what math and hooping is all about"]]]],"b117a7a9feab44f7a651fdfc14a7155f":[["i","o0a1f6065-5ca2-4f42-a082-786fc309f8c7/BarrellRollRace_heart.jpg","953d96d8-d556-457a-ac0c-68c48827912b"],["v","BarrellRollRace.mp4"],["t",[["We ended on a roll too, with a partner barrel roll race! This is what the day I realised the magic of collaborative embodiment, and what the authors meant when they said “The presence of multiple learners fundamentally changes the nature of how mathematical ideas can be embodied, in a way that is not describable as the sum of each individual’s actions.”"]]]],"dbaff6a9cab24a6d8fbc81fd3f82756c":[["i","of18d1c10-62af-4695-ad16-d4529393a611/Diameter.jpg","7a2c117c-40d4-4ff6-8b8a-6feef9615aaf",[["Diameter Embodied Representation"]]],["i","o6796a485-100c-4b70-a9a4-9ebb3060ca89/Radius.jpg","9424667d-5d02-4795-858e-75bb7f71af38",[["Radius Embodied Representation"]]],["i","oc07d72aa-b123-4dd7-b80f-fe3fc0579c50/2r-pi.png","257a5284-4cc2-4f3a-8d85-12404447f689"],["b",[["I held two opposite ends of the hoop, and asked what that is: After some time they said diameter"]]],["b",[["If you trace your hand over the hoop, it’s the circumference"]]],["b",[["Now, for radius, I myself was confused, so I posed it as a question as to how we can show radius. That’s when Shreya suggested that if you hold two hands, it’s diameter, and if you hold just one hand, it’s radius! A simple and elegant suggestion, and the magic of critical co-facilitation"]]]],"11e3e2df56b449b783ea5a626a19ae11":[["i","o957dbe24-4a5f-4678-9f71-2e5dafe44f8d/HoopHandshakeCircleHeart.jpg","7b367443-382b-42c3-95b3-aa4b01418f7c"]],"580edd9b5c894e36b67653571e152b3e":[["i","o61271cf1-ce36-44f6-850e-d859fef9ef0f/Top_Spin.jpg","2ba19544-a414-4e96-a8ea-a1d8df745a6a"],["t",[["There are three important planes in any flow art, which are wheel(side), wall(front) and floor(top) plane. These are analogous to yz, zx and xy cartesian planes and sagittal, transverse and coronal anatomical planes."]]]],"6f74865d91e148f4a3a163f79e87c737":[["i","o95a4cd34-f9fe-4383-9790-743fa2058b73/Anu_Priya_Page_07_Image_0001.jpg","8a1ca461-199f-4feb-9020-0fd71aff01d0"],["i","o752f8bab-39d0-42a6-9e0b-3bbb221c638a/Jennifer_Page_3_Image_0001.jpg","cec51736-3051-4499-b3fc-8298740c0f26"],["i","o60832592-7339-410d-b827-a5b5c391405d/Mahima_Page_5.jpg","c56c8ed4-f4a9-46a6-91cf-8f5f72ac69cc"],["i","o4bd3c79a-fbd8-4900-be38-f71c1f450d5f/Mogana_Page_5_Image_0001.jpg","f77fd23e-fada-4100-8d48-5029c14ea5b9"],["i","oea6fe7da-eb78-4c66-b9d5-5ee783f3a446/Nirmala_Page_06.jpg","1b3a2937-97cf-439d-afd5-db79db3a0d08"],["i","o72abd74b-c7c0-47ca-bd6b-8bf1e9d9c2a4/Nithya_Page_5_Image_0001.jpg","ba040219-7cae-41f1-b79e-080fbeb062a9"],["i","o2772f01e-eaa4-47d3-8f1f-3372255d8075/Refuge_Notebooks_Page_17_Image_0001.jpg","866faacc-0587-41a6-a2e7-28e1232cd8ea"],["i","o13e460e2-feb8-4837-9ab4-66b0384f881f/Refuge_Notebooks_Page_21_Image_0001.jpg","72ed5802-93e0-41f5-8ba9-a7d7482c18b6"],["i","o1c4b2c0d-bc10-4c3f-b998-5a3c0ecfcf29/Refuge_Notebooks_Page_34_Image_0001.jpg","6cc78d66-b361-42fe-8995-48af07205292"],["i","of9f8e544-296b-41d3-8974-669e9c4b8bec/Refuge_Notebooks_Page_35_Image_0001.jpg","9eee510b-c2ea-4a6a-82e9-15de2daa1eae"],["t",[["I asked them to draw the shape of the path of the movements they learnt that day and these\nare the results! Despite us not having had a math heavy discussion on this day, I could see their\ngeometric and spatial reasoning skills evolve.These were mostly rough sketches, because they\nwanted to get ready for a performance at VBS the next day, so I was even more pleasantly\nsurprised at how naturally they were able to make these!"]]]],"b23079db8bb64588ad6a3b6054864a23":[["i","o0e4d4a99-84e6-49e0-a8c4-7a705e713ace/WeavesLearning.jpg","f0a4b377-5a09-451c-9007-565edcae38b2"],["v","TwinWeave.mp4"],["t",[["\nOn this day, the students had identified a new phenomena/rule. They said to me, “Akka, when\nyou look only the trick stops working!”. But the journey of hearing them say “Akkaaa, it’s not\ncoming!” to “Look akka, it’s happening!” is one of the most rewarding feelings!"]]]],"f325dfa0f17f4516a35fed911aeff0d3":[["i","o06915d66-394a-4fb9-b3d6-294f9aa1924f/Escalator.png","f3bee8d9-bcc8-47c5-966b-533833330cb4"],["t",[["When there’s a hoop around, I have a habit of messing around it with it almost\nsubconsciously. So when class started I was asking about VBS and messing around, which is\nwhen a student said “Akka please teach us that trick, you always do it and it looks so cool!”.\nThat’s how escalators came to be part of the course."]]]],"47673d3e24a547018a0140c27e5590fb":[["i","obd90e581-1888-45c4-aa0b-b3b23017e4ac/RebekahSays.jpg","beab0b90-05d8-4989-984c-448b71b6b4ca"],["t",[["Description:",["b"]],[" We played the popular game ‘Simon Says’, with the theme of planes. And since Rebekah was facilitating, it was called Rebekah says. The options were front, wall, yz, side, wheel, zx, top, floor, xy. "]]]],"9b0984ba267c4b8a9af80f76789afbcf":[["t",[["They didn’t know about 2D and 3D. I asked if they’ve seen movies, they said they’ve seen Beauty and the Beast when they were very young. I asked them how 3D movies are different from regular ones - they said that it comes out of the screen. I explained that that is the extra dimension which adds the depth. Then we told them about globes, rubik’s cubes, boxes and asked them to draw. They knew how to draw cubes by connecting squares, I explained that the connecting line is the third dimension. We also spoke about how paper is 2d so that’s why it is difficult to draw 3d in 2d, but if you add shading, you can show volume and depth."]]],["t",[["I performed a few tricks like ghosting isolations, chest roll, weaves and asked them to draw them in their notebooks."]]],["i","o66f6b349-135a-4088-bc23-9d598dc5e67e/Anitha_Page_6_Image_0001.jpg","c7c3b73f-9d1c-4b27-9c64-82c1380829ea"],["i","obe00fd1b-7b80-413d-ae74-acfd7c14605d/Anitha_Page_7_Image_0001.jpg","fd1c6a22-f78c-4871-b753-3570115a88e4"],["i","ob1393069-6774-4b5f-b234-b441de1fe50e/Anu_Priya_Page_07_Image_0001.jpg","caf78fd3-c093-4691-a55e-a022b0142e76"],["i","o556f5859-3fcd-4fb8-8ea8-b427ce69e618/Anu_Priya_Page_08_Image_0001.jpg","09e474a4-534c-4822-b458-26192d9e3637"],["i","o5a866894-c7bb-48e5-a7dd-5aaf61117f49/Anu_Priya_Page_09_Image_0001.jpg","19cca4c7-aa1a-40d2-9ac9-7f70c2e9d712"],["i","oe98aa2ea-e640-4187-ad08-ac37eeba6fed/Janani_Page_05.png","516c9612-6d84-45ed-8064-285edf285276"],["i","o55fd1f4b-d8aa-4a5f-8122-8b210665a5db/Janani_Page_06.png","551dfc8d-b0cf-4023-b4a7-736407b668d9"],["i","oee012fed-e363-4051-85ae-85e1cfb667ff/Janani_Page_07.png","eb3bf151-daf6-4072-8d50-b056ef3ad8f5"],["i","o5e2af510-29a4-467e-9c98-864f3723ee96/Mahima_Page_5.jpg","da7fe7e5-0855-4bd2-aa3b-4b36c8a539ba"],["i","oe72bf75b-7a62-488f-97f5-63865aaecb01/Mahima_Page_6.jpg","43cdab4d-1ac8-4b18-a959-925afe29d6b4"],["i","oaecf359f-9e4a-4b76-a364-b06366ba02b7/Mogana_Page_5_Image_0001.jpg","f035d8f2-8fea-4289-9282-57d87900ca71"],["i","oaf53fc97-36c7-4a5c-b866-8ade5e634018/Mogana_Page_6_Image_0001.jpg","0168ad76-0dd5-4873-be21-ed02dd09866f"],["i","o5929b9a5-a809-4d3f-8bea-f1cdf3b282dd/Nirmala_Page_07.jpg","5280e1a7-4df4-4ea9-a689-c1b6cde0fc06"],["i","o7e793400-6846-4260-8c6d-872f4e90753f/Nirmala_Page_08.jpg","0007632a-55da-41b6-996e-895c3998ce77"]],"bd17b1b6d8b2441bb55d3fad0f9eeff7":[["i","o0ff8abee-bdf3-430b-a743-bd4fcac279b0/PartnerPlanes.jpg","a4def313-f79b-4787-8919-4f3708cfaf4d"],["t",[["Description:",["b"]]]],["t",[["The girls were asked to arrange themselves in pairs. I’d call out one plane, and they would have to team up and make representations of the other two with the hoops. The planes options again were ‘front’, ‘yz’, ‘wall’, ‘side’, ‘zx’, ‘wheel’, ‘top’, ‘xy’, ‘floor’."]]]],"d0d841dcf9384df1b6423a9539b1554c":[["i","od1d9cba4-2e50-475a-a256-6ad31494d280/IsopopExplo.jpg","6a6f6f99-2f06-48b8-a2e5-6231901bdc8f"]],"03ee30f82a404351b5ac06b60040e0c1":[["i","n7f40b126-8bb7-48b7-b438-65dc64d9ac1a/Untitled.png","e47de419-2352-4f44-81db-59f02a8a04a5"],["i","oca63d6ca-1194-4981-bd55-38f2847b0fd8/Ind_Balance_Race.jpg","f42ef05d-f529-47e3-a397-1c72a2cb7f1c"],["t",[["While balancing a hoop on the arm or palm, we are making a tangent to the circle with our bodies!"]]]],"18167da3833f47dcaaa159d77a2726b2":[["i","o881eabf1-0188-406c-8c4d-81801faa7994/Anitha_Page_8_Image_0001.jpg","f8e3c43c-ee82-4d3b-bb68-35cc34da0df7"],["i","o575b503f-b708-4b79-9e62-d7d0500a55d6/Anu_Priya_Page_10_Image_0001.jpg","aa6e9d05-3e61-48b5-9952-47f43880dde8"],["i","ob804b3d7-dfa7-4251-88c4-cac0dddf1cee/Anu_Priya_Page_11_Image_0001.jpg","35cde982-6f66-4813-9afc-a3fc17b83e73"],["i","o14fac9f3-a508-4c3f-a4fc-7a0f20aa6008/Janani_Page_08.png","a1d92d87-de48-492a-9f16-46808ffc2496"],["i","o7234068f-e672-4d5a-8aef-254ad8ad1382/Janani_Page_09.png","b71385a9-23cf-4bc8-ab31-d3df85bae6b3"],["i","o19714017-7e74-45d7-932d-1493120e4c1f/Janani_Page_10.png","d69fa610-83dc-4c38-a256-77c7c11737dc"],["i","oe2928868-164f-4cc4-b42f-c813cf00977b/Jennifer_Page_5_Image_0001.jpg","b7598b27-372f-47f2-9eba-0b4b486a7140"],["i","o6c244545-b312-42cf-83e5-af379c1d9c31/Jennifer_Page_6_Image_0001.jpg","b90c4645-e644-4b2c-8908-80598a1f17dc"],["i","ob3092744-bf39-48b0-a809-a1074e7d1bbb/Mahima_Page_8.jpg","10b7370f-95a6-4e65-8763-f5c2cb9260a6"],["i","o037f61c5-5192-438f-855d-6c9bd418190f/Mogana_Page_7_Image_0001.jpg","cb7a5b89-3c7f-4804-9326-96fa5f4f85f1"],["i","o6fae5891-66f4-4c98-9137-aa1a9440d9f5/Nirmala_Page_09.jpg","4be803d2-0465-4e64-b6d6-72f4025987de"],["i","o9f56f80c-fa81-4bea-820c-83ed33e07907/Nirmala_Page_10.jpg","e517baad-2637-4846-9906-ea00aafa5506"],["i","oa3998c11-070c-485e-a8fa-5cd801076761/Nithya_Page_6_Image_0001.jpg","3bcf7678-0d12-42ad-9f03-0f1144596e96"],["i","o6c2165c9-d491-43cc-8acd-39cf6eb1297c/Nithya_Page_7_Image_0001.jpg","0a983075-5b9a-47ec-a7d1-3ee866bcb83e"],["i","o8b252608-11c3-464d-b853-a24587bcaac9/Page6.jpg","c7034459-2ab3-4574-b2ff-3ab7fc3c9f0c"]],"27ec929bec094ae5a53e8a4dd0a42afc":[["i","n70552e2e-9744-4c87-9291-00ebfdf694f0/Untitled.png","d647db79-3763-484f-bc83-67504838b350"],["i","n33743f50-e2c8-4d4f-a532-97ff7f455853/Mahima_Page_8.jpg","f5f4e1b0-b645-4d9f-b135-41692792ff80"],["i","nabe9034e-e955-4b3e-81a7-8dd7ed8848d0/Anu_Priya_Page_10_Image_0001.jpg","b338b672-91b8-4734-8d6b-180e88ae3adb"],["i","naaa102b2-0bcc-4da7-92b6-4cc8b60f3ca9/Janani_Page_10.png","4bce42ee-1a4b-48ae-af49-0c0b75f7636d"],["i","n2d67eef9-ba18-4b1b-9db5-032e02e15de9/Untitled.png","783cb603-3465-40f1-9ea7-0e6e993666c5"]],"441f7d3adf694d85a09ecd537b30aa78":[["i","nb6465f56-6f98-4995-b421-864f52070de8/ForeheadBalance.jpg","172ef4b8-6610-4105-8323-c63269821350"],["i","n358e0684-d13e-48c4-af01-fe05269f0293/PartnerBalanceRace.00_00_05_19.Hearts.jpg","cbf9c270-987a-4b97-9611-cb24a19d4d40"]],"4a923d35f6544e91b07354082869b8fd":[["v","ChestRoll.mp4"],["t",[["The arms and chest act as a tangent to the hoop!"]]]],"6e53316ced8144f287a63a680a521f2b":[["i","o24ea4580-827a-48e4-9b19-1f2117e55234/BalanceRace.jpg","8b1e2bf9-b2c1-4abe-88ea-3fb514384ebc"]],"910e0919c6b448c5bc045b1c03ff3b0d":[["i","oddacef9f-1a1c-4cb3-8441-eea57b14c64d/photo_2023-05-16_17-29-47.jpg","de84e5ac-8d52-4501-b17a-8545aad3271b"],["i","o1e61e4bb-e195-4c9a-9f3d-47bb78c848d5/PointerBalanceChestRollDemo.00_00_05_17.Still001.jpg","0600c061-7d17-436e-a19b-92ca1ce40730"],["t",[["I had told my mentor during the initial classes that the students tend to switch off when they hear mathematical terms like circumference, radius and diameter. They suggested that I could ask the girls to come up with their own words to describe the things, and this way we could build our\nown community vocabulary! As I didn’t have a name for this trick, I asked them to name it. They called it pointer finger balance, because the hoop balances on both the index/pointer fingers!"]]],["t",[["Points of balance + gaze can be used to teach inscribed triangles and also vector balancing."]]]],"95559675a7604cf78ddfb8cd14c33664":[["i","o433cb80d-113c-4db9-80b5-4d76aa53a780/Untitled.png","129fc5b5-9b51-4273-ac7d-02ca6ea2a690"],["i","n8c794d80-1a6c-471a-aa2d-25763e47d8cc/Back_balance.jpg","1623ba47-4fae-40a4-bb76-b31847b7d8e9"],["i","n8e627f17-6fba-4618-b5e5-307a32d8d872/FaceBalance.jpg","543c4d0a-a9d1-4412-acc5-4afcb5e8b2f4"],["i","neca8a6ea-bbaf-473e-be22-73943445d5fa/PartnerArmBalance.jpg","0353fa27-43f7-482d-bbcf-58ce15a0d3ce"],["i","n8b4b7bcd-66a9-4ec8-a43d-d8f7179457f1/PartnerChestBalance.jpg","613193c1-42a3-483b-955e-f0824aca5e0a"],["i","naa9616ec-99a6-4e42-a1b6-2c259aa97968/photo_2023-05-19_16-16-06.jpg","1e1f2875-f6d8-47a6-9f3f-bca3f48a83e9"],["i","n808d0ab3-201c-4285-90cd-1411459ef652/RebekahPartnerBalance.jpg","658f708b-76cf-4874-9bb2-8ae263e06539"]],"a7cc5c1b40e1443f9a50ad7feef0f74f":[["i","nf271e96d-30cf-459b-a895-54de7dceddcd/PartnerArmBalance.jpg","90a3ea9b-e008-4520-afea-25e0f88312ed"],["i","n510519d1-da59-4830-94cc-16fd2f97d194/Arm_Balance.jpg","a4ee4a86-3391-4dc7-82b5-915ad090f1f0"],["i","nbcda1c92-027b-42b7-99fc-d25eee45b4a8/ArmBalance.jpg","fbd6d63a-a420-45ee-b5f3-5799e5fc8a78"]],"c0823519e46c4685a99a39396c406984":[["i","o4fe0b753-0f00-4801-9aa8-072630905a21/Ind_Balance_Race.jpg","4f5d6db5-6d2a-47f3-84e6-1785dae2cfa1"]],"280d407fe4c44ceba90c00b91bddb3fd":[["t",[["The time had come for Hoop School to end, and for us to throw our hoops in the air like graduation caps! The girls passed with flying hoops."]]],["v","PassedWithFlyingHoops.MP4"],["i","nbfe04b46-e82e-4da7-a28a-63be976be205/photo_2023-05-16_17-35-02.jpg","9e88abf3-a229-420e-9604-62bc9e8688e0"]],"2a28a425cda44eecb9a188d47d50ffe8":[["t",[["For our last class, I designed an activity that summarized each of the concepts we learnt in some way. It was a simple paired task, to hold the hoop on the ground at the point marked with tape, take a chalk piece and trace one full rotation on the ground. They needed to keep the line as straight as possible. This covered circumference, tangents, rotations, and also how the circle looks like a line from a top view."]]],["i","oeefa2650-c818-4b50-a056-dec5921e13d3/photo_2023-05-08_21-15-40.jpg","dd0b56f7-2232-43f0-bf94-7833cd41087b"],["i","o43c4def2-5c74-452f-9ad6-0bdc92d170ac/photo_2023-05-08_21-28-02.jpg","958f3a19-8a65-4e67-8671-9f7a4465363e"],["i","o2a0b2568-83a6-48f3-b195-bbd61254194c/photo_2023-05-08_21-50-39.jpg","a20b92d5-a848-46cd-94d9-c8ee8225de34"],["i","oc0130fce-903b-4e0c-812b-7e79661d8cd8/Screenshot_2023-05-08_220234.png","66124c69-04e8-47af-9ac6-9027129af86a"]],"328c5f7ac71542e896532bade0116dcb":[["i","nf8c0478c-f825-4467-af64-21b629e19e29/photo_2023-05-14_17-06-33_(2).jpg","6a017bbf-05dd-45c3-a1ab-755a5bff7e04"],["i","nafd20b49-175f-4575-9b09-57b428897c21/photo_2023-05-14_17-06-33_(3).jpg","6d288871-9bc5-4b2b-828d-374d121ddcde"],["i","n729bf1d0-4e96-4b0b-9528-82418db7766a/photo_2023-05-14_17-06-33.jpg","b6bd4e6c-90b4-45ff-8306-5ee71208ca19"],["i","nb7bac130-a3a1-44f1-a704-11a4f7d61b93/photo_2023-05-14_17-06-34_(3).jpg","3704d623-236f-4890-bad9-c9a13b852163"]],"9f1e77c869bb473eb9fcd00c66e6441b":[["t",[["I wrote each student a letter of love, affirmation and gratitude, highlighting their strengths through specific anecdotes, and pointing out a skill that can make them good at math. The letter also had a picture of them from classes. Writing letters brings me such joy, and this is something I will continue to do wherever I go. These were pinned to their notebooks, along with a small pamphlet with a summary of the concepts we learnt."]]],["i","ndb53946f-2b29-4dfb-ab53-f472e978a9c9/photo_2023-05-15_10-57-54.jpg","abb9e686-02f8-4cbd-a966-b7e8cef65334"],["i","n36fa6f10-2c88-4150-86ef-ec3a5544141e/photo_2023-05-15_11-15-31.jpg","c2a4d98b-43af-430e-b74b-82beb71d73ba"],["i","n17b4892e-ccf3-4b8e-9a38-f98f71ffe77a/photo_2023-05-15_11-15-32_(2).jpg","b3d243b2-c506-4aea-977f-94fae006670a"],["i","nbb1259e0-d445-4fa7-82f7-6a7a470e36b5/photo_2023-05-15_11-15-32_(3).jpg","cc5209ce-1cef-4294-a783-fb69b4f94f00"],["i","n04e429f8-4910-4f1a-b5c0-7ee16e6d9e02/photo_2023-05-15_11-15-32_(4).jpg","64616f12-3fd6-4fd2-8929-55c9525015f8"],["i","n421f9326-4730-40ca-9cf9-a6edc698f967/photo_2023-05-15_11-15-32_(5).jpg","a47f5e14-efc9-4b24-8801-2191890bbc0f"],["i","nc8fe2c12-cebc-4763-9dfd-410bec1dd6d5/photo_2023-05-15_11-15-32_(6).jpg","6b5e1cad-e547-47fc-a90c-c759940ae04c"],["i","n4c5bfe35-20b4-45f3-afb5-3a51b3f1ec9e/photo_2023-05-15_11-15-32_(7).jpg","586040bb-e9ff-4d11-b7f4-6f139fd4377d"],["i","nd12b1aa5-16e6-4f73-8add-fb28c98de611/photo_2023-05-15_11-15-32_(8).jpg","b6d329ca-4be9-4dc2-949f-0d40ad58d984"],["i","n489c741d-eba1-4644-a619-1747bf648671/photo_2023-05-15_11-15-32_(9).jpg","7173c970-491b-4ed8-8d72-210669acca8f"],["i","n3572b1d6-98c3-437e-bc99-fcaf789461f2/photo_2023-05-15_11-15-32_(10).jpg","199ade4d-3c33-47e6-98fc-6b64aa70bbed"],["i","n1a7fba74-06a2-4495-a569-df418e9529b4/photo_2023-05-15_11-15-32.jpg","5fe41645-ae02-4e5d-9fc5-481752b4c895"]],"c8466a347eae4a6a9da2a22f360e91fb":[["i","nf5c9b26a-b6de-401b-b3a4-34945058f165/photo_2023-05-16_17-28-29.jpg","4906c2e4-7a06-4c23-b94b-30f1747ffe67"],["i","n650537a5-4466-4e74-be42-0d75a8b99708/photo_2023-05-16_17-40-08.jpg","e414130f-ca92-48fe-8da4-ee840bc8128f"]],"cb9a8c9f3abf4a24a616eb7850d2cfeb":[["t",[["Prompt: ",["b"]],["Imagine that math has turned into a person, and you have met them. Describe their personality. What would you say to them? What would their name be? (Names visible are aliases)"]]],["i","o563a51b0-47f7-4ab0-bd67-b04f7b77d3b2/Anitha_Page_12_Image_0001.jpg","07a89032-370c-4342-ba0c-cb1dc6ec64a3"],["i","obbe0cfef-c055-4e09-ba5f-8d51f2ed390a/Anu_Priya_Page_12_Image_0001.jpg","27b44e35-c58e-4379-9209-4ba382126171"],["i","ob6385b6d-cf66-46e7-85ca-9bd263eb0452/Banu_Page_8_Image_0001.jpg","e9eeba74-2b9b-43e1-b11b-64a9892c78f5"],["i","o7b7b415b-a727-410b-bffe-342f6d665b05/IMG_20230421_173952875.jpg","d4ad407b-ae3b-492a-b185-1ed806bab4a1"],["i","o02a41493-1491-4c38-8d99-70bf9e68fa17/Janani_Page_11.jpg","f225d758-b802-4edc-ae74-b0cc7a1d2d73"],["i","o79c3acbf-1675-468c-9fce-6ec78c0c02b6/Mahima_Page_10.jpg","58298446-9ea6-4482-b87e-26367e82201c"],["i","ob2387cb2-f1b7-4ab1-88fb-a32f620f0617/Mogana_Page_9_Image_0001.jpg","86dd960b-dc17-4f6d-a308-e626bdd04ce3"],["i","od61b1b86-d3d4-49f0-a61a-1a1161b211f3/Nirmala_Page_11.jpg","3a003e5e-aa3a-4027-83b6-9eeccc091b62"],["i","o72e7993f-c458-48c9-ac12-6356b6940207/Nithya_Page_8_Image_0001.jpg","64fe8234-b775-4710-9363-0dbd1b76e4a1"],["i","o79368149-7c7d-4116-be14-7592b62e1d99/Page7.jpg","1bc1d2e3-fdb0-4d92-bfed-5870cbfd9ba5"],["f","Math Creatures Booklet.pdf"]],"e8420d2d7efa4dc6af823633579a0903":[["i","ndc769e95-868b-4ead-b497-146c0a39bd53/photo_2023-05-14_17-13-09.jpg","edcf0371-3f58-475c-8fbd-769daeec002b"],["i","n58834255-bd00-4614-85e1-1da64e203668/Banu_Page_7_Image_0001.jpg","be566226-9d9e-44f3-8c80-8ef977eff043"],["i","nbaba9c20-9c65-48e7-a1e8-a2f0f5e3d149/Itachi.jpg","726b5b1c-59d2-4cde-9a79-1c26f2d503aa"],["i","n5a9685b0-a5ce-4ebb-8f18-96ee8d57f38f/Mahima_Page_0.jpg","3c570cc4-bd01-4421-b200-2f5a7d9f6de0"],["i","na95335c9-92f0-495f-b7b9-9f2cf45527a6/photo_2023-05-14_17-06-34_(2).jpg","98a87b2d-c857-4e94-82e7-031840af53ed"],["i","ncd8f5340-0c02-41a0-8ea9-da12e8f2205a/photo_2023-05-14_17-06-34.jpg","d69581db-5933-4e78-a0d9-5b4364f1159b"]]};
+
+// Videos: put the files in a "videos" folder next to this page (download each from its Notion activity).
+// To use YouTube/Vimeo instead, set the value to the embed URL, e.g. "https://www.youtube.com/embed/XXXX".
+const VIDEOS = {
+  "RotationsDegreesDemo.mp4": "videos/RotationsDegreesDemo.mp4",
+  "BarrellRollCircle.mp4": "videos/BarrellRollCircle.mp4",
+  "PartnerExploration.mp4": "videos/PartnerExploration.mp4",
+  "BarrellRollRace.mp4": "videos/BarrellRollRace.mp4",
+  "TwinWeave.mp4": "videos/TwinWeave.mp4",
+  "ChestRoll.mp4": "videos/ChestRoll.mp4",
+  "PassedWithFlyingHoops.MP4": "videos/PassedWithFlyingHoops.mp4"
+};
+// Files (PDFs): put them in a "files" folder next to this page.
+const FILES = { "Math Creatures Booklet.pdf": "files/Math_Creatures_Booklet.pdf" };
+
+(function(){
+  const SPACE = "478e6666-be50-4f38-9eb4-e755fa2977cf";
+  const PRE = { o:"https://s3-us-west-2.amazonaws.com/secure.notion-static.com/", n:"https://prod-files-secure.s3.us-west-2.amazonaws.com/"+SPACE+"/" };
+  const imgURL = (s,id) => "https://aditibhat.notion.site/image/" + encodeURIComponent(PRE[s[0]] + s.slice(1)) + "?table=block&id=" + id + "&spaceId=" + SPACE + "&width=1200&cache=v2";
+  const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const rich = r => (r||[]).map(([s,f]) => {
+    let h = esc(s).replace(/\n/g,"<br>");
+    (f||[]).forEach(m => { if(m==="b") h="<b>"+h+"</b>"; else if(m==="i") h="<i>"+h+"</i>"; else if(m.startsWith("a:")) h='<a href="'+esc(m.slice(2))+'" target="_blank" rel="noopener">'+h+"</a>"; });
+    return h; }).join("");
+  const fig = e => '<figure><img loading="lazy" src="'+imgURL(e[1],e[2])+'" alt="">'+(e[3]?"<figcaption>"+rich(e[3])+"</figcaption>":"")+"</figure>";
+  const video = name => { const u = VIDEOS[name];
+    if (u && /youtube|vimeo/.test(u)) return '<figure><div style="aspect-ratio:16/9"><iframe src="'+esc(u)+'" style="width:100%;height:100%;border:0;border-radius:10px" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></figure>';
+    return '<figure><video controls playsinline preload="metadata" src="'+esc(u||"")+'"></video><div class="vid-missing" hidden>'+esc(name)+'</div></figure>'; };
+  function render(blocks){
+    let html="", i=0;
+    while(i<blocks.length){ const e=blocks[i];
+      if(e[0]==="i"){ // consecutive images -> one grid (single image stays full width)
+        const run=[]; while(i<blocks.length && blocks[i][0]==="i") run.push(blocks[i++]);
+        html += run.length>1 ? '<div class="grid">'+run.map(fig).join("")+"</div>" : fig(run[0]); continue; }
+      if(e[0]==="b"||e[0]==="n"){ const tag=e[0]==="b"?"ul":"ol", items=[];
+        while(i<blocks.length && blocks[i][0]===e[0]) items.push("<li>"+rich(blocks[i++][1])+"</li>");
+        html += "<"+tag+">"+items.join("")+"</"+tag+">"; continue; }
+      if(e[0]==="t") html += "<p>"+rich(e[1])+"</p>";
+      else if(e[0]==="h") html += "<h4>"+rich(e[1])+"</h4>";
+      else if(e[0]==="v") html += video(e[1]);
+      else if(e[0]==="f") html += '<a class="file" href="'+esc(FILES[e[1]]||"#")+'" target="_blank" rel="noopener">'+esc(e[1])+" ↓</a>";
+      i++; }
+    return html; }
+
+  const pop = document.getElementById("pop"), body = document.getElementById("pop-body");
+  let lastCard = null;
+  function open(card){
+    const id = card.dataset.id; if(!ACT[id] || !ACT[id].length) return false;
+    lastCard = card;
+    document.getElementById("pop-title").textContent = card.querySelector(".name").textContent;
+    document.getElementById("pop-tags").innerHTML = [...card.querySelectorAll(".tag")].map(t=>t.outerHTML).join("");
+    body.innerHTML = render(ACT[id]);
+    body.querySelectorAll("video").forEach(v => v.addEventListener("error", () => { v.hidden = true; v.nextElementSibling.hidden = false; }, {once:true}));
+    pop.classList.add("open"); pop.scrollTop = 0; document.body.classList.add("pop-lock");
+    document.getElementById("pop-close").focus();
+    return true; }
+  function close(){ pop.classList.remove("open"); document.body.classList.remove("pop-lock"); body.innerHTML=""; if(lastCard) lastCard.focus(); }
+
+  document.getElementById("gallery").addEventListener("click", ev => {
+    const card = ev.target.closest(".card"); if(!card) return;
+    if(open(card)) ev.preventDefault(); });
+  document.getElementById("pop-close").addEventListener("click", close);
+  pop.addEventListener("click", ev => { if(ev.target === pop) close(); });
+  document.addEventListener("keydown", ev => { if(ev.key === "Escape" && pop.classList.contains("open")) close(); });
+})();
+</script>
+</body>
+</html>
