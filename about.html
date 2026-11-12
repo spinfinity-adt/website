@@ -54,8 +54,6 @@ p.body a:hover{border-color:var(--accent2)}
 .world-chip:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--wc,var(--accent2))}
 .world-chip .w-name{font-family:var(--display);font-weight:700}
 .world-chip .w-note{font-weight:400}
-.connect-section{border:2px solid var(--accent2);border-radius:14px;box-shadow:6px 6px 0 var(--accent1-text)}
-.connect-text{font-family:var(--display);font-weight:700}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.anim-0,.anim-1,.anim-2,.anim-3,.anim-4,.anim-5{opacity:1}}
 /* ---- hoops + p5: the roles are one plain line; "the hoop has taken me to" is five spinning hoops ---- */
 .roles-line{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem .65rem;margin-top:.55rem;font-weight:700;font-size:1rem;color:var(--muted)}
@@ -105,15 +103,12 @@ p.body a:hover{border-color:var(--accent2)}
     <div class="about-section anim-4">
       <p class="section-label">the hoop has taken me to</p>
       <div class="worlds" id="worlds">
-        <div class="world"><div class="hoop-slot"><span class="w-name">Movement</span></div><span class="w-note">from flow arts to animal behavior</span></div>
+        <div class="world"><div class="hoop-slot"><span class="w-name">Movement</span></div><span class="w-note">flow arts, animal behavior</span></div>
         <div class="world"><div class="hoop-slot"><span class="w-name">Mathematics</span></div><span class="w-note">topology, geometry in motion, numbers, rhythm, symmetry</span></div>
-        <div class="world"><div class="hoop-slot"><span class="w-name">Physics &amp; Astronomy</span></div><span class="w-note">seeing objects the universe in motion</span></div>
-        <div class="world"><div class="hoop-slot"><span class="w-name">Engineering and Design</span></div><span class="w-note">Embodied problem solving and 3D visualization</span></div>
-        <div class="world"><div class="hoop-slot"><span class="w-name">Learning Design</span></div><span class="w-note">how we learn through the body</span></div>
+        <div class="world"><div class="hoop-slot"><span class="w-name">Physics &amp; Astronomy</span></div><span class="w-note">seeing objects in the universe in motion</span></div>
+        <div class="world"><div class="hoop-slot"><span class="w-name">Creative Tech</span></div><span class="w-note">creative coding, TouchDesigner, 3D visualization</span></div>
+        <div class="world"><div class="hoop-slot"><span class="w-name">Learning Design</span></div><span class="w-note">how we learn through the body, Embodied problem solving</span></div>
       </div>
-    </div>
-    <div class="connect-section anim-5">
-      <p class="connect-text">come think with me,<br><span>flow with me.</span><br><span style="font-size:1rem;color:var(--muted);font-weight:300">let's spin into infinite poi-ssibilities</span></p>
     </div>
   </div>
 </div>
@@ -131,7 +126,13 @@ p.body a:hover{border-color:var(--accent2)}
    Tweak freely: STRIPES = [main, tape] ring colours, TINTS = tag colours, TURN = hover speed. */
 new p5(function (p) {
   var host = document.getElementById('worlds');
-  var STRIPES = [['#2E7A6E','#FFBD35'],['#502064','#8267BE'],['#3FA796','#502064'],['#8267BE','#FFBD35'],['#2E7A6E','#3FA796']];
+  // One colour per hoop, with a quiet tape stripe in a lighter shade of the same colour.
+  // The five colours are the same five used for the project categories.
+  var STRIPES = [['#8267BE','#B7A4DD'],   // Movement — lilac
+                 ['#F26A1B','#F8A573'],   // Mathematics — orange
+                 ['#3FA796','#8FCFC3'],   // Physics & Astronomy — green
+                 ['#502064','#8A5FA0'],   // Creative Tech — purple
+                 ['#FFBD35','#FFDD95']];  // Learning Design — yellow  // Learning Design
   var TINTS = ['rgba(63,167,150,.22)','rgba(255,189,53,.38)','rgba(130,103,190,.22)'];
   var SEGS = 40, TURN = 0.022, still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var hoops = Array.prototype.map.call(host.querySelectorAll('.world'), function (el, i) {
