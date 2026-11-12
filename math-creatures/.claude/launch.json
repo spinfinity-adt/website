@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/private/tmp/claude-501/-Users-aditi-Documents-website-math-creatures/f817908d-0ae6-4b1f-bdb9-055ee2a55039/scratchpad/serve.py"],
+      "port": 8742
+    }
+  ]
+}

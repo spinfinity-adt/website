@@ -1,163 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" href="/favicon.png">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Math Creatures — Spinfinity</title>
-  <link rel="stylesheet" href="/styles.css">
-  <style>
-    /* Card accents cycle through the four brand colours (theme-paper tokens).
-       Yellow is frame/tint only — never text (site palette rule). */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { color: var(--text); min-height: 100vh; overflow-x: hidden; }
-    header { max-width: 1400px; margin: 0 auto; padding: 2rem 40px 0.5rem; }
-    header h1 { font-family: var(--display); font-weight: 700; font-size: 2rem; line-height: 1.05; color: var(--text); margin: 0; }
-    header h1 span { font-family: var(--hand); font-weight: 800; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent1-text); display: block; margin-bottom: 5px; }
-    .note-tile { break-inside: avoid; display: inline-block; width: 100%; margin-bottom: 20px; }
-    .note-tile-inner {
-      background: var(--card-bg); border: 2px solid var(--accent4); border-radius: 16px;
-      padding: 20px 18px 16px; box-shadow: 0 4px 0 rgba(130,103,190,0.22);
-    }
-    .note-body { font-family: var(--hand); font-size: .92rem; line-height: 1.6; color: var(--text); }
-    .note-body p + p { margin-top: .7em; }
-    .note-body strong { font-weight: 800; }
-    .note-body em { font-style: italic; color: var(--accent2); }
-    .note-sig { font-family: var(--hand); font-size: .82rem; font-weight: 700; color: var(--muted); margin-top: 12px; }
-    .filters-area {
-      padding: 28px 40px 12px; max-width: 1400px; margin: 0 auto;
-      display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
-    }
-    .filter-label { font-family: var(--hand); font-size: 1rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
-    .filter-row { display: flex; flex-wrap: wrap; gap: 8px; }
-    .filter-btn {
-      font-family: var(--hand); font-weight: 700; font-size: .9rem; padding: 5px 16px;
-      border-radius: 20px; border: 1.5px solid var(--border);
-      background: var(--card-bg); color: var(--muted); cursor: pointer; transition: all 0.15s ease;
-    }
-    .filter-btn:hover { border-color: var(--accent2); color: var(--accent2); }
-    .filter-btn.active { background: var(--accent2); border-color: var(--accent2); color: #fff; }
-    .status-line {
-      padding: 4px 40px 0; max-width: 1400px; margin: 0 auto;
-      font-family: var(--hand); font-size: 0.9rem; color: var(--muted); min-height: 22px;
-    }
-    .grid { column-count: 4; column-gap: 20px; padding: 24px 40px 80px; max-width: 1400px; margin: 0 auto; }
-    @media (max-width: 1100px) { .grid { column-count: 3; } }
-    @media (max-width: 760px)  { .grid { column-count: 2; padding: 20px 20px 60px; } }
-    @media (max-width: 480px)  { .grid { column-count: 1; } }
-    @media (max-width: 600px)  { .intro { padding: 40px 20px 36px; } .filters-area { padding: 20px; } .status-line { padding-left: 20px; } }
-    .card {
-      break-inside: avoid; display: inline-block; width: 100%; margin-bottom: 20px;
-      position: relative; cursor: pointer; animation: fadeUp 0.35s ease both;
-    }
-    .card.hidden { display: none; }
-    .card-inner {
-      background: var(--card-bg); border: 2px solid var(--edge); border-radius: 16px;
-      padding: 10px 10px 14px; box-shadow: 0 4px 0 var(--edge-soft);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-    .card:hover .card-inner { transform: translateY(-4px); box-shadow: 0 8px 0 var(--edge-soft); }
-    /* one of the four brand accents per card */
-    .grid > :nth-child(4n+1) .card-inner, .grid > :nth-child(4n+1) { --edge:#3FA796; --edge-soft:rgba(63,167,150,0.24);  --tint:rgba(63,167,150,0.10); }
-    .grid > :nth-child(4n+2) .card-inner, .grid > :nth-child(4n+2) { --edge:#8267BE; --edge-soft:rgba(130,103,190,0.24); --tint:rgba(130,103,190,0.10); }
-    .grid > :nth-child(4n+3) .card-inner, .grid > :nth-child(4n+3) { --edge:#FFBD35; --edge-soft:rgba(255,189,53,0.30);  --tint:rgba(255,189,53,0.14); }
-    .grid > :nth-child(4n+4) .card-inner, .grid > :nth-child(4n+4) { --edge:#502064; --edge-soft:rgba(80,32,100,0.22);   --tint:rgba(80,32,100,0.08); }
-    .card-img { width: 100%; display: block; border-radius: 10px; background: var(--tint); padding: 8px; }
-    .card-body { padding: 10px 4px 2px; }
-    .card-name { font-family: var(--display); font-size: 1.25rem; font-weight: 700; color: var(--text); line-height: 1.15; margin-bottom: 3px; }
-    .card-meta { font-family: var(--hand); font-size: 0.72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-    .card-emotion-tag {
-      display: inline-block; font-family: var(--hand); font-size: 0.78rem; font-weight: 700;
-      padding: 2px 10px; border-radius: 10px; background: var(--tint);
-      color: var(--text); margin-bottom: 6px;
-    }
-    .card-description { font-size: 0.82rem; line-height: 1.65; color: var(--text); display: none; margin-top: 6px; }
-    .card-questions { margin-top: 8px; display: none; }
-    .questions-label { font-family: var(--hand); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 5px; }
-    .question-item { font-family: var(--hand); font-size: 0.92rem; font-weight: 600; color: var(--accent2); line-height: 1.5; border-left: 2px solid var(--accent2); padding-left: 8px; margin-bottom: 3px; }
-    .expand-btn {
-      display: block; width: 100%; text-align: center; font-family: var(--hand); font-weight: 700;
-      font-size: 0.82rem; color: var(--muted); background: none; border: none; cursor: pointer;
-      padding: 7px 0 2px; margin-top: 8px; border-top: 1px dashed var(--border); transition: color 0.15s;
-    }
-    .expand-btn:hover { color: var(--accent2); }
-    .card.expanded .card-description, .card.expanded .card-questions { display: block; }
-    .lightbox {
-      display: none; position: fixed; inset: 0; background: rgba(35,39,48,0.6);
-      z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
-    }
-    .lightbox.open { display: flex; }
-    .lightbox-content {
-      background: var(--card-bg); border-radius: 16px; max-width: 820px; width: 100%;
-      max-height: 90vh; overflow-y: auto; display: flex;
-      box-shadow: 0 24px 70px rgba(35,39,48,0.35); position: relative;
-    }
-    .lb-img-side { width: 48%; flex-shrink: 0; background: rgba(63,167,150,0.08); display: flex; align-items: center; justify-content: center; padding: 24px; }
-    .lb-img-side img { max-width: 100%; max-height: 75vh; object-fit: contain; border-radius: 8px; }
-    .lb-text-side { padding: 36px 30px 30px; flex: 1; overflow-y: auto; }
-    .lb-name { font-family: var(--display); font-size: 2rem; font-weight: 700; color: var(--text); line-height: 1.1; margin-bottom: 4px; }
-    .lb-meta { font-family: var(--hand); font-size: 0.8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
-    .lb-description { font-size: 0.9rem; line-height: 1.8; color: var(--text); }
-    .lb-questions { margin-top: 18px; padding: 14px 16px; background: rgba(80,32,100,0.06); border-radius: 10px; border-left: 3px solid var(--accent2); }
-    .lb-questions .questions-label { margin-bottom: 8px; }
-    .lb-q-item { font-family: var(--hand); font-size: 1.05rem; font-weight: 600; color: var(--accent2); line-height: 1.55; margin-bottom: 4px; }
-    .lb-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
-    .lb-tag { font-family: var(--hand); font-size: 0.82rem; font-weight: 700; padding: 3px 10px; border-radius: 12px; background: rgba(130,103,190,0.10); color: var(--text); }
-    .lb-close { position: absolute; top: 12px; right: 14px; background: none; border: none; font-family: var(--hand); font-size: 1.6rem; cursor: pointer; color: var(--muted); line-height: 1; z-index: 10; }
-    .lb-close:hover { color: var(--text); }
-    @media (max-width: 620px) { .lightbox-content { flex-direction: column; } .lb-img-side { width: 100%; max-height: 45vh; } }
-    .loading-state { text-align: center; padding: 80px 40px; font-family: var(--hand); font-size: 1.2rem; color: var(--muted); }
-    .loading-state .dot { display: inline-block; animation: blink 1.2s infinite; }
-    .loading-state .dot:nth-child(2) { animation-delay: 0.2s; }
-    .loading-state .dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes blink { 0%,80%,100% { opacity:0.2; } 40% { opacity:1; } }
-    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; } }
-    .footer { text-align: center; padding: 0 40px 60px; font-family: var(--hand); font-size: 1rem; color: var(--muted); line-height: 1.8; }
-    .footer a { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
-  </style>
+<title>Math Creatures — Spinfinity</title>
+<link rel="stylesheet" href="/styles.css">
+<style>
+/* Gallery page on the shared system: tokens, fonts, nav, footer and the .frame / .proj-header.split
+   layout all come from /styles.css. Everything below is this page's own components, token-driven. */
+/* ============ NEW — shared by both gallery pages ============ */
+/* per-theme extras: ink for text sitting on an accent fill, and the sheet shadow */
+.theme-studio{--on-accent:#1c1a20;--sheet-shadow:rgba(0,0,0,.45);--p-purple:#b996ec}
+.theme-paper{--on-accent:#ffffff;--sheet-shadow:rgba(35,39,48,.16);--p-purple:#502064}
+main.frame .proj-header.split .proj-title{max-width:none}
+main.frame .proj-header.split .proj-sub{max-width:60ch;line-height:1.5}
+.eyebrow{display:block;font-family:var(--hand);font-weight:800;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent1-text);margin-bottom:.45rem}
+/* paper wears the same bold heading as studio: ink title, one purple word, tilted teal underline, teal subtitle */
+body.theme-paper .proj-header h1{color:var(--text);font-weight:700;letter-spacing:0}
+body.theme-paper .proj-header h1 .w{color:var(--accent2)}
+body.theme-paper .proj-header h1::after{content:'';display:block;width:110px;height:4px;margin:.55rem 0 0;border-radius:4px;background:var(--accent1-text);transform:rotate(-1.2deg)}
+body.theme-paper .proj-header .proj-sub{color:var(--accent1-text);letter-spacing:.14em;font-weight:600}
+
+/* filter chips — same pill + flat offset shadow language as the mosaic button */
+.chips{display:flex;flex-wrap:wrap;align-items:center;gap:10px 10px;padding:4px 0 26px}
+.chips-label{font-weight:700;color:var(--muted);margin-right:6px}
+.chip{--tc:var(--accent2);display:inline-flex;align-items:center;gap:.5rem;font-family:var(--hand);font-weight:700;font-size:.92rem;line-height:1;padding:.5rem 1rem;border-radius:999px;border:2px solid var(--border);background:transparent;color:var(--text);cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.chip:hover{border-color:var(--tc);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--tc)}
+.chip.active{background:var(--tc);border-color:var(--tc);color:var(--on-accent);box-shadow:3px 3px 0 var(--accent1-text)}
+.chip:focus-visible,.btn:focus-visible,.sheet:focus-visible,.tile:focus-visible{outline:2px solid var(--accent3);outline-offset:3px}
+.chip small{font-size:.68rem;font-weight:600;opacity:.75;letter-spacing:.03em}
+.chip svg{width:20px;height:20px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.chip:hover svg,.chip.active svg{animation:spin 2.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.btn{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--hand);font-weight:800;font-size:.95rem;padding:.55rem 1.15rem;border-radius:999px;border:2px solid var(--accent2);background:var(--card-bg);color:var(--text);cursor:pointer;box-shadow:4px 4px 0 var(--accent1-text);transition:transform .2s ease,box-shadow .2s ease}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--accent1-text)}
+.btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.btn.go svg{animation:spin .5s ease}
+.tally{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.tally-n{font-family:var(--hand);color:var(--muted);font-size:.9rem;letter-spacing:.04em}
+.tally-n strong{font-family:var(--display);font-weight:700;font-size:1.9rem;color:var(--text);margin-right:.35rem;letter-spacing:-.02em}
+
+/* ============ MATH CREATURES — drawings taped to the wall ============ */
+.wall{column-count:4;column-gap:34px;padding:14px 0 90px}
+@media (max-width:1250px){.wall{column-count:3}}
+@media (max-width:820px){.wall{column-count:2;column-gap:22px}}
+@media (max-width:500px){.wall{column-count:1}}
+.sheet,.note{break-inside:avoid;display:inline-block;width:100%;margin:14px 0 30px;position:relative}
+.sheet{cursor:pointer;animation:fadeUp .4s ease both}
+.sheet.hidden{display:none}
+.sheet-paper{position:relative;background:#fff;border-radius:3px;transform:rotate(var(--r,0deg));box-shadow:0 10px 22px var(--sheet-shadow);transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s ease}
+body.theme-paper .sheet-paper{outline:1px solid var(--border)}
+.sheet-paper img{display:block;width:100%;height:auto;border-radius:3px}
+.sheet-paper::before{content:'';position:absolute;top:-11px;left:50%;width:74px;height:22px;margin-left:-37px;background:var(--tape);opacity:.88;transform:rotate(var(--tr,-3deg));z-index:2;box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.sheet:hover .sheet-paper,.sheet:focus-visible .sheet-paper{transform:rotate(0deg) translateY(-6px) scale(1.015);box-shadow:0 18px 30px var(--sheet-shadow)}
+.sheet:nth-child(4n+1){--tape:#4FA393}
+.sheet:nth-child(4n+2){--tape:#FFBD35}
+.sheet:nth-child(4n+3){--tape:#8267BE}
+.sheet:nth-child(4n+4){--tape:#b996ec}
+.sheet-cap{padding:14px 4px 0}
+.sheet-name{font-family:var(--display);font-weight:700;font-size:1.2rem;line-height:1.15;color:var(--text)}
+.sheet-meta{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.sheet-feel{font-size:.86rem;font-style:italic;color:var(--accent1-text);margin-top:5px}
+/* what the child asked Math — a speech bubble hanging off the drawing */
+.bubble{position:relative;z-index:3;display:block;width:fit-content;max-width:92%;margin:-16px 0 0 auto;padding:.6rem .85rem .65rem;background:var(--card-bg);color:var(--text);border:2px solid var(--accent2);border-radius:16px 16px 4px 16px;font-weight:700;font-size:.95rem;line-height:1.35;box-shadow:3px 3px 0 var(--accent2);transform:rotate(calc(var(--r,0deg) * -1))}
+.bubble em{display:block;font-style:normal;font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent1-text);margin-bottom:2px}
+.bubble b{display:inline-block;margin-left:.35rem;padding:0 .4rem;border-radius:999px;background:var(--accent2);color:var(--on-accent);font-size:.72rem}
+.note{margin-top:14px}
+.note-inner{position:relative;background:#FBFBF8;color:#232730;border-radius:3px;padding:30px 22px 20px;transform:rotate(-1.2deg);box-shadow:0 10px 22px var(--sheet-shadow)}
+body.theme-paper .note-inner{outline:1px solid var(--border)}
+.note-inner::before{content:'';position:absolute;top:-11px;left:50%;width:84px;height:22px;margin-left:-42px;background:#FFBD35;opacity:.9;transform:rotate(2deg)}
+.note-body{font-size:.95rem;line-height:1.62}
+.note-body p+p{margin-top:.75em}
+.note-body strong{font-weight:800}
+.note-body em{font-style:italic;color:#502064}
+.note-sig{font-size:.84rem;font-weight:700;color:#5d616b;margin-top:14px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.loading-state{column-span:all;text-align:center;padding:80px 40px;font-size:1.2rem;color:var(--muted)}
+.loading-state .dot{display:inline-block;animation:blink 1.2s infinite}
+.loading-state .dot:nth-child(2){animation-delay:.2s}
+.loading-state .dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+/* ============ lightbox (shared) ============ */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(12,11,15,.82);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.lightbox.open{display:flex}
+.lb{position:relative;display:flex;max-width:880px;width:100%;max-height:90vh;background:var(--card-bg);color:var(--text);border:2px solid var(--accent2);border-radius:14px;box-shadow:8px 8px 0 var(--accent1-text);overflow:hidden}
+.lb-img{flex:0 0 48%;background:#fff;display:flex;align-items:center;justify-content:center;padding:18px}
+.lb-img img{max-width:100%;max-height:78vh;object-fit:contain}
+.lb-text{flex:1;padding:34px 28px 28px;overflow-y:auto}
+.lb-name{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1.1}
+.lb-meta{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 0 16px}
+.lb-desc{font-size:.95rem;line-height:1.75}
+.lb-q{margin-top:18px}
+.lb-q .bubble{margin:10px 0 0 0;transform:none;border-radius:16px 16px 16px 4px;font-size:1.02rem}
+.lb-q-label{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent1-text)}
+.lb-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+.lb-tags span{font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid var(--border);color:var(--muted)}
+.lb-close{position:absolute;top:8px;right:10px;width:36px;height:36px;border-radius:50%;background:var(--card-bg);border:2px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;z-index:2}
+.lb.solo{max-width:560px;flex-direction:column}
+.lb.solo .lb-img{flex:0 1 auto;padding:0}
+.lb.solo .lb-text{padding:16px 22px 18px;flex:0 0 auto}
+.lb.solo .lb-name{font-family:var(--hand);font-size:1.05rem}
+.lb.solo .lb-meta{margin:3px 0 0;text-transform:none;letter-spacing:0;font-style:italic;font-weight:400}
+@media (max-width:640px){.lb{flex-direction:column;overflow-y:auto}.lb-img{flex:0 0 auto}}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.tile{opacity:1}}
+</style>
 </head>
 <body class="theme-paper">
-  <div id="sf-nav-mount"></div>
+<div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>
 
-
-<header>
-  <h1><span>Spinfinity's</span> Math Creatures</h1>
-</header>
-
-<div class="filters-area">
-  <span class="filter-label">show me —</span>
-  <div class="filter-row" id="filterRow">
-    <button class="filter-btn active" data-filter="all">all creatures</button>
-    <button class="filter-btn" data-filter="center:Refuge">Refuge</button>
-    <button class="filter-btn" data-filter="center:RGH">RGH (govt. school)</button>
-    <button class="filter-btn" data-filter="has-questions">has questions</button>
-  </div>
-</div>
-
-<div class="status-line" id="statusLine"></div>
-
-<div class="grid" id="grid">
-  <div class="loading-state">fetching creatures<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
-</div>
-
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-content">
-    <button class="lb-close" id="lbClose">&#x2715;</button>
-    <div class="lb-img-side"><img id="lbImg" src="" alt=""></div>
-    <div class="lb-text-side">
-      <div class="lb-name" id="lbName"></div>
-      <div class="lb-meta" id="lbMeta"></div>
-      <div class="lb-description" id="lbDesc"></div>
-      <div id="lbQuestions"></div>
-      <div class="lb-tags" id="lbTags"></div>
+<main class="frame">
+  <header class="proj-header split">
+    <div class="proj-title">
+      <h1><span class="eyebrow">Spinfinity's</span>Math <span class="w">Creatures</span></h1>
     </div>
+    <div class="proj-aside"><div class="tally"><div class="tally-n" id="statusLine"></div></div></div>
+  </header>
+  <div class="chips" id="filterRow">
+    <span class="chips-label">show me —</span>
+    <button class="chip active" data-filter="all">all creatures</button>
+    <button class="chip" data-filter="center:Refuge">Refuge</button>
+    <button class="chip" data-filter="center:RGH">RGH (govt. school)</button>
+    <button class="chip" data-filter="has-questions">has questions</button>
   </div>
-</div>
+  <div class="wall" id="grid">
+    <div class="loading-state">fetching creatures<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+  </div>
+</main>
+
+<div class="lightbox" id="lightbox"><div class="lb" id="lb" role="dialog" aria-modal="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&#x2715;</button>
+  <div class="lb-img"><img id="lbImg" alt=""></div>
+  <div class="lb-text"><div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div><div class="lb-desc" id="lbDesc"></div><div class="lb-q" id="lbQ"></div><div class="lb-tags" id="lbTags"></div></div>
+</div></div>
 
 <div id="sf-footer-mount"></div>
-
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSI6LsxxrOjecL2-xYydl_MTemNjImNNzS5rKcKRhwMKU5UjZs9r2LJv0zLElB3eQfhr20cT8O13vcy/pub?output=csv&gid=0";
 
@@ -232,45 +214,57 @@ function parseCSV(text) {
   }).filter(Boolean);
 }
 
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// steady little tilt per item, so things look hand-hung but never reshuffle their angles
+const tilt = (i, max) => (((i * 37) % 11) / 10 * 2 - 1) * max;
+
+// ── IMAGES ──
+// Grid uses the small WebP in thumbs/ (named after the sheet's "File Name"); the full drawing
+// loads only in the lightbox, through jsDelivr pinned to a commit (bump the hash when drawings change).
+const CDN = 'https://cdn.jsdelivr.net/gh/spinfinity-adt/math-creatures@b1091f3/';
+const RAW = 'https://raw.githubusercontent.com/spinfinity-adt/math-creatures/main/';
+const fullSrc = c => (c.image || '').replace(RAW, CDN);
+const thumbSrc = c => c.file ? 'thumbs/' + c.file + '.webp' : fullSrc(c);
+const DIMS = {"MathCreature_RGH_1":[720,826],"MathCreature_RGH_10":[684,1080],"MathCreature_RGH_11":[720,405],"MathCreature_RGH_12":[656,1080],"MathCreature_RGH_13":[720,961],"MathCreature_RGH_14":[686,1080],"MathCreature_RGH_15":[720,1074],"MathCreature_RGH_16":[720,1074],"MathCreature_RGH_17":[720,826],"MathCreature_RGH_18":[720,1064],"MathCreature_RGH_19":[720,988],"MathCreature_RGH_2":[657,1080],"MathCreature_RGH_20":[703,1080],"MathCreature_RGH_21":[720,977],"MathCreature_RGH_22":[720,515],"MathCreature_RGH_23":[720,847],"MathCreature_RGH_24":[695,1080],"MathCreature_RGH_25":[695,1080],"MathCreature_RGH_26":[720,571],"MathCreature_RGH_27":[720,471],"MathCreature_RGH_28":[720,953],"MathCreature_RGH_3":[720,976],"MathCreature_RGH_4":[720,543],"MathCreature_RGH_5":[720,883],"MathCreature_RGH_6":[720,970],"MathCreature_RGH_7":[720,929],"MathCreature_RGH_8":[662,1074],"MathCreature_RGH_9":[696,1080],"MathCreature_Refuge_1":[720,623],"MathCreature_Refuge_10":[703,1080],"MathCreature_Refuge_2":[649,1080],"MathCreature_Refuge_3":[709,1080],"MathCreature_Refuge_4":[720,999],"MathCreature_Refuge_5":[720,1013],"MathCreature_Refuge_6":[720,1061],"MathCreature_Refuge_7":[720,968],"MathCreature_Refuge_8":[720,764],"MathCreature_Refuge_9":[720,665]};
+
+// rows the sheet hasn't named yet carry the file name as their name — show those untitled
+const nameOf = c => /^MathCreature_/.test(c.name) ? '' : c.name.replace(/(^|\s)\w/g, l => l.toUpperCase());
+const metaOf = c => [c.center, c.standard ? 'Std. ' + c.standard : null].filter(Boolean).join(' \u00b7 ');
+const qsOf = c => c.questions ? c.questions.split('|').map(q => q.trim()).filter(Boolean) : [];
+
 // ── BUILD CARD ──
 function buildCard(c, i) {
-  const card = document.createElement('div');
-  card.className = 'card';
+  const card = document.createElement('article');
+  card.className = 'sheet'; card.tabIndex = 0;
   card.dataset.center = c.center;
   card.dataset.hasQuestions = c.questions ? 'true' : 'false';
+  card.style.setProperty('--r', tilt(i + 3, 2.2).toFixed(2) + 'deg');
+  card.style.setProperty('--tr', tilt(i + 7, 5).toFixed(1) + 'deg');
   card.style.animationDelay = Math.min(i * 35, 700) + 'ms';
-
-  const displayName = c.name.replace(/(^|\s)\w/g, l => l.toUpperCase());
-  const metaParts = [c.center, c.standard ? 'Std. ' + c.standard : null].filter(Boolean);
-  const questions = c.questions ? c.questions.split('|').map(q => q.trim()).filter(Boolean) : [];
-
+  const name = nameOf(c), q = qsOf(c), d = DIMS[c.file];
   card.innerHTML =
-    '<div class="card-inner">' +
-    (c.image ? '<img class="card-img" src="' + c.image + '" alt="' + displayName + '" loading="lazy">' : '') +
-    '<div class="card-body">' +
-    '<div class="card-name">' + displayName + '</div>' +
-    '<div class="card-meta">' + metaParts.join(' \u00b7 ') + '</div>' +
-    (c.emotion ? '<div class="card-emotion-tag">' + c.emotion + '</div>' : '') +
-    (c.description ? '<div class="card-description">' + c.description.replace(/\n/g, '<br><br>') + '</div>' : '') +
-    (questions.length ? '<div class="card-questions"><div class="questions-label">asked math \u2014</div>' +
-      questions.map(q => '<div class="question-item">' + q + '</div>').join('') + '</div>' : '') +
-    '<button class="expand-btn">read more \u2193</button>' +
-    '</div></div>';
-
-  card.querySelector('.expand-btn').addEventListener('click', function(e) {
-    e.stopPropagation();
-    var expanded = card.classList.toggle('expanded');
-    e.target.textContent = expanded ? 'show less \u2191' : 'read more \u2193';
-  });
-  card.querySelector('.card-inner').addEventListener('click', function() { openLightbox(c); });
+    '<div class="sheet-paper">' + (thumbSrc(c) ? '<img src="' + esc(thumbSrc(c)) + '"' + (d ? ' width="' + d[0] + '" height="' + d[1] + '"' : '') +
+      ' alt="' + esc(name || 'Math creature drawing') + '" loading="' + (i < 8 ? 'eager' : 'lazy') + '">' : '') + '</div>' +
+    (q.length ? '<div class="bubble"><em>asked math \u2014</em>' + esc(q[0]) + (q.length > 1 ? '<b>+' + (q.length - 1) + '</b>' : '') + '</div>' : '') +
+    '<div class="sheet-cap">' +
+    (name ? '<div class="sheet-name">' + esc(name) + '</div>' : '') +
+    '<div class="sheet-meta">' + esc(metaOf(c)) + '</div>' +
+    (c.emotion ? '<div class="sheet-feel">' + esc(c.emotion) + '</div>' : '') +
+    '</div>';
+  const img = card.querySelector('img');
+  // no thumbnail for this drawing yet → fall back to the full image
+  if (img) img.addEventListener('error', function () { if (fullSrc(c) && img.src !== fullSrc(c)) img.src = fullSrc(c); }, { once: true });
+  card.addEventListener('click', function () { openLightbox(c); });
+  card.addEventListener('keydown', function (e) { if (e.key === 'Enter') openLightbox(c); });
   return card;
 }
 
 // ── RENDER ──
 function buildNote() {
   var n = document.createElement('div');
-  n.className = 'note-tile';
-  n.innerHTML = '<div class="note-tile-inner">' +
+  n.className = 'note';
+  n.innerHTML = '<div class="note-inner">' +
     '<div class="note-body">' +
     '<p>I asked my students to <em>imagine Math as a person or living being</em> \u2014 and to draw it, name it, and ask it whatever they wanted.</p>' +
     '<p>These math creatures were made by <strong>bold, brilliant girls aged 9\u201314</strong> at an orphanage where the math trauma is almost generational \u2014 and by <strong>4th standard students</strong> at a government school.</p>' +
@@ -278,71 +272,63 @@ function buildNote() {
     '<p>Spinfinity is about breaking out of these labels, and exploring math through the body. We use hula hoops as a tool to play and spin math concepts.</p>' +
     '</div>' +
     '<div class="note-sig">\u2014 <strong>Aditi Bhat</strong>, Chief Spinner at Spinfinity</div>' +
+    
     '</div>';
   return n;
 }
+var activeFilter = 'all';
 function renderGrid(data) {
   var grid = document.getElementById('grid');
   grid.innerHTML = '';
   if (!data.length) { grid.innerHTML = '<div class="loading-state">no creatures found</div>'; return; }
   grid.appendChild(buildNote());
   data.forEach(function(c, i) { grid.appendChild(buildCard(c, i)); });
-  updateCount();
+  applyFilter();
 }
-
 function updateCount() {
-  var visible = document.querySelectorAll('.card:not(.hidden)').length;
-  document.getElementById('statusLine').textContent = visible + ' creature' + (visible !== 1 ? 's' : '');
+  var visible = document.querySelectorAll('.sheet:not(.hidden)').length;
+  document.getElementById('statusLine').innerHTML = '<strong>' + visible + '</strong> creature' + (visible !== 1 ? 's' : '');
 }
 
 // ── FILTERS ──
-document.querySelectorAll('.filter-btn').forEach(function(btn) {
+function applyFilter() {
+  document.querySelectorAll('.sheet').forEach(function(card) {
+    var visible = true;
+    if      (activeFilter === 'center:Refuge') visible = card.dataset.center === 'Refuge';
+    else if (activeFilter === 'center:RGH')    visible = card.dataset.center === 'RGH';
+    else if (activeFilter === 'has-questions') visible = card.dataset.hasQuestions === 'true';
+    card.classList.toggle('hidden', !visible);
+  });
+  updateCount();
+}
+document.querySelectorAll('#filterRow .chip').forEach(function(btn) {
   btn.addEventListener('click', function() {
-    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('#filterRow .chip').forEach(function(b) { b.classList.remove('active'); });
     btn.classList.add('active');
-    var filter = btn.dataset.filter;
-    document.querySelectorAll('.card').forEach(function(card) {
-      var visible = true;
-      if      (filter === 'center:Refuge')    visible = card.dataset.center === 'Refuge';
-      else if (filter === 'center:RGH')       visible = card.dataset.center === 'RGH';
-      else if (filter === 'has-questions')    visible = card.dataset.hasQuestions === 'true';
-      card.classList.toggle('hidden', !visible);
-    });
-    updateCount();
+    activeFilter = btn.dataset.filter;
+    applyFilter();
   });
 });
 
 // ── LIGHTBOX ──
 function openLightbox(c) {
-  var displayName = c.name.replace(/(^|\s)\w/g, function(l) { return l.toUpperCase(); });
-  var metaParts = [c.center, c.standard ? 'Std. ' + c.standard : null].filter(Boolean);
-  var questions = c.questions ? c.questions.split('|').map(function(q) { return q.trim(); }).filter(Boolean) : [];
-
-  document.getElementById('lbImg').src = c.image || '';
-  document.getElementById('lbImg').alt = displayName;
-  document.getElementById('lbName').textContent = displayName;
-  document.getElementById('lbMeta').textContent = metaParts.join(' \u00b7 ');
-  document.getElementById('lbDesc').innerHTML = (c.description || '').replace(/\n/g, '<br><br>');
-
-  document.getElementById('lbQuestions').innerHTML = questions.length
-    ? '<div class="lb-questions"><span class="questions-label">asked math \u2014</span>' +
-      questions.map(function(q) { return '<div class="lb-q-item">' + q + '</div>'; }).join('') + '</div>'
-    : '';
-
-  var tags = [c.emotion, c.form].filter(Boolean);
-  document.getElementById('lbTags').innerHTML = tags.map(function(t) { return '<span class="lb-tag">' + t + '</span>'; }).join('');
-
-  document.getElementById('lightbox').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  var img = $('lbImg'), full = fullSrc(c), name = nameOf(c), q = qsOf(c);
+  // show the (already cached) thumbnail instantly, swap in the full drawing when ready
+  img.src = thumbSrc(c); img.alt = name || 'Math creature drawing'; img.dataset.want = full;
+  if (full) { var hi = new Image(); hi.onload = function () { if (img.dataset.want === full) img.src = full; }; hi.src = full; }
+  $('lbName').textContent = name;
+  $('lbMeta').textContent = metaOf(c);
+  $('lbDesc').innerHTML = esc(c.description || '').replace(/\n+/g, '<br><br>');
+  $('lbQ').innerHTML = q.length ? '<span class="lb-q-label">asked math \u2014</span>' + q.map(function (x) { return '<div class="bubble">' + esc(x) + '</div>'; }).join('') : '';
+  $('lbTags').innerHTML = [c.emotion, c.form].filter(Boolean).map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('');
+  showLb();
 }
 
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow = '';
-}
-document.getElementById('lbClose').addEventListener('click', closeLightbox);
-document.getElementById('lightbox').addEventListener('click', function(e) { if (e.target === document.getElementById('lightbox')) closeLightbox(); });
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+function showLb() { $('lightbox').classList.add('open'); document.body.style.overflow = 'hidden'; $('lbClose').focus(); }
+function closeLb() { $('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
+$('lbClose').addEventListener('click', closeLb);
+$('lightbox').addEventListener('click', e => { if (e.target === $('lightbox')) closeLb(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
 
 // ── INIT ──
 // Uses localStorage to cache last-good sheet data — loads instantly on repeat visits.

@@ -1,0 +1,29 @@
+{
+ "version": "0.0.1",
+ "configurations": [
+  {
+   "name": "site",
+   "runtimeExecutable": "python3",
+   "runtimeArgs": [
+    "/private/tmp/claude-501/-Users-aditi-Documents-website/8104ffb6-6bb3-489f-8148-b7fe4e5aa789/scratchpad/serve.py"
+   ],
+   "port": 4173
+  },
+  {
+   "name": "layout-mock",
+   "runtimeExecutable": "python3",
+   "runtimeArgs": [
+    "/private/tmp/claude-501/-Users-aditi-Documents-website/08c313cb-701f-4eb0-8540-d2bb5d7d7ca3/scratchpad/serve.py"
+   ],
+   "port": 4180
+  },
+  {
+   "name": "site-static",
+   "runtimeExecutable": "python3",
+   "runtimeArgs": [
+    "/private/tmp/claude-501/-Users-aditi-Documents-website/3fe5010a-7b6b-4cbb-a5f0-14151fee0704/scratchpad/serve.py"
+   ],
+   "port": 4190
+  }
+ ]
+}

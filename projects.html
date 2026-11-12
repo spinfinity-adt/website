@@ -8,22 +8,40 @@
 <title>Projects — Spinfinity</title>
 <link rel="stylesheet" href="/styles.css"/>
 <style>
-.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.5rem}
-.proj-card{display:flex;flex-direction:column;background:var(--card-bg);border:1px solid var(--border);border-radius:4px;overflow:hidden;text-decoration:none;color:var(--fg);transition:all .28s ease}
-.proj-card:hover{border-color:var(--card-accent,var(--accent2));transform:translateY(-4px);box-shadow:0 0 0 1px var(--card-accent,var(--accent2))}
-.proj-card:hover .proj-thumb img{transform:scale(1.04)}
-.proj-thumb{width:100%;aspect-ratio:16/10;overflow:hidden;background:#111}
-.proj-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease;display:block}
-.proj-body{padding:1.1rem 1.2rem 1.3rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
-.proj-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.2rem}
-.proj-name{font-family:var(--hand);font-size:1.45rem;font-weight:700;line-height:1.1;transition:color .2s}
-.proj-card:hover .proj-name{color:var(--card-accent,var(--accent2))}
-.proj-desc{font-family:var(--hand);font-size:.93rem;color:var(--muted);line-height:1.55;flex:1}
-.proj-link-label{font-family:var(--hand);font-size:1rem;color:var(--card-accent,var(--accent2));margin-top:.6rem;display:flex;align-items:center;gap:.3rem;transition:gap .2s}
-.proj-card:hover .proj-link-label{gap:.6rem}
-.proj-card.featured{grid-column:1/-1;flex-direction:row}
-.proj-card.featured .proj-thumb{width:42%;flex-shrink:0;aspect-ratio:unset}
-@media(max-width:640px){.proj-card.featured{flex-direction:column}.proj-card.featured .proj-thumb{width:100%;aspect-ratio:16/9}.projects-grid{grid-template-columns:1fr}}
+/* Projects: two headings, and every project is a tag hanging off a hoop like a key ring.
+   Each hoop is a small striped SVG ring, coloured by what the project is made of. Nothing animates. */
+.proj-wrap{max-width:none;padding:32px var(--gutter) clamp(2rem,5vw,5rem)}
+.section-label{color:var(--accent1-text);font-weight:800;font-size:.8rem}
+.section-label::after{background:var(--border)}
+.proj-h{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,4.3vw,2.85rem);line-height:1.04;letter-spacing:-.018em;color:var(--text);margin:2.6rem 0 1.9rem}
+.proj-h:first-of-type{margin-top:1.2rem}
+.proj-h::after{content:'';display:block;width:110px;height:4px;margin-top:.55rem;border-radius:4px;background:var(--accent1-text);transform:rotate(-1.2deg)}
+.hoop-key{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.4rem;margin:1.1rem 0 0;font-weight:700;font-size:.95rem;color:var(--muted)}
+.hoop-key span{display:inline-flex;align-items:center;gap:.45rem}
+.hoop-key i{display:inline-block;width:1rem;height:1rem;border-radius:50%;border:4px solid var(--k)}
+.proj-note{max-width:var(--measure);margin:.2rem 0 1.1rem;font-size:1.02rem;line-height:1.65;color:var(--text)}
+.proj-note:empty{display:none}
+.pick{display:flex;flex-wrap:wrap;gap:10px;margin-top:.4rem}
+.pick button{font-family:var(--hand);font-weight:700;font-size:.95rem;line-height:1;padding:.55rem 1.05rem;border-radius:999px;border:2px solid var(--border);background:transparent;color:var(--text);cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.pick button:hover{border-color:var(--accent2);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--accent2)}
+.pick button.active{background:var(--accent2);border-color:var(--accent2);color:#fff;box-shadow:3px 3px 0 var(--accent1-text)}
+.pick button:focus-visible{outline:2px solid var(--accent3);outline-offset:3px}
+.group[hidden]{display:none}
+.rings{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:1.6rem 1.8rem}
+/* a tag hangs from its hoop: the hoop sits on the top-left corner and goes through the punched hole */
+.ktag{position:relative;display:block;padding:30px 0 0 28px;text-decoration:none;color:var(--text);min-width:0}
+.hoop-slot{position:absolute;left:0;top:0;width:84px;height:84px;z-index:2;pointer-events:none;transition:transform .2s ease}
+.ktag:hover .hoop-slot,.ktag:focus-visible .hoop-slot{transform:translate(-2px,-2px)}
+.hoop-slot svg{display:block;width:100%;height:100%}
+.ktag-card{position:relative;display:flex;flex-direction:column;gap:.7rem;height:100%;padding:.95rem 1rem 1.05rem;background:var(--card-bg);border:2px solid var(--accent2);border-radius:14px;box-shadow:4px 4px 0 var(--accent1-text);transition:transform .2s ease,box-shadow .2s ease}
+.ktag:hover .ktag-card,.ktag:focus-visible .ktag-card{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--accent1-text)}
+.ktag:focus-visible{outline:2px solid var(--accent3);outline-offset:4px;border-radius:14px}
+.ktag-name{display:flex;align-items:center;min-height:50px;padding-left:3.5rem;font-family:var(--display);font-weight:700;font-size:1.18rem;line-height:1.15}
+.ktag-img{display:block;aspect-ratio:16/10;border-radius:8px;overflow:hidden;background:var(--border)}
+.ktag-img img{display:block;width:100%;height:100%;object-fit:cover}
+.ktag-desc{font-size:.9rem;line-height:1.5;color:var(--muted);flex:1}
+.ktag-go{font-weight:700;font-size:.92rem;color:var(--accent2)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.anim-0,.anim-1,.anim-2,.anim-3,.anim-4{opacity:1}}
 </style>
 </head>
 <body class="theme-paper">
@@ -35,80 +53,117 @@
 
 
 <div class="page">
-  <div class="container">
-    <p class="section-label anim-0">the experiments</p>
-            <div class="projects-grid" id="projects-grid"></div>
+  <div class="container proj-wrap">
+    <div id="projects" class="anim-1">
+      <!-- Aditi's note about the categories goes inside this paragraph; it stays hidden while empty -->
+      <p class="proj-note" id="proj-note"></p>
+      <div class="pick" id="pick" role="group" aria-label="show">
+        <button class="active" data-show="all">all</button>
+        <button data-show="learning">learning engagements</button>
+        <button data-show="tech">creative tech</button>
+      </div>
+      <p class="hoop-key" id="hoop-key" aria-label="what the hoop colours mean"></p>
+      <section class="group" data-kind="learning">
+        <h2 class="proj-h">learning engagements</h2>
+        <div class="rings" id="rings-learning"></div>
+      </section>
+      <section class="group" data-kind="tech">
+        <h2 class="proj-h">creative tech</h2>
+        <div class="rings" id="rings-tech"></div>
+      </section>
+    </div>
   </div>
 </div>
 
 <div id="sf-footer-mount"></div>
 
-
 <script>
 (function(){
-  // ADD A PROJECT = add one object here. Fields: name, url, img, tags[], desc.
-  // Optional: featured:true (large card), accent:"accent1"|"accent2"|"accent3"|"accent4" (else auto).
+  // ADD A PROJECT = add one object here. Fields: name, url, img, desc, plus
+  //   kind: "learning" (goes under learning engagements) or "tech" (goes under creative tech)
+  //   made: any of "art", "data", "technology", "math", "movement" - these colour the project's hoop
   const projects = [
    
     { name:"Hoop School: Math Edition!", url:"https://spinfinity.in/hoop-school-math-edition/", img:"images/hoop-school-math.jpg",
-      tags:["education","math"], featured:true,
+      kind:"learning", made:["art","data","math","movement"],
       desc:"Six sessions of “Hoop School: Math Edition!” took place over two weeks." },
     { name:"Climate Stripes", url:"https://spinfinity.in/climate-stripes", img:"images/climate-stripes.png",
-      tags:["data viz","performance"],
+      kind:"tech", made:["art","data","movement","math"],
       desc:"A data performance turning 175 years of global temperature into a wall of colour — Ed Hawkins' climate stripes brought to life with long-exposure photography." },
     { name:"Math Creatures", url:"https://spinfinity.in/math-creatures", img:"images/math-creatures.jpg",
-      tags:["education","community"], 
+      kind:"learning", made:["art","data","math"],
       desc:"Kids were asked: what does math look like to you? This gallery is their answer — hand-drawn creatures with personalities, fears, and superpowers." },
 
     { name:"100 Days of Making", url:"https://spinfinity.in/100-days-of-making/", img:"images/100-days-of-making.jpg",
-      tags:["making","process"],
+      kind:"tech", made:["art","data","technology","math","movement"],
       desc:"One hundred days. One small thing made each day. A log of experiments, failures, sketches and surprises — proof that the practice matters more than the output." },
 
     { name:"Mosaic Data Viz", url:"https://spinfinity.in/mosaic-data-viz", img:"images/mosaic-data-viz.jpg",
-      tags:["data viz","creative coding"],
+      kind:"tech", made:["data","technology","art"],
       desc:"A creative coding recreation of a community data selfie — collecting and visualising people's data at Mosaic, a live community event." },
 
     { name:"Hilbert Curve Cat", url:"https://spinfinity.in/hilbert-curve-cat/", img:"images/hilbert-curve-cat.jpg",
-      tags:["math","generative"],
+      kind:"tech", made:["technology","art","math"],
       desc:"An unlimited cat generator — every cat rendered in the style of a Hilbert curve, the space-filling mathematical path that never quite repeats itself." },
 
     { name:"Hoop Trick Shapes", url:"https://spinfinity.in/hoop-trick-shapes/", img:"images/hoop-trick-shapes.jpg",
-      tags:["education","student art"],
+      kind:"learning", made:["art","data","math","movement"],
       desc:"Students drew the shapes they saw the hoop make after learning each trick — Barrel Roll, Cylinder, Sphere, Weave. A gallery of motion interpreted by hand." },
 
     { name:"Vibe Shift", url:"https://spinfinity.in/vibe-shift/", img:"images/vibe-shift.jpg",
-      tags:["generative art","AI","data portrait"],
+      kind:"tech", made:["technology","data"],
       desc:"A generative data portrait gallery made with Claude. Tell it who you are — your loves, your chaos, your aesthetics — and it translates you into a living p5.js sketch." },
 
     { name:"Hands of Vizchitra", url:"https://spinfinity.in/hands-of-vizchitra/", img:"images/hands-of-vizchitra.jpg",
-      tags:["data viz","participatory"],
+      kind:"tech", made:["data","art","technology"],
       desc:"At Vizchitra 2025, ~44 people traced a hand and encoded themselves onto it in highlighter and ink. Every hand redrawn as data — click one to see the original paper." },
 
     { name:"FOSS Contribution Chart!", url:"https://spinfinity.in/indiafoss2026/", img:"images/indiafoss2026.jpg",
-      tags:["data viz","participatory"],
+      kind:"tech", made:["data","art"],
       desc:"Inspired by github contribution charts, this was an attempt to record all the IndiaFOSS 2026 attendees" }
   ];
 
-  // card accent drives tag text, link label + hover name (all text) as well as the
-  // hover border, so it must stay off yellow and use the AA-safe teal text variant.
-  const PALETTE = ["--accent2","--accent1-text"];
-  const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-  const accentOf = (p,i) => "var(" + (p.accent ? "--"+p.accent : (p.featured ? "--accent2" : PALETTE[i % PALETTE.length])) + ")";
+  // one colour per ingredient: the hoop is striped in the colours of what the project is made of
+  const MADE = { art:"#FFBD35", data:"#3FA796", technology:"#502064", math:"#F26A1B", movement:"#8267BE" };
 
-  const grid = document.getElementById("projects-grid");
-  if (grid) grid.innerHTML = projects.map((p,i) => {
-    const accent = accentOf(p,i);
-    const anim = "anim-" + (p.featured ? 1 : Math.min(i+1, 4));
-    const tags = (p.tags||[]).map(tg => '<span class="tag" style="color:'+accent+'">'+esc(tg)+'</span>').join("");
-    return '<a class="proj-card '+(p.featured?"featured ":"")+anim+'" href="'+esc(p.url)+'" style="--card-accent:'+accent+'">'
-      + '<div class="proj-thumb"><img src="'+esc(p.img)+'" alt="'+esc(p.name)+'" loading="lazy"/></div>'
-      + '<div class="proj-body">'
-      + '<div class="proj-tags">'+tags+'</div>'
-      + '<span class="proj-name">'+esc(p.name)+'</span>'
-      + '<p class="proj-desc">'+esc(p.desc)+'</p>'
-      + '<span class="proj-link-label">open project →</span>'
-      + '</div></a>';
-  }).join("");
+  const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  // a striped ring: one dashed circle per colour, offset so the stripes take turns around the hoop.
+  // The ring runs over the tag and right across the punched hole; the mask hides the stretch that
+  // has gone through and runs behind the tag, from the hole's far rim to the tag's left edge.
+  let hoopN = 0;
+  function hoop(made){
+    const cols = (made||[]).map(m => MADE[m]).filter(Boolean); if (!cols.length) cols.push("#502064");
+    const R = 36, C = 2*Math.PI*R, n = cols.length === 1 ? 1 : cols.length * Math.max(2, Math.round(10/cols.length)), len = C/n;
+    const id = "hm" + (hoopN++);
+    return '<svg viewBox="0 0 84 84" aria-hidden="true"><mask id="'+id+'" maskUnits="userSpaceOnUse" x="0" y="0" width="84" height="84"><rect width="84" height="84" fill="#fff"/>'
+      + '<polygon points="28,30 30,30 84,84 28,84"/>'                                          // the part behind the tag
+      + '<circle cx="67.46" cy="67.46" r="7" fill="#fff"/></mask>'                             // ...but the ring shows all the way across the hole
+      + '<circle cx="67.46" cy="67.46" r="8" fill="var(--bg)" stroke="var(--accent2)" stroke-width="2"/>'   // the punched hole, centred on the ring
+      + '<g mask="url(#'+id+')">' + cols.map((c,i) =>
+      '<circle cx="42" cy="42" r="'+R+'" fill="none" stroke="'+c+'" stroke-width="8"'
+      + (n === 1 ? '' : ' stroke-dasharray="'+len.toFixed(2)+' '+(len*(cols.length-1)).toFixed(2)+'" stroke-dashoffset="'+(-i*len).toFixed(2)+'"')
+      + ' transform="rotate(-90 42 42)"/>').join("") + '</g></svg>';
+  }
+  const card = p => '<a class="ktag" href="'+esc(p.url)+'">'
+      + '<span class="hoop-slot" title="'+esc((p.made||[]).join(", "))+'">'+hoop(p.made)+'</span>'
+      + '<span class="ktag-card">'
+      + '<span class="ktag-name">'+esc(p.name)+'</span>'
+      + '<span class="ktag-img"><img src="'+esc(p.img)+'" alt="'+esc(p.name)+'" loading="lazy"/></span>'
+      + '<span class="ktag-desc">'+esc(p.desc)+'</span>'
+      + '<span class="ktag-go">open project →</span>'
+      + '</span></a>';
+  ["learning","tech"].forEach(k => {
+    document.getElementById("rings-"+k).innerHTML = projects.filter(p => p.kind === k).map(card).join("");
+  });
+  document.getElementById("hoop-key").innerHTML = Object.keys(MADE).map(m => '<span><i style="--k:'+MADE[m]+'"></i>'+m+'</span>').join("");
+
+  // all / learning engagements / creative tech
+  const pick = document.getElementById("pick");
+  pick.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    pick.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
+    document.querySelectorAll(".group").forEach(g => { g.hidden = b.dataset.show !== "all" && g.dataset.kind !== b.dataset.show; });
+  });
 })();
 </script>
 </body>

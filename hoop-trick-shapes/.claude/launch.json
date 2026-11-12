@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-I",
+        "-c",
+        "import os,functools,http.server,socketserver; socketserver.TCPServer.allow_reuse_address=True; h=functools.partial(http.server.SimpleHTTPRequestHandler, directory='/private/tmp/claude-501/-Users-aditi-Documents-website-hoop-trick-shapes/d6e79392-6528-4122-89fe-b67bae7f2a0d/scratchpad/serve'); socketserver.TCPServer(('127.0.0.1',4173),h).serve_forever()"
+      ],
+      "port": 4173
+    }
+  ]
+}

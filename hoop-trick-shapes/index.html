@@ -8,143 +8,155 @@
 <title>Hoop Trick Shapes Gallery</title>
 <link rel="stylesheet" href="/styles.css">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{--ink:var(--text);--accent:var(--accent2)}
+/* Gallery page on the shared system: tokens, fonts, nav, footer and the .frame / .proj-header.split
+   layout all come from /styles.css. Everything below is this page's own components, token-driven. */
+/* ============ NEW — shared by both gallery pages ============ */
+/* per-theme extras: ink for text sitting on an accent fill, and the sheet shadow */
+.theme-studio{--on-accent:#1c1a20;--sheet-shadow:rgba(0,0,0,.45);--p-purple:#b996ec}
+.theme-paper{--on-accent:#ffffff;--sheet-shadow:rgba(35,39,48,.16);--p-purple:#502064}
+main.frame .proj-header.split .proj-title{max-width:none}
+main.frame .proj-header.split .proj-sub{max-width:60ch;line-height:1.5}
+.eyebrow{display:block;font-family:var(--hand);font-weight:800;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent1-text);margin-bottom:.45rem}
+/* paper wears the same bold heading as studio: ink title, one purple word, tilted teal underline, teal subtitle */
+body.theme-paper .proj-header h1{color:var(--text);font-weight:700;letter-spacing:0}
+body.theme-paper .proj-header h1 .w{color:var(--accent2)}
+body.theme-paper .proj-header h1::after{content:'';display:block;width:110px;height:4px;margin:.55rem 0 0;border-radius:4px;background:var(--accent1-text);transform:rotate(-1.2deg)}
+body.theme-paper .proj-header .proj-sub{color:var(--accent1-text);letter-spacing:.14em;font-weight:600}
 
-header{display:flex;align-items:baseline;flex-wrap:wrap;gap:0.3rem 0.55rem;max-width:1400px;margin:0 auto;padding:1.6rem 2rem 1rem}
-h1{font-family:var(--display);font-weight:400;font-size:1.6rem;line-height:1.1;letter-spacing:-0.01em;color:var(--text);margin:0}
-.colon{font-family:var(--display);font-size:1.45rem;line-height:1;color:var(--accent)}
-.subtitle{font-family:var(--hand);font-style:italic;font-size:0.95rem;line-height:1.3;color:var(--muted);margin:0}
+/* filter chips — same pill + flat offset shadow language as the mosaic button */
+.chips{display:flex;flex-wrap:wrap;align-items:center;gap:10px 10px;padding:4px 0 26px}
+.chips-label{font-weight:700;color:var(--muted);margin-right:6px}
+.chip{--tc:var(--accent2);display:inline-flex;align-items:center;gap:.5rem;font-family:var(--hand);font-weight:700;font-size:.92rem;line-height:1;padding:.5rem 1rem;border-radius:999px;border:2px solid var(--border);background:transparent;color:var(--text);cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.chip:hover{border-color:var(--tc);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--tc)}
+.chip.active{background:var(--tc);border-color:var(--tc);color:var(--on-accent);box-shadow:3px 3px 0 var(--accent1-text)}
+.chip:focus-visible,.btn:focus-visible,.sheet:focus-visible,.tile:focus-visible{outline:2px solid var(--accent3);outline-offset:3px}
+.chip small{font-size:.68rem;font-weight:600;opacity:.75;letter-spacing:.03em}
+.chip svg{width:20px;height:20px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.chip:hover svg,.chip.active svg{animation:spin 2.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* FILTERS — single row, trick + shape shown together */
-.filters{max-width:1400px;margin:0 auto;padding:0 2rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
-.filter-row{display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;padding:0.75rem 0}
-.filter-label{font-family:var(--hand);font-size:0.52rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);min-width:52px;white-space:nowrap}
-.pill{display:inline-flex;flex-direction:column;align-items:center;padding:0.45rem 1rem;border-radius:999px;border:1.5px solid var(--border);background:transparent;color:var(--ink);font-family:var(--hand);cursor:pointer;transition:all 0.15s ease;white-space:nowrap;line-height:1;gap:2px}
-.pill:hover{border-color:var(--ink);background:rgba(0,0,0,0.04)}
-.pill.active{background:var(--ink);border-color:var(--ink);color:var(--bg)}
-.pill-trick{font-size:0.82rem;font-weight:400}
-.pill-shape{font-size:0.58rem;opacity:0.6;letter-spacing:0.03em}
-.pill.active .pill-shape{opacity:0.7}
-/* each trick gets its own active color */
-.pill[data-trick="Barrel Roll"].active{background:#0c8294;border-color:#0c8294;color:#fff}
-.pill[data-trick="Cylinder"].active{background:#3a66c8;border-color:#3a66c8;color:#fff}
-.pill[data-trick="Sphere"].active{background:#7a52c4;border-color:#7a52c4;color:#fff}
-.pill[data-trick="Waist Hooping"].active{background:#bb8b1a;border-color:#bb8b1a;color:#fff}
-.pill[data-trick="Weave"].active{background:#1f9e80;border-color:#1f9e80;color:#fff}
+.btn{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--hand);font-weight:800;font-size:.95rem;padding:.55rem 1.15rem;border-radius:999px;border:2px solid var(--accent2);background:var(--card-bg);color:var(--text);cursor:pointer;box-shadow:4px 4px 0 var(--accent1-text);transition:transform .2s ease,box-shadow .2s ease}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--accent1-text)}
+.btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.btn.go svg{animation:spin .5s ease}
+.tally{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.tally-n{font-family:var(--hand);color:var(--muted);font-size:.9rem;letter-spacing:.04em}
+.tally-n strong{font-family:var(--display);font-weight:700;font-size:1.9rem;color:var(--text);margin-right:.35rem;letter-spacing:-.02em}
 
-/* RESULTS BAR */
-.results-bar{max-width:1400px;margin:0 auto;padding:0 2rem 1.25rem;display:flex;align-items:baseline;gap:1rem;justify-content:space-between;flex-wrap:wrap}
-.results-count{font-family:var(--hand);font-size:0.72rem;color:var(--muted);letter-spacing:0.05em}
-.results-count strong{color:var(--ink);font-size:1.35rem;font-weight:900;margin-right:3px}
-.shuffle-btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.38rem 0.85rem;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-family:var(--hand);font-size:0.78rem;cursor:pointer;transition:all 0.15s}
-.shuffle-btn:hover{border-color:var(--ink);color:var(--ink)}
-
-/* GALLERY */
-.gallery-section{max-width:1400px;margin:0 auto;padding:0 2rem 6rem}
-.masonry{columns:5 175px;column-gap:10px}
-@media(max-width:900px){.masonry{columns:3 140px}}
-@media(max-width:560px){.masonry{columns:2 130px}h1{font-size:1.35rem}}
-
-.card{break-inside:avoid;margin-bottom:10px;position:relative;border-radius:7px;overflow:hidden;background:var(--card-bg);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.07);opacity:0;animation:card-in 0.35s ease forwards}
-.card:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 10px 28px rgba(0,0,0,0.13);z-index:10;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s ease}
-
-.card-img-wrap{position:relative;width:100%;background:#e3eaea}
-.card-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.55) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 1.4s infinite;opacity:1;transition:opacity 0.3s}
-.card-img-wrap.loaded::after{opacity:0;pointer-events:none}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:1;opacity:0;transition:opacity 0.25s ease}
-.card img.visible{opacity:1}
-
-.card-label{position:absolute;bottom:0;left:0;right:0;padding:0.55rem 0.65rem 0.5rem;background:linear-gradient(to top,rgba(255,255,255,0.97) 55%,transparent);transform:translateY(100%);transition:transform 0.18s ease;pointer-events:none;z-index:2}
-.card:hover .card-label{transform:translateY(0)}
-.card-name{font-size:0.73rem;font-weight:400;color:var(--ink);display:block}
-.card-meta{font-size:0.62rem;color:var(--muted);display:block;margin-top:1px}
-
-@keyframes card-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* ============ HOOP TRICK SHAPES ============ */
+.theme-studio{--t-barrel:#4FA393;--t-cyl:#8267BE;--t-sphere:#b996ec;--t-waist:#FFBD35;--t-weave:#f3efe6}
+.theme-paper{--t-barrel:#3FA796;--t-cyl:#8267BE;--t-sphere:#502064;--t-waist:#FFBD35;--t-weave:#232730}
+[data-trick="Barrel Roll"]{--tc:var(--t-barrel)}
+[data-trick="Cylinder"]{--tc:var(--t-cyl)}
+[data-trick="Sphere"]{--tc:var(--t-sphere)}
+[data-trick="Waist Hooping"]{--tc:var(--t-waist)}
+[data-trick="Weave"]{--tc:var(--t-weave)}
+.chip[data-trick].active{color:#1c1a20}
+body.theme-paper .chip[data-trick="Sphere"].active,body.theme-paper .chip[data-trick="Weave"].active,body.theme-paper .chip[data-trick="All"].active{color:#fff}
+.chip[data-trick="All"]{--tc:var(--accent2)}
+body.theme-studio .chip[data-trick="All"].active{color:#1c1a20}
+.masonry{columns:6 180px;column-gap:18px;padding:6px 0 90px}
+@media(max-width:560px){.masonry{columns:2 130px;column-gap:14px}}
+.tile{break-inside:avoid;display:block;width:100%;margin-bottom:20px;position:relative;border-radius:4px;overflow:hidden;background:#fff;cursor:pointer;border:0;padding:0;box-shadow:4px 4px 0 var(--tc);opacity:0;animation:deal .4s ease forwards;transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease}
+body.theme-paper .tile{outline:1px solid var(--border)}
+.tile:hover,.tile:focus-visible{transform:translate(-3px,-3px) rotate(var(--r,1deg));box-shadow:8px 8px 0 var(--tc);z-index:5}
+.tile img{display:block;width:100%;height:auto}
+.tile-label{position:absolute;left:0;right:0;bottom:0;padding:.5rem .65rem;background:var(--card-bg);color:var(--text);text-align:left;transform:translateY(101%);transition:transform .18s ease;border-top:3px solid var(--tc)}
+.tile:hover .tile-label,.tile:focus-visible .tile-label{transform:none}
+.tile-label b{display:block;font-size:.8rem;font-weight:700}
+.tile-label span{display:block;font-size:.66rem;color:var(--muted);margin-top:1px}
+@keyframes deal{from{opacity:0;transform:translateY(12px) rotate(var(--r,0deg))}to{opacity:1;transform:none}}
 
 .empty-state{text-align:center;padding:6rem 2rem;color:var(--muted)}
-
-.lightbox{display:none;position:fixed;inset:0;background:rgba(26,20,16,0.88);z-index:1000;align-items:center;justify-content:center;padding:2rem;cursor:zoom-out;backdrop-filter:blur(4px)}
+/* ============ lightbox (shared) ============ */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(12,11,15,.82);z-index:1000;align-items:center;justify-content:center;padding:20px}
 .lightbox.open{display:flex}
-.lb-inner{max-width:580px;width:100%;background:var(--card-bg);border-radius:12px;overflow:hidden;cursor:default;box-shadow:0 40px 80px rgba(0,0,0,0.4);animation:lb-in 0.22s cubic-bezier(0.34,1.56,0.64,1)}
-@keyframes lb-in{from{transform:scale(0.88);opacity:0}to{transform:scale(1);opacity:1}}
-.lb-inner img{width:100%;height:auto;display:block}
-.lb-footer{padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:flex-end}
-.lb-name{font-family:var(--hand);font-size:0.95rem;font-weight:700}
-.lb-details{font-size:0.78rem;color:var(--muted);margin-top:3px;font-style:italic}
-.lb-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.4rem;line-height:1;padding:0;transition:color 0.15s}
-.lb-close:hover{color:var(--ink)}
+.lb{position:relative;display:flex;max-width:880px;width:100%;max-height:90vh;background:var(--card-bg);color:var(--text);border:2px solid var(--accent2);border-radius:14px;box-shadow:8px 8px 0 var(--accent1-text);overflow:hidden}
+.lb-img{flex:0 0 48%;background:#fff;display:flex;align-items:center;justify-content:center;padding:18px}
+.lb-img img{max-width:100%;max-height:78vh;object-fit:contain}
+.lb-text{flex:1;padding:34px 28px 28px;overflow-y:auto}
+.lb-name{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1.1}
+.lb-meta{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 0 16px}
+.lb-desc{font-size:.95rem;line-height:1.75}
+.lb-q{margin-top:18px}
+.lb-q .bubble{margin:10px 0 0 0;transform:none;border-radius:16px 16px 16px 4px;font-size:1.02rem}
+.lb-q-label{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent1-text)}
+.lb-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+.lb-tags span{font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid var(--border);color:var(--muted)}
+.lb-close{position:absolute;top:8px;right:10px;width:36px;height:36px;border-radius:50%;background:var(--card-bg);border:2px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;z-index:2}
+.lb.solo{max-width:560px;flex-direction:column}
+.lb.solo .lb-img{flex:0 1 auto;padding:0}
+.lb.solo .lb-text{padding:16px 22px 18px;flex:0 0 auto}
+.lb.solo .lb-name{font-family:var(--hand);font-size:1.05rem}
+.lb.solo .lb-meta{margin:3px 0 0;text-transform:none;letter-spacing:0;font-style:italic;font-weight:400}
+@media (max-width:640px){.lb{flex-direction:column;overflow-y:auto}.lb-img{flex:0 0 auto}}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.tile{opacity:1}}
 </style>
 </head>
-<body class="theme-light">
-  <div id="sf-nav-mount"></div>
+<body class="theme-paper">
+<div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>
 
-<header>
-  <h1>Hoop Trick Shapes</h1>
-  <span class="colon">:</span>
-  <p class="subtitle">student drawings made after learning each hoop trick ∞</p>
-</header>
-
-<div class="filters">
-  <div class="filter-row" id="filter-row">
-    <span class="filter-label">Filter</span>
-  </div>
-</div>
-
-<div class="results-bar">
-  <div class="results-count" id="count"><strong>—</strong> drawings</div>
-  <button class="shuffle-btn" id="shuffle-btn">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
-    Shuffle
-  </button>
-</div>
-
-<main class="gallery-section">
+<main class="frame">
+  <header class="proj-header split">
+    <div class="proj-title">
+      <h1>Hoop Trick <span class="w">Shapes</span></h1>
+      <p class="proj-sub">student drawings made after learning each hoop trick ∞</p>
+    </div>
+    <div class="proj-aside">
+      <div class="tally">
+        <div class="tally-n" id="count"><strong>—</strong> drawings</div>
+        <button class="btn" id="shuffle-btn"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>Shuffle</button>
+      </div>
+    </div>
+  </header>
+  <div class="chips" id="filter-row"><span class="chips-label">Filter</span></div>
   <div id="gallery" class="masonry"></div>
   <div id="empty" class="empty-state" style="display:none"><p style="font-size:2rem;opacity:0.3;margin-bottom:1rem">○</p><p>No drawings here yet.</p></div>
 </main>
 
-<div class="lightbox" id="lightbox">
-  <div class="lb-inner" onclick="event.stopPropagation()">
-    <img id="lb-img" src="" alt="">
-    <div class="lb-footer">
-      <div><div class="lb-name" id="lb-name"></div><div class="lb-details" id="lb-details"></div></div>
-      <button class="lb-close" id="lb-close">✕</button>
-    </div>
-  </div>
-</div>
+<div class="lightbox" id="lightbox"><div class="lb solo" id="lb" role="dialog" aria-modal="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&#x2715;</button>
+  <div class="lb-img"><img id="lbImg" alt=""></div>
+  <div class="lb-text"><div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+</div></div>
 
+<div id="sf-footer-mount"></div>
 <script src="data.js"></script>
 <script>
 // trick → shape label (1:1 mapping)
 const SHAPE = {"Barrel Roll":"Circle","Cylinder":"Cylinder","Sphere":"Sphere","Waist Hooping":"Chakli","Weave":"Figure-8"};
+// little line drawing of each shape, shown in its filter chip (placeholders — redraw by hand any time)
+const GLYPH = {
+  "Barrel Roll":'<circle cx="12" cy="12" r="8.5"/>',
+  "Cylinder":'<ellipse cx="12" cy="6" rx="7.5" ry="2.8"/><path d="M4.5 6v12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V6"/>',
+  "Sphere":'<circle cx="12" cy="12" r="8.5"/><ellipse cx="12" cy="12" rx="8.5" ry="3.2"/>',
+  "Waist Hooping":'<path d="M13.2 12.0L13.3 12.2L13.3 12.4L13.3 12.7L13.2 12.9L13.1 13.2L12.9 13.4L12.7 13.6L12.5 13.7L12.2 13.9L11.9 14.0L11.5 14.0L11.2 14.0L10.9 13.9L10.5 13.7L10.2 13.5L9.9 13.2L9.7 12.9L9.5 12.5L9.4 12.1L9.3 11.7L9.3 11.2L9.4 10.7L9.6 10.3L9.8 9.9L10.2 9.5L10.6 9.2L11.0 8.9L11.5 8.7L12.1 8.6L12.7 8.6L13.2 8.7L13.8 8.8L14.3 9.1L14.8 9.5L15.3 9.9L15.6 10.5L15.9 11.1L16.1 11.7L16.1 12.4L16.1 13.1L16.0 13.7L15.7 14.4L15.3 15.0L14.8 15.6L14.2 16.0L13.6 16.4L12.8 16.7L12.1 16.8L11.3 16.9L10.5 16.8L9.7 16.5L8.9 16.1L8.2 15.6L7.6 15.0L7.1 14.3L6.8 13.5L6.5 12.6L6.4 11.7L6.4 10.8L6.6 9.9L7.0 9.0L7.5 8.2L8.1 7.4L8.9 6.8L9.7 6.3L10.7 5.9L11.7 5.7L12.7 5.7L13.8 5.8L14.8 6.1L15.7 6.6L16.6 7.2L17.4 8.0L18.1 8.9L18.6 9.9L18.9 11.0L19.1 12.1L19.0 13.2L18.8 14.4L18.4 15.5L17.8 16.5L17.0 17.5L16.1 18.3L15.1 18.9L13.9 19.4L12.7 19.7L11.4 19.8L10.1 19.7L8.9 19.3L7.7 18.8L6.6 18.1L5.6 17.1L4.8 16.1L4.2 14.9L3.7 13.6L3.5 12.2L3.5 10.8L3.7 9.4L4.2 8.1L4.9 6.8"/>',
+  "Weave":'<path d="M12 12c-2.6-4.2-9.5-4.2-9.5 0s6.9 4.2 9.5 0c2.6-4.2 9.5-4.2 9.5 0s-6.9 4.2-9.5 0z"/>'
+};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// steady little tilt per item, so things look hand-hung but never reshuffle their angles
+const tilt = (i, max) => (((i * 37) % 11) / 10 * 2 - 1) * max;
 
 let active = "All";
 
 function buildFilters() {
-  const row = document.getElementById('filter-row');
-  const tricks = ["All", ...new Set(ALL_DATA.map(d => d.trick))];
-  tricks.forEach(t => {
+  const row = $('filter-row');
+  ["All", ...new Set(ALL_DATA.map(d => d.trick))].forEach(t => {
     const b = document.createElement('button');
-    b.className = 'pill' + (t === active ? ' active' : '');
+    b.className = 'chip' + (t === active ? ' active' : '');
     b.dataset.trick = t;
-    if (t === 'All') {
-      b.innerHTML = '<span class="pill-trick">All</span>';
-    } else {
-      b.innerHTML = '<span class="pill-trick">' + t + '</span><span class="pill-shape">' + (SHAPE[t] || '') + '</span>';
-    }
+    b.innerHTML = t === 'All' ? 'All'
+      : (GLYPH[t] ? '<svg viewBox="0 0 24 24" aria-hidden="true">' + GLYPH[t] + '</svg>' : '') + '<span>' + esc(t) + ' <small>' + esc(SHAPE[t] || '') + '</small></span>';
     b.onclick = () => { active = t; sync(); render(); };
     row.appendChild(b);
   });
 }
-
 function sync() {
-  document.querySelectorAll('.pill').forEach(b => b.classList.toggle('active', b.dataset.trick === active));
+  document.querySelectorAll('#filter-row .chip').forEach(b => b.classList.toggle('active', b.dataset.trick === active));
 }
-
 function shuffle(a) {
   const arr = [...a];
   for (let i = arr.length-1; i > 0; i--) {
@@ -153,63 +165,30 @@ function shuffle(a) {
   }
   return arr;
 }
-
 function render() {
-  const gallery = document.getElementById('gallery');
-  const empty = document.getElementById('empty');
-
+  const gallery = $('gallery'), empty = $('empty');
   const filtered = active === 'All' ? ALL_DATA : ALL_DATA.filter(d => d.trick === active);
   const displayed = shuffle(filtered);
-
-  document.getElementById('count').innerHTML = '<strong>'+displayed.length+'</strong> drawing'+(displayed.length!==1?'s':'');
-
-  if (!displayed.length) {
-    gallery.style.display='none'; empty.style.display='block'; return;
-  }
+  $('count').innerHTML = '<strong>'+displayed.length+'</strong> drawing'+(displayed.length!==1?'s':'');
+  if (!displayed.length) { gallery.style.display='none'; empty.style.display='block'; return; }
   empty.style.display='none'; gallery.style.display='block';
   gallery.innerHTML='';
-
   const frag = document.createDocumentFragment();
   displayed.forEach((d,i) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.style.animationDelay = Math.min(i*0.02,0.5)+'s';
-
-    const wrap = document.createElement('div');
-    wrap.className = 'card-img-wrap';
-    wrap.style.aspectRatio = d.w + ' / ' + d.h;
-
-    const img = document.createElement('img');
-    img.alt = 'Drawing by '+d.name;
-    img.decoding = 'async';
-    img.loading = i < 30 ? 'eager' : 'lazy';
-    const reveal = () => {
-      img.classList.add('visible');
-      wrap.classList.add('loaded');
-    };
-    img.addEventListener('load', reveal, {once:true});
-    img.addEventListener('error', () => card.style.display = 'none', {once:true});
-    img.src = d.thumb;
-    if (img.complete && img.naturalWidth > 0) reveal();
-
-    const label = document.createElement('div');
-    label.className = 'card-label';
-    const metaParts = [d.std+' Std', d.school].filter(Boolean).join(' · ');
-    label.innerHTML =
-      '<span class="card-name">'+d.name+'</span>'+
-      '<span class="card-meta">'+metaParts+'</span>';
-
-    wrap.appendChild(img);
-    card.appendChild(wrap);
-    card.appendChild(label);
-    card.addEventListener('click', () => openLb(d));
-    frag.appendChild(card);
+    const b = document.createElement('button');
+    b.className = 'tile'; b.dataset.trick = d.trick;
+    b.style.setProperty('--r', tilt(i, 2.4).toFixed(2) + 'deg');
+    b.style.animationDelay = Math.min(i*0.018,0.6)+'s';
+    b.innerHTML = '<img src="' + esc(d.thumb) + '" width="' + d.w + '" height="' + d.h + '" alt="Drawing by ' + esc(d.name) + '" decoding="async" loading="' + (i < 30 ? 'eager' : 'lazy') + '">' +
+      '<span class="tile-label"><b>' + esc(d.name) + '</b><span>' + esc([d.std+' Std', d.school].filter(Boolean).join(' \u00b7 ')) + '</span></span>';
+    b.querySelector('img').addEventListener('error', () => b.style.display = 'none', {once:true});
+    b.addEventListener('click', () => openLb(d));
+    frag.appendChild(b);
   });
   gallery.appendChild(frag);
 }
-
 function openLb(d) {
-  const lbImg = document.getElementById('lb-img');
+  const lbImg = $('lbImg');
   // show the (already cached) thumbnail instantly, swap in full-res when ready
   lbImg.src = d.thumb;
   lbImg.dataset.want = d.img;
@@ -217,24 +196,21 @@ function openLb(d) {
   full.onload = () => { if (lbImg.dataset.want === d.img) lbImg.src = d.img; };
   full.src = d.img;
   lbImg.alt = 'Drawing by '+d.name;
-  document.getElementById('lb-name').textContent = d.name;
-  document.getElementById('lb-details').textContent = [d.trick, SHAPE[d.trick], d.std+' Standard', d.school].filter(Boolean).join(' · ');
-  document.getElementById('lightbox').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeLb() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow='';
+  $('lbName').textContent = d.name;
+  $('lbMeta').textContent = [d.trick, SHAPE[d.trick], d.std+' Standard', d.school].filter(Boolean).join(' \u00b7 ');
+  showLb();
 }
 
-document.getElementById('lightbox').addEventListener('click', closeLb);
-document.getElementById('lb-close').addEventListener('click', closeLb);
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeLb(); });
-document.getElementById('shuffle-btn').addEventListener('click', render);
+function showLb() { $('lightbox').classList.add('open'); document.body.style.overflow = 'hidden'; $('lbClose').focus(); }
+function closeLb() { $('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
+$('lbClose').addEventListener('click', closeLb);
+$('lightbox').addEventListener('click', e => { if (e.target === $('lightbox')) closeLb(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+$('shuffle-btn').addEventListener('click', () => { const s = $('shuffle-btn'); s.classList.remove('go'); void s.offsetWidth; s.classList.add('go'); render(); });
 
 buildFilters();
 render();
 </script>
-  <div id="sf-footer-mount"></div>
 </body>
 </html>
