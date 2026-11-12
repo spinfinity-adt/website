@@ -35,6 +35,39 @@
 .blog-card:hover .blog-read-link{letter-spacing:.04em}
 
 @media(max-width:480px){.blog-grid{grid-template-columns:1fr}}
+/* ---- new paper look (matches the gallery pages): full-width frame, bold heading, taped note, flat offset shadows ---- */
+.blog-wrap{max-width:none;padding:32px var(--gutter) clamp(2rem,5vw,5rem)}
+.blog-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:2.4rem clamp(2rem,5vw,5rem);margin-bottom:3.2rem}
+.blog-top .blog-header{margin-bottom:0;max-width:none;gap:.5rem}
+.blog-top .section-label{margin-bottom:0}
+.blog-top .section-label::after{display:none}
+.section-label{color:var(--accent1-text);font-weight:800;font-size:.8rem}
+.section-label::after{background:var(--border)}
+.blog-title{font-weight:700;font-size:clamp(2.4rem,6.2vw,4.4rem);line-height:1;letter-spacing:-.02em;color:var(--text)}
+.blog-title .inf{color:var(--accent2)}
+.blog-title::after{content:'';display:block;width:130px;height:5px;margin-top:.9rem;border-radius:4px;background:var(--accent1-text);transform:rotate(-1.2deg)}
+.manifesto{position:relative;margin:14px 0 0;padding:2.2rem 1.9rem 1.7rem;max-width:560px;flex:1 1 380px;border:0;border-radius:3px;background:var(--card-bg);outline:1px solid var(--border);box-shadow:0 10px 22px rgba(35,39,48,.16);transform:rotate(1deg)}
+.manifesto::before{content:'';position:absolute;top:-11px;left:50%;width:92px;height:24px;margin-left:-46px;background:var(--accent3);opacity:.9;transform:rotate(-3deg);box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.manifesto p{font-size:clamp(1rem,1.5vw,1.12rem);line-height:1.75}
+.blog-grid{gap:1.8rem}
+.blog-card{border:2px solid var(--accent2);border-radius:12px;box-shadow:4px 4px 0 var(--accent1-text);transition:transform .2s ease,box-shadow .2s ease}
+.blog-card:hover{border-color:var(--accent2);transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--accent1-text)}
+.blog-card-title{font-weight:700}
+.blog-card .tag{border-width:2px;font-weight:700;opacity:1}
+.blog-read-link{font-weight:700}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.anim-0,.anim-1,.anim-2,.anim-3,.anim-4,.anim-5{opacity:1}}
+/* ---- hoops + p5: no tag pills; every post gets a poi "flower" traced by a p5 sketch ---- */
+.flower{width:92px;height:92px;flex:0 0 auto;margin:-.3rem 0 0 -.4rem}
+.flower canvas{display:block}
+.blog-card-top{align-items:flex-start}
+.blog-card-top .blog-date{padding-top:.2rem}
+/* header: title and note stacked on the left, the Truchet tiles fill everything to their right */
+.blog-top{display:grid;grid-template-columns:minmax(0,600px) minmax(0,1fr);grid-template-areas:"head art" "note art";gap:2.4rem clamp(2rem,5vw,5rem);align-items:start}
+.blog-top .blog-header{grid-area:head}
+.blog-top .manifesto{grid-area:note;max-width:none;margin:0}
+.truchet{grid-area:art;align-self:stretch;position:relative;min-width:0;min-height:240px;overflow:hidden}
+.truchet canvas{position:absolute;top:0;left:0}
+@media(max-width:760px){.blog-top{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "art" "note"}.truchet{height:240px}}
 </style>
 </head>
 <body class="theme-paper">
@@ -49,23 +82,23 @@
 
 
 <div class="page">
-  <div class="container">
-    <p class="section-label anim-0">writings from the portal</p>
-
-    <div class="blog-header anim-1">
-      <h1 class="blog-title">infinite<br><span class="inf">poi-ssibilities</span></h1>
-    </div>
-
-
-    <div class="manifesto anim-3">
-      <p>I wish to challenge what's considered <em>intelligent</em> and <em>beautiful</em>. Art can be analytical and math can be aesthetic. Technicalities are beautiful and expression is intelligent. To challenge boundaries that we set for ourselves, that "Oh, I can't do this cause I'm not a math person" or "I'm not a creative person at all!". Let's open the boxes that we put ourselves, our thoughts and our bodies in!</p>
-    </div>
+  <div class="container blog-wrap">
+    <header class="blog-top">
+      <div class="blog-header anim-1">
+        <p class="section-label">writings from the portal</p>
+        <h1 class="blog-title">infinite<br><span class="inf">poi-ssibilities</span></h1>
+      </div>
+      <div class="truchet anim-2" id="truchet" aria-hidden="true"></div>
+      <div class="manifesto anim-3">
+        <p>I wish to challenge what's considered <em>intelligent</em> and <em>beautiful</em>. Art can be analytical and math can be aesthetic. Technicalities are beautiful and expression is intelligent. To challenge boundaries that we set for ourselves, that "Oh, I can't do this cause I'm not a math person" or "I'm not a creative person at all!". Let's open the boxes that we put ourselves, our thoughts and our bodies in!</p>
+      </div>
+    </header>
     <p class="section-label anim-5">latest posts</p>
 
     <div class="blog-grid">
       <a class="blog-card anim-3" href="https://spinfinity.substack.com/p/how-to-spin-pi" target="_blank" rel="noopener">
         <div class="blog-card-inner">
-          <div class="blog-card-top"><span class="tag" style="color:var(--accent2)">math</span><span class="blog-date">Mar 14, 2026</span></div>
+          <div class="blog-card-top"><div class="flower" data-petals="4" data-spin="anti" aria-hidden="true"></div><span class="blog-date">Mar 14, 2026</span></div>
           <h2 class="blog-card-title">How to Spin Pi</h2>
           <p class="blog-card-sub">Happy Pi Day from me and my hula hoops!</p>
           <p class="blog-card-blurb">When you spin a hula hoop, you literally spin π. Three hoop moves — isolations, chest rolls, waist hooping — each trace a different face of this infinite constant.</p>
@@ -74,7 +107,7 @@
       </a>
       <a class="blog-card anim-3" href="https://spinfinity.substack.com/p/mosaic-data-selfie" target="_blank" rel="noopener">
         <div class="blog-card-inner">
-          <div class="blog-card-top"><span class="tag" style="color:var(--accent1-text)">data + making</span><span class="blog-date">Feb 11, 2026</span></div>
+          <div class="blog-card-top"><div class="flower" data-petals="5" data-spin="in" aria-hidden="true"></div><span class="blog-date">Feb 11, 2026</span></div>
           <h2 class="blog-card-title">Mosaic Data Selfie!</h2>
           <p class="blog-card-sub">A creative-tech, analog/digital, participatory process journey</p>
           <p class="blog-card-blurb">Designing a community data selfie for a science event → cleaning the data → recreating it in p5.js → writing about the whole chaotic, joyful process.</p>
@@ -83,7 +116,7 @@
       </a>
       <a class="blog-card anim-4" href="https://spinfinity.substack.com/p/hoopscotch-submarines-and-learning" target="_blank" rel="noopener">
         <div class="blog-card-inner">
-          <div class="blog-card-top"><span class="tag" style="color:var(--accent2)">learning</span><span class="blog-date">Nov 10, 2025</span></div>
+          <div class="blog-card-top"><div class="flower" data-petals="6" data-spin="anti" aria-hidden="true"></div><span class="blog-date">Nov 10, 2025</span></div>
           <h2 class="blog-card-title">Hoopscotch, submarines and Learning Through Play!</h2>
           <p class="blog-card-blurb">Using the Lego Foundation's Learning Through Play framework to analyse what actually happens when kids play Hoopscotch — and why the submarine metaphor changed how I design sessions.</p>
           <span class="blog-read-link">read on substack →</span>
@@ -91,7 +124,7 @@
       </a>
       <a class="blog-card anim-4" href="https://spinfinity.substack.com/p/spinning-triangles-with-a-hula-hoop" target="_blank" rel="noopener">
         <div class="blog-card-inner">
-          <div class="blog-card-top"><span class="tag" style="color:var(--accent1-text)">embodied cognition</span><span class="blog-date">Nov 1, 2025</span></div>
+          <div class="blog-card-top"><div class="flower" data-petals="3" data-spin="anti" aria-hidden="true"></div><span class="blog-date">Nov 1, 2025</span></div>
           <h2 class="blog-card-title">Spinning triangles with a hula hoop and fire</h2>
           <p class="blog-card-sub">Appreciating the body's intelligence!</p>
           <p class="blog-card-blurb">At a fire jam, I heard "Triangles are my favourite shape" and my body just... made one with the hoop. An investigation into embodied cognition, trefoil knots and rose curves.</p>
@@ -100,7 +133,7 @@
       </a>
       <a class="blog-card anim-5" href="https://spinfinity.substack.com/p/introducing-spinfinity" target="_blank" rel="noopener">
         <div class="blog-card-inner">
-          <div class="blog-card-top"><span class="tag" style="color:var(--muted)">origin</span><span class="blog-date">Nov 12, 2024</span></div>
+          <div class="blog-card-top"><div class="flower" data-petals="2" data-spin="in" aria-hidden="true"></div><span class="blog-date">Nov 12, 2024</span></div>
           <h2 class="blog-card-title">Introducing Spinfinity!</h2>
           <p class="blog-card-sub">Spinning into Infinite Possibilities</p>
           <p class="blog-card-blurb">The portal, the hoop, the inscribed triangle that started it all. What Spinfinity is, why it exists, and the worlds it's been spinning into.</p>
@@ -114,6 +147,103 @@
   </div>
 </div>
 <div id="sf-footer-mount"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script>
+/* Poi flowers. A poi head on a string, spun while the hand circles, traces a flower:
+   spin it against the hand ("anti") and you get petals, with the hand ("in") and you get loops.
+   Each .flower box sets data-petals and data-spin; the sketch traces that flower with a fading
+   trail, like a long exposure. Hover a post to speed it up. */
+function poiFlower(host) {
+  return new p5(function (p) {
+    var S = 92, big = false, t = 0, fast = false;
+    var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var petals = +host.dataset.petals || 4, anti = host.dataset.spin !== 'in';
+    var css = getComputedStyle(document.body), col = function (v) { return css.getPropertyValue(v).trim(); };
+    var INK = col('--accent2'), GUIDE = 'rgba(130,103,190,.38)', HEAD = col('--accent3'), TEAL = col('--accent1-text');
+    function at(a) {
+      var k = anti ? -(petals - 1) : (petals + 1), R = S * (anti ? 0.23 : 0.27), r = S * (anti ? 0.23 : 0.17);
+      return [S / 2 + R * Math.cos(a) + r * Math.cos(k * a), S / 2 + R * Math.sin(a) + r * Math.sin(k * a)];
+    }
+    var card = host.closest('.blog-card') || host;
+    card.addEventListener('mouseenter', function () { fast = true; });
+    card.addEventListener('mouseleave', function () { fast = false; });
+    p.setup = function () { p.createCanvas(S, S).parent(host); p.noFill(); };
+    p.draw = function () {
+      p.clear();
+      // the whole flower, faint
+      p.stroke(still ? INK : GUIDE); p.strokeWeight(still ? 1.6 : 1.2); p.beginShape();
+      for (var a = 0; a <= p.TWO_PI + 0.02; a += 0.02) { var q = at(a); p.vertex(q[0], q[1]); }
+      p.endShape();
+      if (still) { p.noLoop(); return; }
+      // the trail behind the poi head
+      var N = big ? 190 : 110, step = 0.022, c = p.color(INK);
+      for (var i = N; i > 0; i--) {
+        var q0 = at(t - i * step), q1 = at(t - (i - 1) * step), f = 1 - i / N;
+        c.setAlpha(255 * f * f); p.stroke(c); p.strokeWeight((big ? 4.5 : 2.6) * (0.35 + 0.65 * f));
+        p.line(q0[0], q0[1], q1[0], q1[1]);
+      }
+      var h = at(t); p.stroke(TEAL); p.strokeWeight(1.5); p.fill(HEAD); p.circle(h[0], h[1], big ? 12 : 7); p.noFill();
+      t += fast ? 0.07 : 0.022;
+    };
+  });
+}
+Array.prototype.forEach.call(document.querySelectorAll('.blog-card .flower'), poiFlower);
+
+/* Truchet tiles — from Truchet-Tiles/sketch.js in the "Art – meet Math – meet Code" workshop
+   (Aditi Bhat and Mathura, IndiaFOSS 2026): https://github.com/MathuraMG/FOSS26-artcodemath
+   The tiling logic is as written there. What differs: it runs in p5 instance mode (hence the "p."
+   prefixes) so it can share the page with the other sketches; the canvas fills its box instead of
+   400 x 400; the background is cleared so the paper shows through; the s / g save keys are left out;
+   and each arc is drawn by hoopArc() as a striped hoop in the site colours instead of a plain black line.
+   Every arc is centred on a tile corner, and all arcs around one corner share a colour, so each
+   full circle the tiling makes is one whole hoop. HOOPS = [main, tape] colour pairs, as on the About page. */
+new p5(function (p) {
+  let x, y;
+  let size, choice;
+  const box = document.getElementById('truchet');
+  const HOOPS = [['#2E7A6E','#FFBD35'],['#502064','#8267BE'],['#3FA796','#502064'],['#8267BE','#FFBD35'],['#2E7A6E','#3FA796']];
+  // a quarter hoop: the arc from a0 to a1 (degrees) around (cx, cy), in short striped segments
+  function hoopArc(cx, cy, w, h, a0, a1) {
+    if (a1 <= a0) a1 += 360;
+    const pair = HOOPS[(Math.round(cx / size) * 2 + Math.round(cy / size) * 3) % HOOPS.length], n = 6, step = (a1 - a0) / n;
+    for (let k = 0; k < n; k++) {
+      p.stroke(k === 2 ? pair[1] : pair[0]);
+      p.arc(cx, cy, w, h, a0 + k * step, a0 + (k + 1) * step + (k < n - 1 ? 0.6 : 0));
+    }
+  }
+  p.setup = function () {
+    p.createCanvas(box.clientWidth, box.clientHeight).parent(box);
+
+    size = 64;
+    p.frameRate(1);
+    p.angleMode(p.DEGREES);
+    p.strokeWeight(7);
+    p.strokeCap(p.SQUARE);
+    p.noFill();
+  };
+
+  p.draw = function () {
+    if (p.width !== box.clientWidth || p.height !== box.clientHeight) p.resizeCanvas(box.clientWidth, box.clientHeight);
+    p.clear();
+    for (x = 0; x < p.width; x += size) {
+      for (y = 0; y < p.height; y += size) {
+        choice = p.random(0, 1);
+        if (choice < 0.5) {
+          hoopArc(x, y, size, size, 0, 90);
+          hoopArc(x + size, y + size, size, size, 180, 270);
+        } else {
+          hoopArc(x + size, y, size, size, 90, 180);
+          hoopArc(x, y + size, size, size, 270, 0);
+        }
+      }
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) p.noLoop();
+  };
+  window.addEventListener('resize', function () { p.redraw(); });
+});
+</script>
+
 
 </body>
 </html>

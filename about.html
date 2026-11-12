@@ -42,6 +42,34 @@ p.body a:hover{border-color:var(--accent2)}
 .connect-text span{color:var(--accent2)}
 .connect-btns{display:flex;gap:1rem;flex-wrap:wrap}
 @media(max-width:480px){.worlds-grid{grid-template-columns:1fr 1fr}.connect-section{flex-direction:column;align-items:flex-start}}
+/* ---- new paper look (matches the gallery pages): taped photo, bold pills, flat offset shadows ---- */
+.photo-taped{position:relative;transform:rotate(-1.2deg);box-shadow:0 10px 22px rgba(35,39,48,.16);outline:1px solid var(--border);border-radius:3px;margin-top:10px}
+.photo-taped::before{content:'';position:absolute;top:-11px;left:50%;width:92px;height:24px;margin-left:-46px;background:var(--accent3);opacity:.9;transform:rotate(3deg);z-index:2;box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.photo-taped .about-photo{border:0}
+.photo-caption{margin-top:1.3rem}
+.roles .tag{border-width:2px;font-weight:700;opacity:1;padding:.3rem .85rem}
+.section-label{color:var(--accent1-text);font-weight:800;font-size:.8rem}
+.section-label::after{background:var(--border)}
+.world-chip{border:2px solid var(--wc,var(--accent2));border-radius:12px;box-shadow:4px 4px 0 var(--wc,var(--accent2));transition:transform .2s ease,box-shadow .2s ease}
+.world-chip:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--wc,var(--accent2))}
+.world-chip .w-name{font-family:var(--display);font-weight:700}
+.world-chip .w-note{font-weight:400}
+.connect-section{border:2px solid var(--accent2);border-radius:14px;box-shadow:6px 6px 0 var(--accent1-text)}
+.connect-text{font-family:var(--display);font-weight:700}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.anim-0,.anim-1,.anim-2,.anim-3,.anim-4,.anim-5{opacity:1}}
+/* ---- hoops + p5: the roles are one plain line; "the hoop has taken me to" is five spinning hoops ---- */
+.roles-line{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem .65rem;margin-top:.55rem;font-weight:700;font-size:1rem;color:var(--muted)}
+.roles-line i{display:inline-block;width:.62rem;height:.62rem;border:2px solid var(--accent1);border-radius:50%}
+.worlds{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2rem 1rem;margin-top:1.8rem}
+@media(max-width:1100px){.worlds{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.worlds{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.worlds canvas{position:absolute;top:0;left:0;pointer-events:none}
+.world{position:relative;z-index:1;text-align:center;cursor:pointer}
+.hoop-slot{width:min(236px,100%);aspect-ratio:1;margin:0 auto;display:flex;align-items:center;justify-content:center;padding:25%}
+.world .w-name{font-family:var(--display);font-weight:700;font-size:1rem;line-height:1.15;color:var(--text)}
+.world .w-note{display:block;max-width:23ch;margin:.55rem auto 0;font-size:.86rem;line-height:1.45;color:var(--muted)}
+/* when the hoop is big enough the sketch writes the note inside it; the text stays here for screen readers */
+.world.tags-in .w-note{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 </style>
 </head>
 <body class="theme-paper">
@@ -56,18 +84,13 @@ p.body a:hover{border-color:var(--accent2)}
   <div class="container about-wrap">
     <div class="about-hero">
       <div class="about-photo-wrap anim-1">
-        <img class="about-photo" src="images/aditi-portrait.jpg" alt="Aditi Bhat juggling hula hoops in Cubbon Park, each hoop labelled with a part of her professional background and the year it began"/>
+        <div class="photo-taped"><img class="about-photo" src="images/aditi-portrait.jpg" alt="Aditi Bhat juggling hula hoops in Cubbon Park, each hoop labelled with a part of her professional background and the year it began"/></div>
         <p class="photo-caption">A shot from juggling in Cubbon Park. A hoop for each dimension of my professional background: hula hooper and flow artist since 2005, computer science engineer since 2015, design researcher and educator since 2021, and learner/explorer, till forever ∞</p>
       </div>
       <div class="about-text anim-2">
         <div>
           <h1 class="about-name">Hello! I'm <span class="highlight">Aditi Bhat</span></h1>
-          <div class="roles">
-            <span class="tag" style="color:var(--accent2)">flow &amp; fire artist</span>
-            <span class="tag" style="color:var(--accent1-text)">design researcher</span>
-            <span class="tag" style="color:var(--accent2)">maker</span>
-            <span class="tag" style="color:var(--accent1-text)">CS engineer</span>
-          </div>
+          <p class="roles-line">flow &amp; fire artist <i></i> design researcher <i></i> maker <i></i> CS engineer</p>
         </div>
         <p class="body">Ever since I was 6 years old, my hoops have been spinning through the circle of life with me. And through it, I've been a part of a whole universe, filled with fun, joy and exploration with my mind and body. It's kind of like I discovered a portal to a parallel universe, but spinning it is the only way to enter it! So this site, and my creative practice Spinfinity is an attempt to share my adventures with the world.</p>
         <p class="body">I'm a flow and fire artist with a Master's in Human-Centered Design and a B.Tech in Computer Science. Through my creative practice, I bring together science and art, math and movement, design and data through flow arts like hula hoops and poi. I love crafting learning experiences through which folks can explore abstract ideas through the body — because the body is an incredibly powerful site for learning and exploration!</p>
@@ -75,31 +98,109 @@ p.body a:hover{border-color:var(--accent2)}
       <div class="about-section about-what anim-3">
         <p class="section-label">what I do with this</p>
         <p class="body" style="max-width:720px;margin-bottom:1.4rem">I've worked with over <em>500 students</em> across government schools and neurodivergent learning spaces, helping them experience abstract ideas through the body. I run workshops where we explore angles, shapes, circle properties, and tangents — with hula hoops. For folks who are scared of math, it softens the fear. For mathematicians, it opens new ways into abstract areas like topology.</p>
-        <p class="body" style="max-width:720px;margin-bottom:1.4rem">Math is often claimed to be about logic and reasoning, but most people's experience of it is <em>deeply emotional</em>. Being "bad at math" gets tangled up with intelligence, identity, self-worth. My practice is also a way to resist the binaries of mind/body and emotion/reason — ideas rooted in feminist theory that I genuinely believe in.</p>
+        <p class="body" style="max-width:720px;margin-bottom:1.4rem">Math is often claimed to be about logic and reasoning, but most people's experience of it is <em>deeply emotional</em>. Being "bad at math" gets tangled up with intelligence, identity, self-worth. My practice is also a way to resist the binaries of mind/body and emotion/reason — ideas rooted in feminist theory.</p>
         <p class="body" style="max-width:720px">Currently I'm a maker and lab manager at <strong>Paper Crane Lab</strong>, where I craft playful, hands-on learning experiences for all ages. And I'm always making something new — generative art, data viz, creative code experiments — which you can find in the <a href="/projects.html">projects</a> section.</p>
       </div>
     </div>
     <div class="about-section anim-4">
       <p class="section-label">the hoop has taken me to</p>
-      <div class="worlds-grid">
-        <div class="world-chip" style="--wc:var(--accent1-text)"><span class="w-icon">〇</span><span class="w-name">Movement</span><span class="w-note">flow arts, animal behavior, body as instrument</span></div>
-        <div class="world-chip" style="--wc:var(--accent2)"><span class="w-icon">∞</span><span class="w-name">Mathematics</span><span class="w-note">topology, geometry in motion, symmetry, rhythm</span></div>
-        <div class="world-chip" style="--wc:var(--accent1-text)"><span class="w-icon">◉</span><span class="w-name">Physics &amp; Astronomy</span><span class="w-note">objects in motion, the universe doing its thing</span></div>
-        <div class="world-chip" style="--wc:var(--accent2)"><span class="w-icon">⌘</span><span class="w-name">Engineering &amp; Design</span><span class="w-note">embodied problem-solving, 3D visualization</span></div>
-        <div class="world-chip" style="--wc:var(--accent1-text)"><span class="w-icon">◎</span><span class="w-name">Learning Design</span><span class="w-note">how we learn through the body, not just the mind</span></div>
+      <div class="worlds" id="worlds">
+        <div class="world"><div class="hoop-slot"><span class="w-name">Movement</span></div><span class="w-note">from flow arts to animal behavior</span></div>
+        <div class="world"><div class="hoop-slot"><span class="w-name">Mathematics</span></div><span class="w-note">topology, geometry in motion, numbers, rhythm, symmetry</span></div>
+        <div class="world"><div class="hoop-slot"><span class="w-name">Physics &amp; Astronomy</span></div><span class="w-note">seeing objects the universe in motion</span></div>
+        <div class="world"><div class="hoop-slot"><span class="w-name">Engineering and Design</span></div><span class="w-note">Embodied problem solving and 3D visualization</span></div>
+        <div class="world"><div class="hoop-slot"><span class="w-name">Learning Design</span></div><span class="w-note">how we learn through the body</span></div>
       </div>
     </div>
     <div class="connect-section anim-5">
       <p class="connect-text">come think with me,<br><span>flow with me.</span><br><span style="font-size:1rem;color:var(--muted);font-weight:300">let's spin into infinite poi-ssibilities</span></p>
-      <div class="connect-btns">
-        <a href="https://instagram.com/spinfinity.in" target="_blank" rel="noopener" class="social-btn insta">instagram</a>
-        <a href="https://spinfinity.substack.com" target="_blank" rel="noopener" class="social-btn sub">substack</a>
-      </div>
     </div>
   </div>
 </div>
 
 <div id="sf-footer-mount"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script>
+/* Five hoops, one per world. Each hoop is a striped ring; the world's note is split at its commas
+   and written inside the ring as curved tags (like the labels on the hoops in the photo above).
+   Nothing moves until you hover (or tap) a world: then only its ring turns, like a hoop spinning
+   in place, and the words stay still. The sketch sleeps whenever no hoop is turning.
+   It reads where the .hoop-slot boxes are, so the layout stays plain HTML/CSS. On small hoops the
+   note stays as normal text underneath instead.
+   Tweak freely: STRIPES = [main, tape] ring colours, TINTS = tag colours, TURN = hover speed. */
+new p5(function (p) {
+  var host = document.getElementById('worlds');
+  var STRIPES = [['#2E7A6E','#FFBD35'],['#502064','#8267BE'],['#3FA796','#502064'],['#8267BE','#FFBD35'],['#2E7A6E','#3FA796']];
+  var TINTS = ['rgba(63,167,150,.22)','rgba(255,189,53,.38)','rgba(130,103,190,.22)'];
+  var SEGS = 40, TURN = 0.022, still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hoops = Array.prototype.map.call(host.querySelectorAll('.world'), function (el, i) {
+    var h = { el: el, slot: el.querySelector('.hoop-slot'), roll: i * 0.4, vel: 0, over: false, boost: 0,
+              tags: el.querySelector('.w-note').textContent.split(',').map(function (t) { return t.trim(); }) };
+    function wake() { if (!still) p.loop(); }
+    el.addEventListener('mouseenter', function () { h.over = true; wake(); });
+    el.addEventListener('mouseleave', function () { h.over = false; });
+    el.addEventListener('click', function () { h.boost = 110; wake(); });
+    return h;
+  });
+  function fit() { if (p.width !== host.clientWidth || p.height !== host.clientHeight) p.resizeCanvas(host.clientWidth, host.clientHeight); }
+
+  // one phrase written along the circle; phrases in the lower half are flipped so they read left to right
+  function arcTag(str, a0, span, rt, fs, tint) {
+    var flip = Math.sin(a0 + span / 2) > 0.3, pad = fs * 0.75 / rt;
+    p.noFill(); p.stroke(tint); p.strokeWeight(fs * 1.8); p.strokeCap(p.ROUND);
+    p.arc(0, 0, rt * 2, rt * 2, a0 + pad * 0.6, a0 + span - pad * 0.6);
+    p.noStroke(); p.fill('#232730');
+    var a = flip ? a0 + span - pad : a0 + pad;
+    for (var i = 0; i < str.length; i++) {
+      var w = p.textWidth(str[i]) / rt, mid = flip ? a - w / 2 : a + w / 2;
+      p.push(); p.rotate(mid); p.translate(rt, 0); p.rotate(flip ? -p.HALF_PI : p.HALF_PI); p.text(str[i], 0, 0); p.pop();
+      a += flip ? -w : w;
+    }
+  }
+
+  p.setup = function () { p.createCanvas(host.clientWidth, host.clientHeight).parent(host); p.textAlign(p.CENTER, p.CENTER); };
+  p.draw = function () {
+    fit(); p.clear();
+    var box = host.getBoundingClientRect(), moving = false;
+    hoops.forEach(function (h, i) {
+      var r = h.slot.getBoundingClientRect(); if (!r.width) return;
+      var cx = r.left - box.left + r.width / 2, cy = r.top - box.top + r.height / 2, R = r.width / 2 - 7;
+      var inside = R >= 92; h.el.classList.toggle('tags-in', inside);
+
+      // motion: the ring eases up to a slow turn while hovered, and eases back to rest after
+      var turning = h.over || h.boost > 0; if (h.boost > 0) h.boost--;
+      h.vel += ((turning ? TURN : 0) - h.vel) * 0.06; h.roll += h.vel;
+      if (turning || h.vel > 0.0004) moving = true; else h.vel = 0;
+
+      // the ring
+      var pair = STRIPES[i % STRIPES.length];
+      p.noFill(); p.strokeCap(p.SQUARE); p.strokeWeight(Math.max(6, R * 0.1));
+      for (var j = 0; j < SEGS; j++) {
+        var a0 = h.roll + j * p.TWO_PI / SEGS, a1 = a0 + p.TWO_PI / SEGS + 0.02;
+        p.stroke(j % 5 === 0 ? pair[1] : pair[0]);
+        p.line(cx + R * Math.cos(a0), cy + R * Math.sin(a0), cx + R * Math.cos(a1), cy + R * Math.sin(a1));
+      }
+
+      // the note, as curved tags inside the ring (these stay still)
+      if (inside) {
+        var fs = Math.max(10.5, R * 0.108), rt = R * 0.74;
+        p.textFont('Nunito'); p.textStyle(p.BOLD); p.textSize(fs);
+        var spans = h.tags.map(function (t) { return (p.textWidth(t) + fs * 1.5) / rt; });
+        var used = spans.reduce(function (a, b) { return a + b; }, 0), gap = Math.max(0, (p.TWO_PI - used) / spans.length);
+        p.push(); p.translate(cx, cy);
+        var a = -p.HALF_PI - spans[0] / 2;
+        h.tags.forEach(function (t, k) { arcTag(t, a, spans[k], rt, fs, TINTS[(k + i) % TINTS.length]); a += spans[k] + gap; });
+        p.pop();
+      }
+    });
+    if (!moving) p.noLoop();   // asleep until the next hover, resize or font load
+  };
+  window.addEventListener('resize', function () { p.redraw(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { p.redraw(); });
+});
+</script>
+
 
 </body>
 </html>
