@@ -92,7 +92,7 @@
   :is(.grid,.stage) .leaf{transition:opacity .25s ease}
   :is(.grid,.stage) img.st{transition:transform .3s cubic-bezier(.3,1.6,.5,1) calc(var(--i,0)*35ms)}
   @media (hover:hover){
-    .grid:has(.leaf:hover) .leaf:not(:hover),.belt:has(.leaf:hover) .leaf:not(:hover){opacity:.45}
+    .grid:has(.leaf:hover) .leaf:not(:hover),.stage:has(.leaf:hover) .leaf:not(:hover){opacity:.45}
     :is(.grid,.stage) .leaf:hover .plate{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 10px 12px rgba(35,39,48,.18))}
     :is(.grid,.stage) .leaf:hover img.st{transform:translate(-50%,-50%) rotate(0deg) scale(1.1)}
     :is(.grid,.stage) .leaf:hover img.st:hover{transform:translate(-50%,-50%) rotate(calc(var(--r)*-2)) scale(1.45);transition-delay:0s;z-index:2}
