@@ -63,12 +63,19 @@
   .vb-search input::placeholder{color:var(--muted)}
   .vb-search input:focus{border-color:var(--accent2);width:220px}
   .search-count{font-family:var(--hand);font-size:11px;color:var(--muted);position:absolute;top:calc(100% + 3px);right:10px;white-space:nowrap}
-  body.view-original .vb-search{visibility:hidden}
+  body:is(.view-original,.view-insights) .vb-search{visibility:hidden}
   body.searching :is(.grid,.stage) .leaf{opacity:.16;filter:grayscale(.5);transition:opacity .18s,filter .18s}
   body.searching :is(.grid,.stage) .leaf.match{opacity:1;filter:none}
   body.searching .leaf.match .nm{color:var(--accent2)}
-  @media (max-width:520px){.tools{gap:8px}.vb-btn{padding:5px 11px}.vb-search input,.vb-search input:focus{width:120px;padding:6px 10px}}
-  @media (max-width:400px){.vb-views{gap:4px}.vb-btn{padding:5px 10px}.vb-search input,.vb-search input:focus{width:114px}}
+  /* phones: search gets its own row, pause + views share the next; views that hide them don't leave holes */
+  @media (max-width:560px){
+    .tools{gap:10px 8px;width:100%}
+    .vb-search{flex:1 1 100%}
+    .vb-search input,.vb-search input:focus{width:100%}
+    .search-count{top:50%;transform:translateY(-50%);right:34px}
+    body:is(.view-original,.view-insights) .vb-search,body:not(.view-scroll) .playpause{display:none}
+    .vb-views{gap:4px}.vb-btn{padding:5px 11px}
+  }
   .playpause{flex:none;display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid var(--accent2);border-radius:50%;
     background:transparent;color:var(--accent2);cursor:pointer;transition:background .15s,color .15s}
   .playpause:hover{background:var(--accent2);color:#fff}
@@ -108,7 +115,31 @@
   .trow small{display:block;font-size:.72rem;line-height:1.25;color:var(--muted)}
   .trow.hl{background:color-mix(in srgb,var(--accent1) 16%,transparent)}
   .trow.hl .ic img{transform:scale(1.25) rotate(-6deg)}
-  body.view-original .tip{display:none}
+  body:is(.view-original,.view-insights) .tip{display:none}
+
+  /* ---------- insights: one small sticker per person, per answer ---------- */
+  body:not(.view-insights) #insights{display:none}
+  .insights{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:18px;padding:10px 0 4px}
+  .icard{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:16px 18px 14px}
+  .icard h3{margin:0 0 12px;font:700 1.08rem/1.2 var(--display);color:var(--text)}
+  .irow{display:grid;grid-template-columns:44px minmax(0,1fr) 2.2em;gap:4px 10px;align-items:center;padding:6px 0;border-top:1px dashed var(--border)}
+  .irow:first-of-type{border-top:0}
+  .irow .big{width:40px;height:34px;object-fit:contain}
+  .irow .lb{grid-column:2;font-weight:700;font-size:.9rem;line-height:1.2}
+  .irow .n{grid-column:3;grid-row:1/3;justify-self:end;font:700 1.25rem/1 var(--display);color:var(--accent2)}
+  .irow.top .n{color:var(--accent1-text)}
+  .units{grid-column:2;display:flex;flex-wrap:wrap;gap:1px}
+  .unit{width:19px;height:19px;object-fit:contain;cursor:pointer;transition:transform .15s ease,opacity .15s ease,filter .15s ease}
+  body.view-insights .unit{animation:pop .32s cubic-bezier(.3,1.6,.5,1) backwards;animation-delay:calc(var(--n)*22ms)}
+  @keyframes pop{from{transform:scale(0) rotate(-30deg)}}
+  .irow .big{grid-row:1/3}
+  .inote{margin:8px 0 0;font-size:.74rem;color:var(--muted)}
+  .insights.tracing .unit{opacity:.18;filter:grayscale(.6)}
+  .insights.tracing .unit.who{opacity:1;filter:none;transform:scale(1.5);position:relative;z-index:1}
+  .who-name{position:fixed;z-index:30;pointer-events:none;padding:3px 10px;border-radius:999px;background:var(--accent2);color:var(--bg);
+    font:700 .78rem/1.4 var(--hand);white-space:nowrap;opacity:0;transition:opacity .12s ease}
+  .who-name.show{opacity:1}
+  @media (prefers-reduced-motion:reduce){body.view-insights .unit{animation:none}}
   body:not(.view-scroll) .stage{display:none}
   body:not(.view-fit) #fitGrid{display:none}
 
@@ -164,6 +195,7 @@
         <button type="button" data-view="scroll" class="vb-btn active">scroll</button>
         <button type="button" data-view="fit" class="vb-btn">fit</button>
         <button type="button" data-view="original" class="vb-btn">original</button>
+        <button type="button" data-view="insights" class="vb-btn">insights</button>
       </div>
     </div>
   </header>
@@ -177,6 +209,7 @@
 <div class="wrap">
   <div class="grid" id="fitGrid"></div>
   <div class="strips" id="strips"></div>
+  <div class="insights" id="insights"></div>
   <p class="hint" id="hint"><span id="count"></span> Data Thalis. Tap a leaf to read it.</p>
 
   <section class="context">
@@ -302,6 +335,7 @@
       t.style.setProperty('--dur',list.length*8+'s');
     });
     for(const d of D) $('fitGrid').appendChild(leaf(d,'lazy'));
+    insights(D);
     // turned sideways: each strip is a figure as wide as the photo is tall, with a small tilt and nudge
     const SW=[262,261,242,264,240,237,236,224,248,255,226,257],TILT=[-1.2,.9,.5,-1.4,-.6,1.1,1.3,-.4,-.9,.7,.4,-1.1],NUDGE=[0,10,-8,4,12,-6,-4,8,6,-10,10,0];
     for(let i=1;i<=12;i++){
@@ -312,6 +346,41 @@
     }
   });
   pause.addEventListener('click',()=>{held=!held;$('ppIcon').setAttribute('d',held?'M2 1l9 5-9 5z':'M2 1h3v10H2zM7 1h3v10H7z');pause.setAttribute('aria-label',held?'Play':'Pause');setPaused();});
+  // ---------- insights ----------
+  // Per question, every answer with one small sticker per person who chose it (people who picked two count in both).
+  function insights(D){
+    const box=$('insights');let h='';
+    const pick=v=>v?v.split(' + ').map(s=>s.replace(/ x\d+$/,'')):[];
+    for(const q of Q){
+      const opts=Object.keys(q.o),by={};opts.forEach(o=>by[o]=[]);
+      let blank=0,two=0;
+      for(const d of D){const p=[...new Set(pick(d[q.k]))];if(!p.length)blank++;if(p.length>1)two++;p.forEach(o=>by[o]&&by[o].push(d));}
+      const max=Math.max(...opts.map(o=>by[o].length));
+      h+='<section class="icard"><h3>'+q.q+'</h3>';
+      for(const o of opts){
+        const f='s/'+file(q.k,o)+'.webp',L=by[o];
+        h+='<div class="irow'+(L.length===max?' top':'')+'"><img class="big" src="'+f+'" alt=""><span class="lb">'+q.o[o]+'</span><span class="n">'+L.length+'</span><span class="units">'+
+          L.map((d,i)=>'<img class="unit" src="'+f+'" alt="" data-id="'+d.id+'" data-name="'+esc(d.name||'No name on this leaf')+'" style="--n:'+i+'">').join('')+'</span></div>';
+      }
+      const notes=[];if(two)notes.push(two+(two>1?' people':' person')+' picked more than one');if(blank)notes.push(blank+' left it blank');
+      h+=(notes.length?'<p class="inote">'+notes.join(' · ')+'</p>':'')+'</section>';
+    }
+    box.innerHTML=h;
+    const tag=document.createElement('div');tag.className='who-name';document.body.appendChild(tag);
+    const trace=u=>{
+      box.classList.toggle('tracing',!!u);
+      box.querySelectorAll('.unit.who').forEach(e=>e.classList.remove('who'));
+      if(!u){tag.classList.remove('show');return;}
+      box.querySelectorAll('.unit[data-id="'+u.dataset.id+'"]').forEach(e=>e.classList.add('who'));
+      const r=u.getBoundingClientRect();tag.textContent=u.dataset.name;tag.classList.add('show');
+      tag.style.left=Math.max(8,Math.min(innerWidth-tag.offsetWidth-8,r.left+r.width/2-tag.offsetWidth/2))+'px';tag.style.top=(r.top-30)+'px';
+    };
+    box.addEventListener('pointerover',e=>{if(e.target.classList.contains('unit'))trace(e.target);});
+    box.addEventListener('pointerout',e=>{if(e.target.classList.contains('unit')&&e.pointerType==='mouse')trace(null);});
+    box.addEventListener('click',e=>{if(e.target.classList.contains('unit'))trace(e.target);else trace(null);});
+    addEventListener('scroll',()=>trace(null),{passive:true});
+  }
+
   // ---------- name search ----------
   // Matches stay lit, the rest fade. In scroll the belts pause and roll so the first match in each belt sits mid-screen;
   // in fit the page scrolls to the first match.
@@ -350,11 +419,11 @@
   document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{
     pinned=false;tipOff();
     document.querySelectorAll('[data-view]').forEach(o=>o.classList.toggle('active',o===btn));
-    document.body.classList.remove('view-scroll','view-fit','view-original');
+    document.body.classList.remove('view-scroll','view-fit','view-original','view-insights');
     document.body.classList.add('view-'+btn.dataset.view);
     if(btn.dataset.view==='fit') fitCells();
     if(searchEl.value)requestAnimationFrame(()=>runSearch(searchEl.value));
-    $('hint').innerHTML=btn.dataset.view==='original'?'The 12 strips as they were photographed.':'<span id="count">45</span> Data Thalis. Tap a leaf to read it.';
+    $('hint').innerHTML=btn.dataset.view==='original'?'The 12 strips as they were photographed.':btn.dataset.view==='insights'?'45 Data Thalis, counted by answer. Hover a sticker to follow one person.':'<span id="count">45</span> Data Thalis. Tap a leaf to read it.';
   }));
   // fit: size cells so all 45 leaves fill one screen
   function fitCells(){
