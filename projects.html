@@ -153,15 +153,26 @@
   document.getElementById("hoop-key").innerHTML = Object.keys(MADE).map(m => '<span><i style="--k:'+MADE[m]+'"></i>'+m+'</span>').join("");
 
   // all / learning engagements / creative tech / participatory viz
+  // Each tab has its own link: projects.html#learning-engagements, #creative-tech, #participatory-viz
+  const LINK = { learning:"learning-engagements", tech:"creative-tech", participatory:"participatory-viz" };
   const pick = document.getElementById("pick");
-  pick.addEventListener("click", e => {
-    const b = e.target.closest("button"); if (!b) return;
-    pick.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
-    const show = b.dataset.show;
+  function showTab(show){
+    pick.querySelectorAll("button").forEach(x => x.classList.toggle("active", x.dataset.show === show));
     document.querySelectorAll("#rings .ktag").forEach(t => {
       t.hidden = !(show === "all" || t.dataset.kind === show || (show === "participatory" && t.hasAttribute("data-participatory")));
     });
+  }
+  function fromLink(){
+    const h = location.hash.slice(1);
+    showTab(Object.keys(LINK).find(k => LINK[k] === h) || "all");
+  }
+  pick.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    showTab(b.dataset.show);
+    history.replaceState(null, "", LINK[b.dataset.show] ? "#" + LINK[b.dataset.show] : location.pathname + location.search);
   });
+  window.addEventListener("hashchange", fromLink);
+  fromLink();
 })();
 </script>
 </body>
