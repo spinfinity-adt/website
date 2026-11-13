@@ -452,8 +452,8 @@
     <span id="searchCount" class="search-count"></span>
   </div>
   <div class="vb-views">
-    <button data-view="fit" class="vb-btn active">fit</button>
-    <button data-view="scroll" class="vb-btn">scroll</button>
+    <button data-view="scroll" class="vb-btn active">scroll</button>
+    <button data-view="fit" class="vb-btn">fit</button>
     <button data-view="original" class="vb-btn">original</button>
     <button data-view="insights" class="vb-btn vb-ins" aria-label="insights"><svg class="vbi-ic" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 11V7h2.4v4zM4.8 11V2h2.4v9zM8.6 11V5H11v6z"/></svg><span class="vbi-text" aria-hidden="true">insights</span></button>
     <button type="button" class="vb-btn vb-legend" aria-controls="legend" aria-haspopup="dialog"
@@ -2622,7 +2622,7 @@ document.addEventListener("focusin",e=>{
 window.addEventListener("hashchange",()=>{ location.hash==="#legend" ? openLegend() : closeLegend(); });
 if(location.hash==="#legend") openLegend();
 
-boot().then(()=>setView("fit"));
+boot().then(()=>setView("scroll"));
 </script>
 <div id="sf-footer-mount"></div>
 </body>
