@@ -84,6 +84,35 @@
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--cell,200px),1fr));gap:14px 16px;padding:6px 0 4px}
   .grid .leaf{margin:0;width:100%}
   .grid .plate{height:auto;width:100%}
+  /* fit hover: the leaf lifts, its stickers straighten up one after another, the rest of the table dims */
+  .grid .plate{transition:transform .28s cubic-bezier(.3,1.4,.5,1),filter .28s ease}
+  .grid .leaf{transition:opacity .25s ease}
+  .grid img.st{transition:transform .3s cubic-bezier(.3,1.6,.5,1) calc(var(--i,0)*35ms)}
+  @media (hover:hover){
+    .grid:has(.leaf:hover) .leaf:not(:hover){opacity:.45}
+    .grid .leaf:hover .plate{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 10px 12px rgba(35,39,48,.18))}
+    .grid .leaf:hover img.st{transform:translate(-50%,-50%) rotate(0deg) scale(1.1)}
+    .grid .leaf:hover img.st:hover{transform:translate(-50%,-50%) rotate(calc(var(--r)*-2)) scale(1.45);transition-delay:0s;z-index:2}
+  }
+  .grid .leaf.tipped .plate{transform:translateY(-5px) scale(1.06)}
+  .grid .leaf.tipped img.st{transform:translate(-50%,-50%) rotate(0deg) scale(1.1)}
+  .grid img.st.hl{transform:translate(-50%,-50%) rotate(calc(var(--r)*-2)) scale(1.45)!important;transition-delay:0s;z-index:2}
+
+  /* the tooltip that reads a leaf in fit view */
+  .tip{position:fixed;z-index:30;left:0;top:0;width:min(290px,calc(100vw - 24px));padding:12px 14px 10px;background:var(--card-bg);
+    border:2px solid var(--accent2);border-radius:14px;box-shadow:0 5px 0 rgba(80,32,100,.2);pointer-events:none;
+    opacity:0;translate:var(--tx,0) var(--ty,0);scale:.96;transform-origin:var(--to,left center);transition:opacity .15s ease,scale .18s ease}
+  .tip.show{opacity:1;scale:1}
+  .tip.pinned{pointer-events:auto}
+  .tip h3{margin:0 0 8px;font:700 1.12rem/1.1 var(--display);color:var(--accent2)}
+  .trow{display:grid;grid-template-columns:40px 1fr;gap:8px;align-items:center;padding:3px 6px;margin:0 -6px;border-radius:8px;transition:background .15s ease}
+  .trow .ic{display:flex;justify-content:center;gap:1px}
+  .trow .ic img{height:28px;max-width:38px;object-fit:contain;transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+  .trow b{display:block;font-size:.88rem;line-height:1.2}
+  .trow small{display:block;font-size:.72rem;line-height:1.25;color:var(--muted)}
+  .trow.hl{background:color-mix(in srgb,var(--accent1) 16%,transparent)}
+  .trow.hl .ic img{transform:scale(1.25) rotate(-6deg)}
+  body:not(.view-fit) .tip{display:none}
   body:not(.view-scroll) .stage{display:none}
   body:not(.view-fit) #fitGrid{display:none}
 
@@ -171,6 +200,8 @@
   </section>
 </div>
 
+<div class="tip" id="tip" role="tooltip" aria-live="polite"></div>
+
 <div class="sheet" id="sheet" hidden role="dialog" aria-live="polite">
   <button class="btn x" id="close" type="button">Close</button>
   <div id="body"></div>
@@ -210,6 +241,47 @@
     }
     body.innerHTML=h+'</div>';sheet.hidden=false;setPaused();
   }
+  // which question a sticker answers, e.g. KEY.roohafza = 'dr'
+  const KEY={};for(const q of Q)for(const o in q.o)KEY[file(q.k,o)]=q.k;
+  const tip=$('tip');let tipLeaf=null,pinned=false;
+  function tipOn(d,b){
+    const parts=v=>v.split(' + ').map(s=>{const m=s.match(/^(.*?)(?: x(\d+))?$/);return [m[1],+(m[2]||1)]});
+    let h='<h3>'+(d.name?esc(d.name):'No name on this leaf')+'</h3>';
+    for(const q of Q){
+      const v=d[q.k];let ic='',a='No sticker';
+      if(v){const p=parts(v);ic=p.map(([n])=>'<img src="s/'+file(q.k,n)+'.webp" alt="">').join('');
+        a=p.map(([n,c])=>q.o[n]+(c>1?' ×'+c:'')).join(' + ');}
+      h+='<div class="trow" data-k="'+q.k+'"><span class="ic">'+ic+'</span><span><b>'+a+'</b><small>'+q.q+'</small></span></div>';
+    }
+    tip.innerHTML=h;
+    if(tipLeaf&&tipLeaf!==b)tipLeaf.classList.remove('tipped');
+    tipLeaf=b;b.classList.add('tipped');placeTip();
+    requestAnimationFrame(()=>tip.classList.add('show'));
+  }
+  function tipOff(){
+    tip.classList.remove('show','pinned');hlRow(null);
+    if(tipLeaf)tipLeaf.classList.remove('tipped');tipLeaf=null;
+  }
+  function hlRow(k){
+    tip.querySelectorAll('.trow').forEach(r=>r.classList.toggle('hl',!!k&&r.dataset.k===k));
+    if(tipLeaf)tipLeaf.querySelectorAll('img.st').forEach(i=>i.classList.toggle('hl',!!k&&i.dataset.k===k));
+  }
+  // beside the leaf if there is room (right first), otherwise above or below it
+  function placeTip(){
+    if(!tipLeaf)return;
+    const r=tipLeaf.querySelector('.plate').getBoundingClientRect(),rb=tipLeaf.getBoundingClientRect(),W=innerWidth,H=innerHeight,m=12,
+          tw=tip.offsetWidth,th=tip.offsetHeight;
+    let x,y,o;
+    if(r.right+m+tw<=W-m){x=r.right+m;y=r.top+r.height/2-th/2;o='left center';}
+    else if(r.left-m-tw>=m){x=r.left-m-tw;y=r.top+r.height/2-th/2;o='right center';}
+    else{x=r.left+r.width/2-tw/2;
+      if(rb.bottom+m+th<=H-m){y=rb.bottom+m;o='center top';}else{y=r.top-m-th;o='center bottom';}}
+    x=Math.max(m,Math.min(W-m-tw,x));y=Math.max(m,Math.min(H-m-th,y));
+    tip.style.setProperty('--tx',Math.round(x)+'px');tip.style.setProperty('--ty',Math.round(y)+'px');tip.style.setProperty('--to',o);
+  }
+  addEventListener('scroll',()=>{if(pinned)placeTip();else if(tipLeaf)tipOff();},{passive:true});
+  document.addEventListener('pointerdown',e=>{if(pinned&&!e.target.closest('#tip')&&!e.target.closest('.leaf.tipped')){pinned=false;tipOff();}});
+
   function leaf(d,clone,orig){
     const b=document.createElement('button');b.className='leaf';b.type='button';b.dataset.id=d.id;
     b.setAttribute('aria-label',(d.name||'Unnamed')+"'s leaf");
@@ -219,11 +291,25 @@
     bg.onload=()=>p.classList.add('ready');
     bg.src=(orig?'orig/':'leaves/')+String(d.id).padStart(2,'0')+'.webp';bg.loading=clone==='lazy'?'lazy':'eager';p.appendChild(bg);
     if(!orig) for(const [n,x,y,w,r] of d.st){
-      const i=new Image();i.className='st';i.alt='';i.src='s/'+n+'.webp';
-      i.style.cssText='left:'+x+'%;top:'+y+'%;width:'+w+'%;--r:'+r+'deg';p.appendChild(i);
+      const i=new Image();i.className='st';i.alt='';i.src='s/'+n+'.webp';i.dataset.k=KEY[n]||'';
+      i.style.cssText='left:'+x+'%;top:'+y+'%;width:'+w+'%;--r:'+r+'deg;--i:'+p.children.length;p.appendChild(i);
     }
     b.appendChild(p);
     const nm=document.createElement('span');nm.className='nm';nm.textContent=d.name||'';b.appendChild(nm);
+    if(clone==='lazy'){            // the fit grid reads leaves with a tooltip instead of the sheet
+      b.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&!pinned)tipOn(d,b);});
+      b.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&!pinned)tipOff();});
+      b.addEventListener('focus',()=>{if(!pinned)tipOn(d,b);});
+      b.addEventListener('blur',()=>{if(!pinned)tipOff();});
+      p.addEventListener('pointerover',e=>{if(e.target.dataset&&e.target.dataset.k!==undefined&&tipLeaf===b)hlRow(e.target.dataset.k);});
+      p.addEventListener('pointerout',e=>{if(e.target.classList.contains('st'))hlRow(null);});
+      b.addEventListener('click',e=>{
+        if(pinned&&tipLeaf===b){pinned=false;tipOff();return;}
+        tipOn(d,b);pinned=e.pointerType!=='mouse';tip.classList.toggle('pinned',pinned);
+        if(e.target.classList.contains('st'))hlRow(e.target.dataset.k);
+      });
+      return b;
+    }
     b.addEventListener('click',()=>{
       if(current===d.id){closeSheet();return;}
       document.querySelectorAll('.leaf.on').forEach(e=>e.classList.remove('on'));
@@ -253,7 +339,7 @@
   pause.addEventListener('click',()=>{held=!held;$('ppIcon').setAttribute('d',held?'M2 1l9 5-9 5z':'M2 1h3v10H2zM7 1h3v10H7z');pause.setAttribute('aria-label',held?'Play':'Pause');setPaused();});
   // views
   document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{
-    closeSheet();
+    closeSheet();pinned=false;tipOff();
     document.querySelectorAll('[data-view]').forEach(o=>o.classList.toggle('active',o===btn));
     document.body.classList.remove('view-scroll','view-fit','view-original');
     document.body.classList.add('view-'+btn.dataset.view);
@@ -273,7 +359,7 @@
   }
   addEventListener('resize',()=>{if(document.body.classList.contains('view-fit'))fitCells();});
 
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSheet();pinned=false;tipOff();}});
 })();
 </script>
 <div id="sf-footer-mount"></div>
