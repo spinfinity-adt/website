@@ -93,8 +93,12 @@
   body:not(.view-original) #strips{display:none}
 
   /* ---------- context: the instruction poster, then the credits under it ---------- */
-  .context{margin-top:44px;padding-top:28px;border-top:1px solid var(--border)}
+  .context{margin-top:44px;padding:28px 0 56px;border-top:1px solid var(--border);
+    display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:24px clamp(28px,4vw,56px);align-items:start}
   .context figure{margin:0;max-width:440px}
+  .context .credit{padding:0 0 16px}
+  .context .more{padding-bottom:0}
+  @media (max-width:760px){.context{grid-template-columns:minmax(0,1fr)}}
   .context figure img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:6px;background:var(--card-bg)}
   .credit{padding:40px 0 16px;font-size:.96rem;line-height:1.6;color:var(--muted);max-width:70ch}
   .credit p{margin:0 0 .4rem}
@@ -142,20 +146,21 @@
     <figure>
       <img src="img/instructions.jpg" width="1046" height="1474" loading="lazy" alt="The Oota Viz instruction sheet. Stamp your leaf on the paper, answer the questions and pick one visual element for each answer, then stick them all together to reveal your Data Thali. Pickle you like: cut mango, lemon, chilli or prawn. Chicken or egg. Role: mango lassi for Educator, rooh afza for Communicator, sol kadhi for Researcher, buttermilk for Enthusiast. Science Santes attended: one, two or three or more papads. Where you last practised science: rasam rice for public space, avial for lab, sambar for kitchen, curd rice for school. How your brain works: laddoo for orderly, payasam for somewhere in between, jalebi for chaos.">
     </figure>
+    <div class="context-text">
+      <div class="credit">
+        <p>Participatory Data Viz Made for Mosaic #3</p>
+        <p>Illustrations by Namisha Katira and Nandita Thakkannavar</p>
+        <p>Ideation and execution by Aditi Bhat, Namisha Katira, Nandita Thakkannavar, Kritika Thakkannavar and Mathura Govindarajan</p>
+      </div>
+
+      <nav class="more" aria-label="Other participatory data viz">
+        <span>More participatory data viz</span>
+        <a href="/indiafoss2026/">FOSS Contribution Chart</a>
+        <a href="/mosaic-data-viz/">Mosaic Data Viz</a>
+        <a href="/hands-of-vizchitra/">Hands of Vizchitra</a>
+      </nav>
+    </div>
   </section>
-
-  <div class="credit">
-    <p>Participatory Data Viz Made for Mosaic #3</p>
-    <p>Illustrations by Namisha Katira and Nandita Thakkannavar</p>
-    <p>Ideation and execution by Aditi Bhat, Namisha Katira, Nandita Thakkannavar, Kritika Thakkannavar and Mathura Govindarajan</p>
-  </div>
-
-  <nav class="more" aria-label="Other participatory data viz">
-    <span>More participatory data viz</span>
-    <a href="/indiafoss2026/">FOSS Contribution Chart</a>
-    <a href="/mosaic-data-viz/">Mosaic Data Viz</a>
-    <a href="/hands-of-vizchitra/">Hands of Vizchitra</a>
-  </nav>
 </div>
 
 <div class="sheet" id="sheet" hidden role="dialog" aria-live="polite">
