@@ -54,7 +54,21 @@
   .vb-btn:hover{color:var(--accent2);border-color:var(--accent2)}
   .vb-btn:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
   .vb-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
-  .tools{display:flex;align-items:center;gap:14px}
+  .tools{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+
+  /* ---------- name search (same box as Hands of Vizchitra) ---------- */
+  .vb-search{position:relative;display:flex;align-items:center}
+  .vb-search input{font-family:var(--hand);font-size:12.5px;color:var(--text);background:var(--card-bg);border:1px solid var(--border);
+    border-radius:999px;padding:6px 15px;width:190px;outline:none;transition:border-color .15s,width .18s}
+  .vb-search input::placeholder{color:var(--muted)}
+  .vb-search input:focus{border-color:var(--accent2);width:220px}
+  .search-count{font-family:var(--hand);font-size:11px;color:var(--muted);position:absolute;top:calc(100% + 3px);right:10px;white-space:nowrap}
+  body.view-original .vb-search{visibility:hidden}
+  body.searching :is(.grid,.stage) .leaf{opacity:.16;filter:grayscale(.5);transition:opacity .18s,filter .18s}
+  body.searching :is(.grid,.stage) .leaf.match{opacity:1;filter:none}
+  body.searching .leaf.match .nm{color:var(--accent2)}
+  @media (max-width:520px){.tools{gap:8px}.vb-btn{padding:5px 11px}.vb-search input,.vb-search input:focus{width:120px;padding:6px 10px}}
+  @media (max-width:400px){.vb-views{gap:4px}.vb-btn{padding:5px 10px}.vb-search input,.vb-search input:focus{width:114px}}
   .playpause{flex:none;display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid var(--accent2);border-radius:50%;
     background:transparent;color:var(--accent2);cursor:pointer;transition:background .15s,color .15s}
   .playpause:hover{background:var(--accent2);color:#fff}
@@ -141,6 +155,10 @@
       <p class="dek">A plate of you, served with data</p>
     </div>
     <div class="tools">
+      <div class="vb-search">
+        <input id="nameSearch" type="search" placeholder="find your name…" autocomplete="off" aria-label="Find a name">
+        <span id="searchCount" class="search-count" aria-live="polite"></span>
+      </div>
       <button type="button" class="playpause" id="pause" aria-label="Pause"><svg viewBox="0 0 12 12" aria-hidden="true"><path id="ppIcon" d="M2 1h3v10H2zM7 1h3v10H7z"/></svg></button>
       <div class="vb-views" role="group" aria-label="View">
         <button type="button" data-view="scroll" class="vb-btn active">scroll</button>
@@ -200,7 +218,8 @@
   const $=id=>document.getElementById(id);
   const stage=$('stage'),pause=$('pause');
   let held=false;
-  const setPaused=()=>stage.classList.toggle('paused',held||!!tipLeaf);
+  const setPaused=()=>stage.classList.toggle('paused',held||!!tipLeaf||searchHits>0);
+  let searchHits=0;
 
 
   // which question a sticker answers, e.g. KEY.roohafza = 'dr'
@@ -259,6 +278,7 @@
     }
     b.appendChild(p);
     const nm=document.createElement('span');nm.className='nm';nm.textContent=d.name||'';b.appendChild(nm);
+    b.dataset.name=(d.name||'').toLowerCase();
     {                              // every leaf is read with the tooltip
       b.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&!pinned)tipOn(d,b);});
       b.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&!pinned)tipOff();});
@@ -292,6 +312,40 @@
     }
   });
   pause.addEventListener('click',()=>{held=!held;$('ppIcon').setAttribute('d',held?'M2 1l9 5-9 5z':'M2 1h3v10H2zM7 1h3v10H7z');pause.setAttribute('aria-label',held?'Play':'Pause');setPaused();});
+  // ---------- name search ----------
+  // Matches stay lit, the rest fade. In scroll the belts pause and roll so the first match in each belt sits mid-screen;
+  // in fit the page scrolls to the first match.
+  function runSearch(q){
+    const term=(q||'').trim().toLowerCase(),count=$('searchCount');
+    const leaves=[...document.querySelectorAll('.stage .leaf,#fitGrid .leaf')];
+    searchHits=0;
+    if(!term){document.body.classList.remove('searching');leaves.forEach(l=>l.classList.remove('match'));count.textContent='';setPaused();return;}
+    document.body.classList.add('searching');
+    leaves.forEach(l=>l.classList.toggle('match',l.dataset.name.includes(term)));
+    searchHits=document.querySelectorAll('#fitGrid .leaf.match').length;
+    count.textContent=searchHits?searchHits+' found':'no match';
+    setPaused();
+    if(!searchHits)return;
+    if(document.body.classList.contains('view-fit')){
+      document.querySelector('#fitGrid .leaf.match').scrollIntoView({behavior:'smooth',block:'center'});return;
+    }
+    document.querySelectorAll('.belt').forEach(belt=>{
+      const track=belt.querySelector('.track'),m=track.querySelector('.leaf.match');if(!m)return;
+      const mr=m.getBoundingClientRect(),off=mr.left-track.getBoundingClientRect().left-belt.clientWidth/2+mr.width/2;
+      const cs=getComputedStyle(track);
+      if(cs.animationName==='none'){belt.scrollTo({left:off,behavior:'smooth'});return;}
+      // the track loops over half its width; pick the frame of the loop where the match is centred
+      const half=track.scrollWidth/2,dur=parseFloat(cs.animationDuration)||160;
+      let x=((off%half)+half)%half;
+      if(belt.classList.contains('b'))x=half-x;          // belt b runs the loop in reverse
+      track.style.animationDelay=-(x/half*dur)+'s';
+    });
+    const st=stage.getBoundingClientRect();if(st.top<0||st.bottom>innerHeight)stage.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  const searchEl=$('nameSearch');
+  searchEl.addEventListener('input',e=>runSearch(e.target.value));
+  searchEl.addEventListener('keydown',e=>{if(e.key==='Escape'){searchEl.value='';runSearch('');}});
+
   // views
   document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{
     pinned=false;tipOff();
@@ -299,6 +353,7 @@
     document.body.classList.remove('view-scroll','view-fit','view-original');
     document.body.classList.add('view-'+btn.dataset.view);
     if(btn.dataset.view==='fit') fitCells();
+    if(searchEl.value)requestAnimationFrame(()=>runSearch(searchEl.value));
     $('hint').innerHTML=btn.dataset.view==='original'?'The 12 strips as they were photographed.':'<span id="count">45</span> Data Thalis. Tap a leaf to read it.';
   }));
   // fit: size cells so all 45 leaves fill one screen
