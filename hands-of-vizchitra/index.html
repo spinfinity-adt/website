@@ -163,7 +163,7 @@
   .irow .n small{display:block;margin-top:2px;font:600 .62rem/1 var(--hand);color:var(--muted);text-align:right;}
   .irow.top .n{color:var(--accent1-text);}
   .units{grid-column:1;display:flex;flex-wrap:wrap;gap:2px 1px;align-items:flex-end;}
-  .unit{height:var(--uh,24px);width:auto;display:block;cursor:pointer;transition:transform .15s ease,opacity .15s ease,filter .15s ease;}
+  .unit{height:var(--uh,24px);width:auto;display:block;pointer-events:none;}
   .hov-insights.on .unit{animation:hovpop .32s cubic-bezier(.3,1.6,.5,1) backwards;animation-delay:calc(var(--n)*16ms);}
   @keyframes hovpop{from{transform:scale(0) rotate(-20deg)}}
   /* the pentagon card: the average hand, drawn like the loader */
@@ -185,8 +185,6 @@
   @keyframes pentgrow{from{transform:scale(0)}}
   @keyframes arcin{from{opacity:0}}
   .inote{margin:8px 0 0;font-size:.74rem;color:var(--muted);}
-  .hov-insights.tracing .unit{opacity:.15;filter:grayscale(.6);}
-  .hov-insights.tracing .unit.who{opacity:1;filter:none;transform:scale(1.35);position:relative;z-index:1;}
   @media (prefers-reduced-motion:reduce){.hov-insights.on .unit,.hov-insights.on .pent *{animation:none;}}
   .roll{display:none;position:relative;--roll-h:480px;}
   .roll.on{display:block;}
@@ -2289,8 +2287,8 @@ function render(rawRows,sourceLabel){
 /* ---- insights: how many people chose what --------------------------------
    Anonymous: no names anywhere. Each person is drawn as the glyph they drew on
    their hand (cut out of the same hand SVG the tiles use), so a row reads like
-   a pile of cats, moons or jellyfish. Hovering one lights up that same hand's
-   glyphs in every card. Glyphs are cut out lazily, the first time the tab opens. */
+   a pile of cats, moons or jellyfish. They're plain counts, so nothing is
+   hoverable. Glyphs are cut out lazily, the first time the tab opens. */
 const HAND_D=(document.querySelector(".lp-hand")||{getAttribute:()=>null}).getAttribute("d");
 let INS_DATA=null, INS_BUILT=null, GLYPHS=null;
 function cutGlyphs(){
@@ -2372,7 +2370,6 @@ function drawInsights(){
   const box=document.getElementById("hovInsights"),data=INS_DATA;
   if(!box||!data||INS_BUILT===data) return; INS_BUILT=data;
   if(!GLYPHS) GLYPHS=cutGlyphs();
-  data.forEach((d,i)=>d._key=d.id||"row"+i);
   let h="";
   // the pentagon: average arcs per knuckle, on the hand's own pentagon
   const ACT=[["develop","Develop"],["collect","Collect"],["design","Design"],["narrate","Narrate"],["analyze","Analyze"]];
@@ -2396,20 +2393,11 @@ function drawInsights(){
       const L=by[v]; if(!L.length&&(v==="other"||v==="none"||v==="both"&&k==="pet")) continue;
       const g=GLYPHS[k]&&GLYPHS[k][v];
       h+=`<div class="irow${L.length===max&&max?" top":""}"><span class="lb">${label}</span><span class="n">${L.length}</span><span class="units">`+
-         (g?L.map((d,i)=>`<img class="unit" src="${g.src}" alt="" data-id="${d._key.replace(/"/g,"&quot;")}" style="--n:${i}">`).join(""):"")+`</span></div>`;
+         (g?L.map((d,i)=>`<img class="unit" src="${g.src}" alt="" style="--n:${i}">`).join(""):"")+`</span></div>`;
     }
     h+=(blank?`<p class="inote">${blank} left it blank</p>`:"")+"</section>";
   }
   box.innerHTML=h;
-  if(box.dataset.wired) return; box.dataset.wired="1";
-  const trace=u=>{
-    box.classList.toggle("tracing",!!u);
-    box.querySelectorAll(".unit.who").forEach(e=>e.classList.remove("who"));
-    if(u) box.querySelectorAll('.unit[data-id="'+CSS.escape(u.dataset.id)+'"]').forEach(e=>e.classList.add("who"));
-  };
-  box.addEventListener("pointerover",e=>{if(e.target.classList.contains("unit"))trace(e.target);});
-  box.addEventListener("pointerout",e=>{if(e.target.classList.contains("unit")&&e.pointerType==="mouse")trace(null);});
-  box.addEventListener("click",e=>trace(e.target.classList.contains("unit")?e.target:null));
 }
 
 async function boot(){
