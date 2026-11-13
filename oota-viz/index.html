@@ -122,7 +122,7 @@
   .insights{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:18px;padding:10px 0 4px}
   .icard{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:16px 18px 14px}
   .icard h3{margin:0 0 12px;font:700 1.08rem/1.2 var(--display);color:var(--text)}
-  .irow{display:grid;grid-template-columns:44px minmax(0,1fr) 2.2em;gap:4px 10px;align-items:center;padding:6px 0;border-top:1px dashed var(--border)}
+  .irow{display:grid;grid-template-columns:44px minmax(0,1fr) 3.3em;gap:4px 10px;align-items:center;padding:6px 0;border-top:1px dashed var(--border)}
   .irow:first-of-type{border-top:0}
   .irow .big{width:40px;height:34px;object-fit:contain}
   .irow .lb{grid-column:2;font-weight:700;font-size:.9rem;line-height:1.2}
@@ -357,10 +357,12 @@
       let blank=0,two=0;
       for(const d of D){const p=[...new Set(pick(d[q.k]))];if(!p.length)blank++;if(p.length>1)two++;p.forEach(o=>by[o]&&by[o].push(d));}
       const max=Math.max(...opts.map(o=>by[o].length));
+      // share of the people who answered (someone who picked two counts in both, so a card can pass 100%)
+      const answered=D.length-blank,pct=n=>answered?Math.round(100*n/answered):0;
       h+='<section class="icard"><h3>'+q.q+'</h3>';
       for(const o of opts){
         const f='s/'+file(q.k,o)+'.webp',L=by[o];
-        h+='<div class="irow'+(L.length===max?' top':'')+'"><img class="big" src="'+f+'" alt=""><span class="lb">'+q.o[o]+'</span><span class="n">'+L.length+'</span><span class="units">'+
+        h+='<div class="irow'+(L.length===max?' top':'')+'"><img class="big" src="'+f+'" alt=""><span class="lb">'+q.o[o]+'</span><span class="n" title="'+L.length+' of '+answered+'">'+pct(L.length)+'%</span><span class="units">'+
           L.map((d,i)=>'<img class="unit" src="'+f+'" alt="" data-id="'+d.id+'" data-name="'+esc(d.name||'No name on this leaf')+'" style="--n:'+i+'">').join('')+'</span></div>';
       }
       const notes=[];if(two)notes.push(two+(two>1?' people':' person')+' picked more than one');if(blank)notes.push(blank+' left it blank');
