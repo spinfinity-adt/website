@@ -149,7 +149,45 @@
   /* ---- original view: the photographed paper roll, scrolled sideways -------
      Same cream band as the hands. The photo is multiplied onto it so its white
      paper takes the band's tone; edge fades show while there's more to scroll. */
-  .strip.view-original{display:none;}
+  .strip.view-original,.strip.view-insights{display:none;}
+  /* ---- insights: one dot per hand, per answer ------------------------------ */
+  .hov-insights{display:none;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:18px;padding:10px var(--gutter) 4px}
+  .hov-insights.on{display:grid;}
+  .icard{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:16px 18px 14px;}
+  .icard h3{margin:0 0 12px;font:700 1.08rem/1.2 var(--display);color:var(--text);}
+  .irow{display:grid;grid-template-columns:minmax(0,1fr) 2.6em;gap:4px 10px;align-items:center;padding:6px 0;border-top:1px dashed var(--border);}
+  .irow:first-of-type{border-top:0;}
+  .irow .lb{font-weight:700;font-size:.9rem;line-height:1.2;display:flex;align-items:center;gap:7px;}
+  .irow .lb .sw{width:12px;height:12px;border-radius:50%;flex:none;}
+  .irow .n{grid-column:2;grid-row:1/3;justify-self:end;font:700 1.25rem/1 var(--display);color:var(--accent2);}
+  .irow .n small{display:block;margin-top:2px;font:600 .62rem/1 var(--hand);color:var(--muted);text-align:right;}
+  .irow.top .n{color:var(--accent1-text);}
+  .units{grid-column:1;display:flex;flex-wrap:wrap;gap:2px 1px;align-items:flex-end;}
+  .unit{height:var(--uh,24px);width:auto;display:block;cursor:pointer;transition:transform .15s ease,opacity .15s ease,filter .15s ease;}
+  .hov-insights.on .unit{animation:hovpop .32s cubic-bezier(.3,1.6,.5,1) backwards;animation-delay:calc(var(--n)*16ms);}
+  @keyframes hovpop{from{transform:scale(0) rotate(-20deg)}}
+  /* the pentagon card: the average hand, drawn like the loader */
+  .pent{display:block;width:100%;max-width:330px;margin:0 auto;height:auto;overflow:visible;}
+  .pent .hand{fill:none;stroke:var(--text);stroke-width:11;stroke-linejoin:round;opacity:.85;}
+  .pent .arcs circle{fill:none;stroke-width:46;opacity:.55;mix-blend-mode:multiply;}
+  .pent .ring{fill:none;stroke:var(--text);stroke-opacity:.18;stroke-width:5;stroke-dasharray:14 14;}
+  .pent .edge{fill:none;stroke:var(--text);stroke-width:26;stroke-linejoin:round;}
+  .pent .avg{fill:var(--accent2);fill-opacity:.16;stroke:var(--accent2);stroke-width:16;stroke-linejoin:round;}
+  .pent .apt{fill:var(--accent2);stroke:var(--card-bg);stroke-width:8;}
+  .pent .knuckle{stroke:var(--text);stroke-width:18;}
+  .pkey{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin-top:10px;font-size:.84rem;font-weight:700;}
+  .pkey span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+  .pkey .sw{width:11px;height:11px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--text);}
+  .pkey b{font:700 1rem/1 var(--display);color:var(--accent2);}
+  .pkey b.top{color:var(--accent1-text);}
+  .hov-insights.on .pent .avg,.hov-insights.on .pent .apt{animation:pentgrow .7s cubic-bezier(.3,1.3,.5,1) backwards;transform-box:view-box;transform-origin:631px 1613px;}
+  .hov-insights.on .pent .arcs circle{animation:arcin .5s ease backwards;animation-delay:calc(var(--j)*90ms);}
+  @keyframes pentgrow{from{transform:scale(0)}}
+  @keyframes arcin{from{opacity:0}}
+  .inote{margin:8px 0 0;font-size:.74rem;color:var(--muted);}
+  .hov-insights.tracing .unit{opacity:.15;filter:grayscale(.6);}
+  .hov-insights.tracing .unit.who{opacity:1;filter:none;transform:scale(1.35);position:relative;z-index:1;}
+  @media (prefers-reduced-motion:reduce){.hov-insights.on .unit,.hov-insights.on .pent *{animation:none;}}
   .roll{display:none;position:relative;--roll-h:480px;}
   .roll.on{display:block;}
   .roll-scroller{display:flex;height:var(--roll-h);padding:18px 28px;
@@ -207,12 +245,18 @@
      or the taller toolbar shrinks the fit view. */
   /* "how to read" opens the legend; it isn't a view, so it never goes active */
   .vb-legend{display:inline-flex;align-items:center;gap:6px;margin-left:4px;}
+  /* insights: the word on wide screens, a small bar-chart icon on phones */
+  .vb-ins{display:inline-flex;align-items:center;}
+  .vbi-ic{display:none;width:13px;height:13px;fill:currentColor;}
   .vbl-q{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
     border:1.5px solid currentColor;font-size:10px;line-height:1;}
   .vb-legend[aria-expanded="true"]{color:var(--accent2);border-color:var(--accent2);}
   /* below ~600px the label would push search onto a second line: icon only */
   @media (max-width:600px){
     .vb-btn.vb-legend{padding:5px 7px;margin-left:0;}
+    .vb-btn.vb-ins{padding:5px 8px;}
+    .vbi-text{display:none;}
+    .vbi-ic{display:block;}
     .vbl-text{display:none;}
   }
   @media (max-width:520px){
@@ -222,10 +266,11 @@
   /* small phones: the header keeps the nav's gutters, so tighten the toolbar
      to stay on one line down to 360px (and keep the whole placeholder visible) */
   @media (max-width:400px){
-    .viewbar{gap:8px;}
-    .vb-views{gap:4px;}
-    .vb-btn{padding:5px 10px;}
-    .vb-search input,.vb-search input:focus{width:114px;}
+    .viewbar{gap:5px;}
+    .vb-views{gap:2px;}
+    .vb-btn{padding:5px 7px;}
+    .vb-btn.vb-ins,.vb-btn.vb-legend{padding:5px 6px;}
+    .vb-search input,.vb-search input:focus{width:112px;padding:6px 7px 6px 9px;}
   }
 
   /* SCROLL mode: horizontal, but rows stagger so it's a messy band, not a line */
@@ -412,6 +457,7 @@
     <button data-view="fit" class="vb-btn active">fit</button>
     <button data-view="scroll" class="vb-btn">scroll</button>
     <button data-view="original" class="vb-btn">original</button>
+    <button data-view="insights" class="vb-btn vb-ins" aria-label="insights"><svg class="vbi-ic" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 11V7h2.4v4zM4.8 11V2h2.4v9zM8.6 11V5H11v6z"/></svg><span class="vbi-text" aria-hidden="true">insights</span></button>
     <button type="button" class="vb-btn vb-legend" aria-controls="legend" aria-haspopup="dialog"
             aria-expanded="false" aria-label="How to read a hand"><span class="vbl-q" aria-hidden="true">?</span><span class="vbl-text" aria-hidden="true">how to read</span></button>
   </div>
@@ -425,7 +471,8 @@
          alt="The original paper roll from Vizchitra 2025, covered in traced and coded hands">
   </div>
   <p class="roll-caption">the original roll · drag or scroll sideways</p>
-</div></div>
+</div>
+<div class="hov-insights" id="hovInsights"></div></div>
 <!-- Developer notes (formerly the hidden #footer):
      Left hand = lives in Bangalore, right = outside. A knuckle with a dashed
      hollow ring means that rating wasn't drawn on the paper; a solid dot with no
@@ -1674,6 +1721,7 @@ function normRow(raw){
     pet:["dog","cat","both","other","none"].includes(pet)?pet:"",
     viz:VIZ.includes(viz)?viz:"", travel:TRV.includes(trv)?trv:"",
     chrono:["morning","night","both"].includes(ch)?ch:"",
+    lives:/yes|left/.test(lb)?"in":mirror?"out":"",
     notes:(g("notes")||"").toString().trim(), photo
   };
 }
@@ -2235,6 +2283,133 @@ function render(rawRows,sourceLabel){
   setupScroll(strip);
   // Names are in the DOM now; fit any that overrun their guide path.
   requestAnimationFrame(()=>fitNames(strip));
+  buildInsights(data);
+}
+
+/* ---- insights: how many people chose what --------------------------------
+   Anonymous: no names anywhere. Each person is drawn as the glyph they drew on
+   their hand (cut out of the same hand SVG the tiles use), so a row reads like
+   a pile of cats, moons or jellyfish. Hovering one lights up that same hand's
+   glyphs in every card. Glyphs are cut out lazily, the first time the tab opens. */
+const HAND_D=(document.querySelector(".lp-hand")||{getAttribute:()=>null}).getAttribute("d");
+let INS_DATA=null, INS_BUILT=null, GLYPHS=null;
+function cutGlyphs(){
+  const ink=getComputedStyle(document.body).color;
+  const svg=MASTER.cloneNode(true);
+  const probe=document.createElement("div");
+  probe.style.cssText="position:absolute;left:-99999px;top:0;width:400px;height:600px;";
+  probe.appendChild(svg);document.body.appendChild(probe);
+  const toVB=svg.getScreenCTM().inverse();
+  const box=el=>{const b=el.getBBox(),m=toVB.multiply(el.getScreenCTM());
+    const pts=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>
+      [m.a*x+m.c*y+m.e,m.b*x+m.d*y+m.f]);
+    const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);return [Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)];};
+  // a standalone copy of just this glyph: its ancestors (for their transforms) and itself
+  const lift=el=>{let node=el.cloneNode(true);
+    for(let p=el.parentNode;p&&p!==svg;p=p.parentNode){const c=p.cloneNode(false);c.appendChild(node);node=c;}
+    return node;};
+  // every option of a question shares one frame, so a small level reads small next to a big one
+  const group=(field,layerOf,values,shared=true,post=null)=>{
+    const parts={},boxes=[],own={};
+    for(const v of values){const d={[field]:v};toggleGlyphs(svg,d);const el=resolveEl(svg,layerOf(v));
+      if(!el||el.style.display==="none")continue;const bx=box(el);if(!isFinite(bx[0]))continue;boxes.push(bx);own[v]=bx;parts[v]=post?post(lift(el)):lift(el);}
+    if(!boxes.length) return {};
+    const x0=Math.min(...boxes.map(b=>b[0])),y0=Math.min(...boxes.map(b=>b[1])),x1=Math.max(...boxes.map(b=>b[2])),y1=Math.max(...boxes.map(b=>b[3]));
+    const pad=(x1-x0)*.06,VB0=[x0-pad,y0-pad,x1-x0+2*pad,y1-y0+2*pad].map(n=>+n.toFixed(1));
+    const out={};
+    for(const v in parts){
+      const vb=shared?VB0:(b=>{const p=(b[2]-b[0])*.06;return [b[0]-p,b[1]-p,b[2]-b[0]+2*p,b[3]-b[1]+2*p].map(n=>+n.toFixed(1));})(own[v]);
+      const str=`<svg xmlns="http://www.w3.org/2000/svg" xmlns:serif="http://www.serif.com/" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="${vb.join(" ")}">${new XMLSerializer().serializeToString(parts[v])}</svg>`.replace(/var\(--text\)/g,ink);
+      out[v]={src:"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(str),ar:vb[2]/vb[3]};
+    }
+    return out;
+  };
+  const G={
+    // the cat is drawn as a solid silhouette; here it's an outline like the dog
+    pet:group("pet",v=>({cat:"cat",dog:"dog",both:"both-pet"})[v],["cat","dog","both"],false,
+      n=>{n.querySelectorAll('[id="cat"] path,[id="cat1"] path').forEach(p=>{p.style.fill="none";p.style.stroke="var(--text)";p.style.strokeWidth="5";p.style.strokeLinejoin="round";});return n;}),
+    chrono:group("chrono",v=>({morning:"morning",night:"moon",both:"both-chrono"})[v],["morning","night","both"],false),
+    viz:group("viz",v=>VIZ_TO_LAYER[v],VIZ),
+    travel:group("travel",()=>"distance-travelled",TRV)
+  };
+  probe.remove();
+  // left / right hand: the loader's hand outline, mirrored for outside Bangalore
+  if(HAND_D){const h=f=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -20 1760 2400"><path d="${HAND_D}" fill="none" stroke="${ink}" stroke-width="46" stroke-linejoin="round"${f?' transform="translate(1640 0) scale(-1 1)"':""}/></svg>`);
+    G.lives={in:{src:h(false),ar:1760/2400},out:{src:h(true),ar:1760/2400}};}
+  return G;
+}
+// the five knuckles in the hand's own pentagon (viewBox points of the loader hand): develop, collect, design, narrate, analyze
+const PENT=[[241,1205],[1035,1105],[1130,1713],[563,2170],[188,1874]];
+// The average hand, drawn like the loader: the empty hand outline, its pentagon, and round(avg)
+// highlighter arcs around each knuckle, clipped to the pentagon. The purple shape on top marks
+// the exact averages along each knuckle's spoke (0 at the middle, 5 at the knuckle).
+function pentagonChart(avg,best){
+  const K=["develop","collect","design","narrate","analyze"],L=["Develop","Collect","Design","Narrate","Analyze"];
+  const cx=PENT.reduce((a,p)=>a+p[0],0)/5,cy=PENT.reduce((a,p)=>a+p[1],0)/5;
+  const at=(i,f)=>[cx+(PENT[i][0]-cx)*f,cy+(PENT[i][1]-cy)*f];
+  const pts=a=>a.map(p=>p.map(n=>n.toFixed(0)).join(",")).join(" ");
+  const poly=f=>pts(PENT.map((_,i)=>at(i,f)));
+  let g="";
+  if(HAND_D) g+=`<path class="hand" d="${HAND_D}"/>`;
+  g+=`<defs><clipPath id="insPentClip"><polygon points="${poly(1)}"/></clipPath></defs>`;
+  g+=`<g clip-path="url(#insPentClip)" class="arcs">`;
+  K.forEach((k,i)=>{const n=Math.round(avg[k]);for(let j=1;j<=n;j++)
+    g+=`<circle cx="${PENT[i][0]}" cy="${PENT[i][1]}" r="${60+j*112}" stroke="var(--${k})" style="--j:${j}"/>`;});
+  g+=`</g>`;
+  for(let r=1;r<=4;r++) g+=`<polygon class="ring" points="${poly(r/5)}"/>`;
+  g+=`<polygon class="edge" points="${poly(1)}"/>`;
+  const A=K.map(k=>avg[k]/5);
+  g+=`<polygon class="avg" points="${pts(PENT.map((_,i)=>at(i,A[i])))}"/>`;
+  K.forEach((k,i)=>{const [x,y]=at(i,A[i]);g+=`<circle class="apt" cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="26"/>`;});
+  K.forEach((k,i)=>g+=`<circle class="knuckle" cx="${PENT[i][0]}" cy="${PENT[i][1]}" r="62" fill="var(--${k})"/>`);
+  // the numbers sit in a key under the hand, so nothing crowds the knuckles
+  const key=`<div class="pkey">`+K.map((k,i)=>`<span><i class="sw" style="background:var(--${k})"></i>${L[i]} <b class="${avg[k]===best?"top":""}">${avg[k].toFixed(1)}</b></span>`).join("")+`</div>`;
+  return `<svg class="pent" viewBox="-20 20 1680 2360" role="img" aria-label="Average enjoyment out of 5: ${K.map((k,i)=>L[i]+" "+avg[k].toFixed(1)).join(", ")}">${g}</svg>`+key;
+}
+function buildInsights(data){INS_DATA=data;if(document.getElementById("hovInsights").classList.contains("on"))drawInsights();}
+function drawInsights(){
+  const box=document.getElementById("hovInsights"),data=INS_DATA;
+  if(!box||!data||INS_BUILT===data) return; INS_BUILT=data;
+  if(!GLYPHS) GLYPHS=cutGlyphs();
+  data.forEach((d,i)=>d._key=d.id||"row"+i);
+  let h="";
+  // the pentagon: average arcs per knuckle, on the hand's own pentagon
+  const ACT=[["develop","Develop"],["collect","Collect"],["design","Design"],["narrate","Narrate"],["analyze","Analyze"]];
+  const avg={};for(const [k] of ACT){const r=data.map(d=>d[k]).filter(v=>v!=null);avg[k]=r.length?r.reduce((a,b)=>a+b,0)/r.length:0;}
+  const best=Math.max(...Object.values(avg));
+  h+='<section class="icard"><h3>How much do you enjoy each part of making a dataviz?</h3>'+pentagonChart(avg,best)+
+     '<p class="inote">Average arcs drawn at each knuckle, out of 5.</p></section>';
+  // the hand and the fingers: one glyph per hand
+  const Q=[
+    ["lives","Left hand or right hand?",[["in","Lives in Bangalore"],["out","Lives outside Bangalore"]],26],
+    ["pet","Dog person or cat person?",[["dog","Dog person"],["cat","Cat person"],["both","Both"],["other","Other"],["none","Neither"]],30],
+    ["viz","How many DataViz have you made so far?",[["none","Yet to make my first one"],["1-10","1–10"],["11-50","11–50"],["51-100","51–100"],["101-200","101–200"],["lost_count","Lost count!"]],44],
+    ["travel","How far did you travel to get to Vizchitra?",[["under_10km","Under 10km"],["10-25km","10–25km"],["south_india","Within South India"],["north_india","From North India"],["outside_india","From outside India"]],38],
+    ["chrono","Morning person or night owl?",[["morning","Morning person"],["night","Night owl"],["both","Both"]],28]
+  ];
+  for(const [k,q,opts,uh] of Q){
+    const by={};opts.forEach(([v])=>by[v]=data.filter(d=>d[k]===v));
+    const blank=data.filter(d=>!d[k]).length,max=Math.max(...opts.map(([v])=>by[v].length));
+    h+=`<section class="icard" style="--uh:${uh}px"><h3>${q}</h3>`;
+    for(const [v,label] of opts){
+      const L=by[v]; if(!L.length&&(v==="other"||v==="none"||v==="both"&&k==="pet")) continue;
+      const g=GLYPHS[k]&&GLYPHS[k][v];
+      h+=`<div class="irow${L.length===max&&max?" top":""}"><span class="lb">${label}</span><span class="n">${L.length}</span><span class="units">`+
+         (g?L.map((d,i)=>`<img class="unit" src="${g.src}" alt="" data-id="${d._key.replace(/"/g,"&quot;")}" style="--n:${i}">`).join(""):"")+`</span></div>`;
+    }
+    h+=(blank?`<p class="inote">${blank} left it blank</p>`:"")+"</section>";
+  }
+  box.innerHTML=h;
+  if(box.dataset.wired) return; box.dataset.wired="1";
+  const trace=u=>{
+    box.classList.toggle("tracing",!!u);
+    box.querySelectorAll(".unit.who").forEach(e=>e.classList.remove("who"));
+    if(u) box.querySelectorAll('.unit[data-id="'+CSS.escape(u.dataset.id)+'"]').forEach(e=>e.classList.add("who"));
+  };
+  box.addEventListener("pointerover",e=>{if(e.target.classList.contains("unit"))trace(e.target);});
+  box.addEventListener("pointerout",e=>{if(e.target.classList.contains("unit")&&e.pointerType==="mouse")trace(null);});
+  box.addEventListener("click",e=>trace(e.target.classList.contains("unit")?e.target:null));
 }
 
 async function boot(){
@@ -2291,7 +2466,7 @@ function applyFitScale(){
 }
 function setView(mode){
   const strip=document.getElementById("strip");
-  strip.classList.remove("view-field","view-scroll","view-fit","view-original");
+  strip.classList.remove("view-field","view-scroll","view-fit","view-original","view-insights");
   strip.classList.add("view-"+mode);
   document.querySelectorAll(".vb-btn").forEach(b=>
     b.classList.toggle("active", b.dataset.view===mode));
@@ -2301,7 +2476,9 @@ function setView(mode){
   // the photo has no names to search, so the box steps aside (keeping its space)
   const orig=mode==="original";
   roll.classList.toggle("on",orig);
-  document.querySelector(".vb-search").style.visibility=orig?"hidden":"";
+  document.getElementById("hovInsights").classList.toggle("on",mode==="insights");
+  if(mode==="insights") drawInsights();
+  document.querySelector(".vb-search").style.visibility=(orig||mode==="insights")?"hidden":"";
   if(orig) showRoll();
   try{ localStorage; }catch(e){}
 }
