@@ -133,6 +133,8 @@
   body.view-insights .unit{animation:pop .32s cubic-bezier(.3,1.6,.5,1) backwards;animation-delay:calc(var(--n)*22ms)}
   @keyframes pop{from{transform:scale(0) rotate(-30deg)}}
   .irow .big{grid-row:1/3}
+  .combo{display:inline-flex;gap:0;padding:0 3px;border-radius:6px;background:color-mix(in srgb,var(--accent4) 12%,transparent)}
+  .irow.blank .lb,.irow.blank .n{color:var(--muted)}
   .inote{margin:8px 0 0;font-size:.74rem;color:var(--muted)}
   .insights.tracing .unit{opacity:.18;filter:grayscale(.6)}
   .insights.tracing .unit.who{opacity:1;filter:none;transform:scale(1.5);position:relative;z-index:1}
@@ -352,21 +354,29 @@
   function insights(D){
     const box=$('insights');let h='';
     const pick=v=>v?v.split(' + ').map(s=>s.replace(/ x\d+$/,'')):[];
+    // whole-number shares of everyone that add up to exactly 100 (largest remainder)
+    const shares=counts=>{const t=counts.reduce((a,b)=>a+b,0);if(!t)return counts.map(()=>0);
+      const raw=counts.map(c=>100*c/t),out=raw.map(Math.floor);let left=100-out.reduce((a,b)=>a+b,0);
+      raw.map((r,i)=>[r-out[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>out[i]++);return out;};
+    const unit=(src,d,i)=>'<img class="unit" src="'+src+'" alt="" data-id="'+d.id+'" data-name="'+esc(d.name||'No name on this leaf')+'" style="--n:'+i+'">';
     for(const q of Q){
+      // every leaf lands in exactly one row: a single answer, more than one, or blank — so each card is 100% of everyone
       const opts=Object.keys(q.o),by={};opts.forEach(o=>by[o]=[]);
-      let blank=0,two=0;
-      for(const d of D){const p=[...new Set(pick(d[q.k]))];if(!p.length)blank++;if(p.length>1)two++;p.forEach(o=>by[o]&&by[o].push(d));}
-      const max=Math.max(...opts.map(o=>by[o].length));
-      // share of the people who answered (someone who picked two counts in both, so a card can pass 100%)
-      const answered=D.length-blank,pct=n=>answered?Math.round(100*n/answered):0;
+      const multi=[],blank=[];
+      for(const d of D){const p=[...new Set(pick(d[q.k]))].filter(o=>by[o]);
+        if(!p.length)blank.push(d);else if(p.length>1)multi.push([d,p]);else by[p[0]].push(d);}
+      const rows=opts.map(o=>({label:q.o[o],big:'s/'+file(q.k,o)+'.webp',n:by[o].length,
+        units:by[o].map((d,i)=>unit('s/'+file(q.k,o)+'.webp',d,i)).join('')}));
+      if(multi.length){let i=0;rows.push({label:'More than one',big:'',n:multi.length,
+        units:multi.map(([d,p])=>'<span class="combo">'+p.map(o=>unit('s/'+file(q.k,o)+'.webp',d,i++)).join('')+'</span>').join('')});}
+      if(blank.length) rows.push({label:'Left blank',big:'',n:blank.length,units:'',blank:true});
+      const pc=shares(rows.map(r=>r.n)),max=Math.max(...rows.filter(r=>!r.blank).map(r=>r.n));
       h+='<section class="icard"><h3>'+q.q+'</h3>';
-      for(const o of opts){
-        const f='s/'+file(q.k,o)+'.webp',L=by[o];
-        h+='<div class="irow'+(L.length===max?' top':'')+'"><img class="big" src="'+f+'" alt=""><span class="lb">'+q.o[o]+'</span><span class="n" title="'+L.length+' of '+answered+'">'+pct(L.length)+'%</span><span class="units">'+
-          L.map((d,i)=>'<img class="unit" src="'+f+'" alt="" data-id="'+d.id+'" data-name="'+esc(d.name||'No name on this leaf')+'" style="--n:'+i+'">').join('')+'</span></div>';
-      }
-      const notes=[];if(two)notes.push(two+(two>1?' people':' person')+' picked more than one');if(blank)notes.push(blank+' left it blank');
-      h+=(notes.length?'<p class="inote">'+notes.join(' · ')+'</p>':'')+'</section>';
+      rows.forEach((r,j)=>{
+        h+='<div class="irow'+(r.n===max&&!r.blank?' top':'')+(r.blank?' blank':'')+'">'+(r.big?'<img class="big" src="'+r.big+'" alt="">':'<span class="big"></span>')+
+           '<span class="lb">'+r.label+'</span><span class="n" title="'+r.n+' of '+D.length+'">'+pc[j]+'%</span><span class="units">'+r.units+'</span></div>';
+      });
+      h+='</section>';
     }
     box.innerHTML=h;
     const tag=document.createElement('div');tag.className='who-name';document.body.appendChild(tag);

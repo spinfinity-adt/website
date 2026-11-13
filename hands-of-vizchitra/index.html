@@ -170,6 +170,7 @@
   .irow .n{grid-column:2;grid-row:1/3;justify-self:end;font:700 1.25rem/1 var(--display);color:var(--accent2);}
   .irow .n small{display:block;margin-top:2px;font:600 .62rem/1 var(--hand);color:var(--muted);text-align:right;}
   .irow.top .n{color:var(--accent1-text);}
+  .irow.blank .lb,.irow.blank .n{color:var(--muted);}
   .units{grid-column:1;display:flex;flex-wrap:wrap;gap:2px 1px;align-items:flex-end;}
   .unit{height:calc(var(--uh,24px)*var(--s,1));width:auto;display:block;pointer-events:none;}
   .hov-insights.on .unit{animation:hovpop .32s cubic-bezier(.3,1.6,.5,1) backwards;animation-delay:calc(var(--n)*16ms);}
@@ -2411,19 +2412,23 @@ function drawInsights(){
     ["travel","How far did you travel to get to Vizchitra?",[["under_10km","Under 10km"],["10-25km","10–25km"],["south_india","Within South India"],["north_india","From North India"],["outside_india","From outside India"]],38],
     ["chrono","Morning person or night owl?",[["morning","Morning person"],["night","Night owl"],["both","Both"]],28]
   ];
+  // whole-number shares of every hand that add up to exactly 100 (largest remainder); blank is its own row
+  const shares=counts=>{const t=counts.reduce((a,b)=>a+b,0);if(!t)return counts.map(()=>0);
+    const raw=counts.map(c=>100*c/t),out=raw.map(Math.floor);let left=100-out.reduce((a,b)=>a+b,0);
+    raw.map((r,i)=>[r-out[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>out[i]++);return out;};
   for(const [k,q,opts,uh] of Q){
-    const by={};opts.forEach(([v])=>by[v]=data.filter(d=>d[k]===v));
-    const blank=data.filter(d=>!d[k]).length,max=Math.max(...opts.map(([v])=>by[v].length));
-    // shares of the people who answered this question (blanks are left out, and noted below)
-    const answered=data.length-blank,pct=n=>answered?Math.round(100*n/answered):0;
+    const rows=opts.map(([v,label])=>({v,label,L:data.filter(d=>d[k]===v)}))
+      .filter(r=>r.L.length||!(r.v==="other"||r.v==="none"||r.v==="both"&&k==="pet"));
+    const blank=data.filter(d=>!d[k]);
+    if(blank.length) rows.push({v:"",label:"Left blank",L:blank,blank:true});
+    const pc=shares(rows.map(r=>r.L.length)),max=Math.max(...rows.filter(r=>!r.blank).map(r=>r.L.length));
     h+=`<section class="icard" style="--uh:${uh}px"><h3>${q}</h3>`;
-    for(const [v,label] of opts){
-      const L=by[v]; if(!L.length&&(v==="other"||v==="none"||v==="both"&&k==="pet")) continue;
-      const g=GLYPHS[k]&&GLYPHS[k][v];
-      h+=`<div class="irow${L.length===max&&max?" top":""}"><span class="lb">${label}</span><span class="n" title="${L.length} of ${answered}">${pct(L.length)}%</span><span class="units">`+
-         (g?L.map((d,i)=>`<img class="unit" src="${g.src}" alt="" style="--n:${i}">`).join(""):"")+`</span></div>`;
-    }
-    h+=(blank?`<p class="inote">${blank} left it blank</p>`:"")+"</section>";
+    rows.forEach((r,j)=>{
+      const g=!r.blank&&GLYPHS[k]&&GLYPHS[k][r.v];
+      h+=`<div class="irow${r.L.length===max&&max&&!r.blank?" top":""}${r.blank?" blank":""}"><span class="lb">${r.label}</span><span class="n" title="${r.L.length} of ${data.length}">${pc[j]}%</span><span class="units">`+
+         (g?r.L.map((d,i)=>`<img class="unit" src="${g.src}" alt="" style="--n:${i}">`).join(""):"")+`</span></div>`;
+    });
+    h+="</section>";
   }
   box.innerHTML=h;
 }
