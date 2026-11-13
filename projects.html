@@ -8,14 +8,11 @@
 <title>Projects — Spinfinity</title>
 <link rel="stylesheet" href="/styles.css"/>
 <style>
-/* Projects: two headings, and every project is a tag hanging off a hoop like a key ring.
+/* Projects: one grid; the tabs filter it. Every project is a tag hanging off a hoop like a key ring.
    Each hoop is a small striped SVG ring, coloured by what the project is made of. Nothing animates. */
 .proj-wrap{max-width:none;padding:32px var(--gutter) clamp(2rem,5vw,5rem)}
 .section-label{color:var(--accent1-text);font-weight:800;font-size:.8rem}
 .section-label::after{background:var(--border)}
-.proj-h{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,4.3vw,2.85rem);line-height:1.04;letter-spacing:-.018em;color:var(--text);margin:2.6rem 0 1.9rem}
-.proj-h:first-of-type{margin-top:1.2rem}
-.proj-h::after{content:'';display:block;width:110px;height:4px;margin-top:.55rem;border-radius:4px;background:var(--accent1-text);transform:rotate(-1.2deg)}
 .hoop-key{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.4rem;margin:1.1rem 0 0;font-weight:700;font-size:.95rem;color:var(--muted)}
 .hoop-key span{display:inline-flex;align-items:center;gap:.45rem}
 .hoop-key i{display:inline-block;width:1rem;height:1rem;border-radius:50%;border:4px solid var(--k)}
@@ -26,8 +23,8 @@
 .pick button:hover{border-color:var(--accent2);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--accent2)}
 .pick button.active{background:var(--accent2);border-color:var(--accent2);color:#fff;box-shadow:3px 3px 0 var(--accent1-text)}
 .pick button:focus-visible{outline:2px solid var(--accent3);outline-offset:3px}
-.group[hidden]{display:none}
-.rings{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:1.6rem 1.8rem}
+.ktag[hidden]{display:none}
+.rings{margin-top:2.2rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:1.6rem 1.8rem}
 /* a tag hangs from its hoop: the hoop sits on the top-left corner and goes through the punched hole */
 .ktag{position:relative;display:block;padding:30px 0 0 28px;text-decoration:none;color:var(--text);min-width:0}
 .hoop-slot{position:absolute;left:0;top:0;width:84px;height:84px;z-index:2;pointer-events:none;transition:transform .2s ease}
@@ -61,16 +58,10 @@
         <button class="active" data-show="all">all</button>
         <button data-show="learning">learning engagements</button>
         <button data-show="tech">creative tech</button>
+        <button data-show="participatory">participatory viz</button>
       </div>
       <p class="hoop-key" id="hoop-key" aria-label="what the hoop colours mean"></p>
-      <section class="group" data-kind="learning">
-        <h2 class="proj-h">learning engagements</h2>
-        <div class="rings" id="rings-learning"></div>
-      </section>
-      <section class="group" data-kind="tech">
-        <h2 class="proj-h">creative tech</h2>
-        <div class="rings" id="rings-tech"></div>
-      </section>
+      <div class="rings" id="rings"></div>
     </div>
   </div>
 </div>
@@ -80,7 +71,9 @@
 <script>
 (function(){
   // ADD A PROJECT = add one object here. Fields: name, url, img, desc, plus
-  //   kind: "learning" (goes under learning engagements) or "tech" (goes under creative tech)
+  //   kind: "learning" (shows under learning engagements) or "tech" (shows under creative tech)
+  //   participatory: true also shows it under participatory viz
+  //   "all" shows every project, in the order they're listed here
   //   made: any of "art", "data", "technology", "math", "movement" - these colour the project's hoop
   const projects = [
    
@@ -99,7 +92,7 @@
       desc:"One hundred days. One small thing made each day. A log of experiments, failures, sketches and surprises — proof that the practice matters more than the output." },
 
     { name:"Mosaic Data Viz", url:"https://spinfinity.in/mosaic-data-viz", img:"images/mosaic-data-viz.jpg",
-      kind:"tech", made:["data","technology","art"],
+      kind:"tech", participatory:true, made:["data","technology","art"],
       desc:"A creative coding recreation of a community data selfie — collecting and visualising people's data at Mosaic, a live community event." },
 
     { name:"Hilbert Curve Cat", url:"https://spinfinity.in/hilbert-curve-cat/", img:"images/hilbert-curve-cat.jpg",
@@ -115,15 +108,15 @@
       desc:"A generative data portrait gallery made with Claude. Tell it who you are — your loves, your chaos, your aesthetics — and it translates you into a living p5.js sketch." },
 
     { name:"Hands of Vizchitra", url:"https://spinfinity.in/hands-of-vizchitra/", img:"images/hands-of-vizchitra.jpg",
-      kind:"tech", made:["data","art","technology"],
+      kind:"tech", participatory:true, made:["data","art","technology"],
       desc:"At Vizchitra 2025, ~44 people traced a hand and encoded themselves onto it in highlighter and ink. Every hand redrawn as data — click one to see the original paper." },
 
     { name:"FOSS Contribution Chart!", url:"https://spinfinity.in/indiafoss2026/", img:"images/indiafoss2026.jpg",
-      kind:"tech", made:["data","art"],
+      kind:"tech", participatory:true, made:["data","art"],
       desc:"Inspired by github contribution charts, this was an attempt to record all the IndiaFOSS 2026 attendees" },
 
     { name:"Oota Viz", url:"https://spinfinity.in/oota-viz/", img:"images/oota-viz.jpg",
-      kind:"tech", made:["data","art"],
+      kind:"tech", participatory:true, made:["data","art"],
       desc:"A plate of you, served with data" }
   ];
 
@@ -148,7 +141,7 @@
       + (n === 1 ? '' : ' stroke-dasharray="'+len.toFixed(2)+' '+(len*(cols.length-1)).toFixed(2)+'" stroke-dashoffset="'+(-i*len).toFixed(2)+'"')
       + ' transform="rotate(-90 42 42)"/>').join("") + '</g></svg>';
   }
-  const card = p => '<a class="ktag" href="'+esc(p.url)+'">'
+  const card = p => '<a class="ktag" data-kind="'+esc(p.kind)+'"'+(p.participatory ? ' data-participatory' : '')+' href="'+esc(p.url)+'">'
       + '<span class="hoop-slot" title="'+esc((p.made||[]).join(", "))+'">'+hoop(p.made)+'</span>'
       + '<span class="ktag-card">'
       + '<span class="ktag-name">'+esc(p.name)+'</span>'
@@ -156,17 +149,18 @@
       + '<span class="ktag-desc">'+esc(p.desc)+'</span>'
       + '<span class="ktag-go">open project →</span>'
       + '</span></a>';
-  ["learning","tech"].forEach(k => {
-    document.getElementById("rings-"+k).innerHTML = projects.filter(p => p.kind === k).map(card).join("");
-  });
+  document.getElementById("rings").innerHTML = projects.map(card).join("");
   document.getElementById("hoop-key").innerHTML = Object.keys(MADE).map(m => '<span><i style="--k:'+MADE[m]+'"></i>'+m+'</span>').join("");
 
-  // all / learning engagements / creative tech
+  // all / learning engagements / creative tech / participatory viz
   const pick = document.getElementById("pick");
   pick.addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     pick.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
-    document.querySelectorAll(".group").forEach(g => { g.hidden = b.dataset.show !== "all" && g.dataset.kind !== b.dataset.show; });
+    const show = b.dataset.show;
+    document.querySelectorAll("#rings .ktag").forEach(t => {
+      t.hidden = !(show === "all" || t.dataset.kind === show || (show === "participatory" && t.hasAttribute("data-participatory")));
+    });
   });
 })();
 </script>
