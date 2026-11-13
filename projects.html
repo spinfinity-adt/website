@@ -14,7 +14,12 @@
 .section-label{color:var(--accent1-text);font-weight:800;font-size:.8rem}
 .section-label::after{background:var(--border)}
 .hoop-key{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.4rem;margin:1.1rem 0 0;font-weight:700;font-size:.95rem;color:var(--muted)}
-.hoop-key span{display:inline-flex;align-items:center;gap:.45rem}
+.hoop-key button{display:inline-flex;align-items:center;gap:.45rem;font:inherit;color:inherit;background:none;border:2px solid transparent;border-radius:999px;padding:.2rem .6rem .2rem .35rem;margin:0 -.35rem;cursor:pointer;transition:border-color .16s ease,color .16s ease}
+.hoop-key button:hover{border-color:var(--border);color:var(--text)}
+.hoop-key button[aria-pressed="true"]{border-color:var(--accent2);color:var(--text)}
+.hoop-key button:focus-visible{outline:2px solid var(--accent3);outline-offset:2px}
+.hoop-key.on button[aria-pressed="false"]{opacity:.55}
+.rings-empty{margin-top:2rem;color:var(--muted)}
 .hoop-key i{display:inline-block;width:1rem;height:1rem;border-radius:50%;border:4px solid var(--k)}
 .proj-note{max-width:var(--measure);margin:.2rem 0 1.1rem;font-size:1.02rem;line-height:1.65;color:var(--text)}
 .proj-note:empty{display:none}
@@ -60,8 +65,9 @@
         <button data-show="tech">creative tech</button>
         <button data-show="participatory">participatory viz</button>
       </div>
-      <p class="hoop-key" id="hoop-key" aria-label="what the hoop colours mean"></p>
+      <p class="hoop-key" id="hoop-key" role="group" aria-label="what the hoop colours mean (click one to filter)"></p>
       <div class="rings" id="rings"></div>
+      <p class="rings-empty" id="rings-empty" hidden>nothing here with that combination yet</p>
     </div>
   </div>
 </div>
@@ -141,7 +147,7 @@
       + (n === 1 ? '' : ' stroke-dasharray="'+len.toFixed(2)+' '+(len*(cols.length-1)).toFixed(2)+'" stroke-dashoffset="'+(-i*len).toFixed(2)+'"')
       + ' transform="rotate(-90 42 42)"/>').join("") + '</g></svg>';
   }
-  const card = p => '<a class="ktag" data-kind="'+esc(p.kind)+'"'+(p.participatory ? ' data-participatory' : '')+' href="'+esc(p.url)+'">'
+  const card = p => '<a class="ktag" data-kind="'+esc(p.kind)+'"'+(p.participatory ? ' data-participatory' : '')+' data-made="'+esc((p.made||[]).join(" "))+'" href="'+esc(p.url)+'">'
       + '<span class="hoop-slot" title="'+esc((p.made||[]).join(", "))+'">'+hoop(p.made)+'</span>'
       + '<span class="ktag-card">'
       + '<span class="ktag-name">'+esc(p.name)+'</span>'
@@ -150,18 +156,36 @@
       + '<span class="ktag-go">open project →</span>'
       + '</span></a>';
   document.getElementById("rings").innerHTML = projects.map(card).join("");
-  document.getElementById("hoop-key").innerHTML = Object.keys(MADE).map(m => '<span><i style="--k:'+MADE[m]+'"></i>'+m+'</span>').join("");
+  document.getElementById("hoop-key").innerHTML = Object.keys(MADE).map(m => '<button type="button" data-made="'+m+'" aria-pressed="false"><i style="--k:'+MADE[m]+'"></i>'+m+'</button>').join("");
 
   // all / learning engagements / creative tech / participatory viz
   // Each tab has its own link: projects.html#learning-engagements, #creative-tech, #participatory-viz
   const LINK = { learning:"learning-engagements", tech:"creative-tech", participatory:"participatory-viz" };
   const pick = document.getElementById("pick");
-  function showTab(show){
-    pick.querySelectorAll("button").forEach(x => x.classList.toggle("active", x.dataset.show === show));
+  // the hoop colours (art, data, ...) also filter, on top of the tab; click again to clear. Not in the link.
+  const key = document.getElementById("hoop-key");
+  let tab = "all", made = "";
+  function apply(){
+    let n = 0;
     document.querySelectorAll("#rings .ktag").forEach(t => {
-      t.hidden = !(show === "all" || t.dataset.kind === show || (show === "participatory" && t.hasAttribute("data-participatory")));
+      const inTab = tab === "all" || t.dataset.kind === tab || (tab === "participatory" && t.hasAttribute("data-participatory"));
+      const inMade = !made || t.dataset.made.split(" ").includes(made);
+      t.hidden = !(inTab && inMade); if (!t.hidden) n++;
     });
+    document.getElementById("rings-empty").hidden = n > 0;
   }
+  function showTab(show){
+    tab = show;
+    pick.querySelectorAll("button").forEach(x => x.classList.toggle("active", x.dataset.show === show));
+    apply();
+  }
+  key.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    made = made === b.dataset.made ? "" : b.dataset.made;
+    key.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.made === made)));
+    key.classList.toggle("on", !!made);
+    apply();
+  });
   function fromLink(){
     const h = location.hash.slice(1);
     showTab(Object.keys(LINK).find(k => LINK[k] === h) || "all");
