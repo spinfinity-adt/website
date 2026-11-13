@@ -31,7 +31,7 @@
 
   /* ---------- the two belts ---------- */
   .stage{display:grid;gap:clamp(10px,2.5vh,26px);padding:8px 0 4px}
-  .belt{overflow:hidden}
+  .belt{overflow:hidden;padding:10px 0}          /* room for a hovered leaf to lift */
   .track{display:flex;width:max-content;animation:roll var(--dur,160s) linear infinite}
   .belt.b .track{animation-direction:reverse}
   .stage.paused .track,.belt:hover .track{animation-play-state:paused}
@@ -44,26 +44,8 @@
   .plate img.st{transform:translate(-50%,-50%) rotate(var(--r));filter:drop-shadow(0 1.5px 1.5px rgba(35,39,48,.28));visibility:hidden}
   .plate.ready img.st{visibility:visible}          /* stickers only show once their leaf is there */
   .nm{min-height:1.3em;padding-left:6%;font:700 .82rem/1.3 var(--hand);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
-  .leaf.on .nm{color:var(--accent2)}
-  .leaf.on .plate{outline:2px solid var(--accent2);outline-offset:4px;border-radius:var(--radius)}
   .hint{margin:10px 0 0;font-size:.8rem;color:var(--muted)}
 
-  /* ---------- one person's answers / the legend ---------- */
-  .sheet{position:fixed;z-index:20;left:50%;bottom:16px;transform:translateX(-50%);width:min(560px,calc(100% - 32px));
-    max-height:calc(100% - 32px);overflow:auto;background:var(--card-bg);border:2px solid var(--accent2);border-radius:16px;
-    padding:18px 20px;box-shadow:0 6px 0 rgba(80,32,100,.24)}
-  .sheet[hidden]{display:none}
-  .sheet h2{margin:0 44px 12px 0;font:700 1.35rem/1.1 var(--display);color:var(--accent2)}
-  .sheet .x{position:absolute;top:12px;right:12px;height:30px;padding:0 12px;font-size:.76rem}
-  .rows{display:grid;gap:9px}
-  .row{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center}
-  .row .ic{display:flex;gap:2px;justify-content:center}
-  .row .ic img{height:40px;max-width:50px;object-fit:contain}
-  .q{font-size:.8rem;color:var(--muted)}
-  .a{font-weight:700}
-  .opts{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:2px}
-  .opts span{display:inline-flex;align-items:center;gap:6px;font-size:.9rem;font-weight:600}
-  .opts img{height:30px}
 
   /* ---------- view toggle (same pills as Hands of Vizchitra) ---------- */
   .vb-views{display:flex;gap:6px;flex-wrap:wrap}
@@ -85,18 +67,18 @@
   .grid .leaf{margin:0;width:100%}
   .grid .plate{height:auto;width:100%}
   /* fit hover: the leaf lifts, its stickers straighten up one after another, the rest of the table dims */
-  .grid .plate{transition:transform .28s cubic-bezier(.3,1.4,.5,1),filter .28s ease}
-  .grid .leaf{transition:opacity .25s ease}
-  .grid img.st{transition:transform .3s cubic-bezier(.3,1.6,.5,1) calc(var(--i,0)*35ms)}
+  :is(.grid,.stage) .plate{transition:transform .28s cubic-bezier(.3,1.4,.5,1),filter .28s ease}
+  :is(.grid,.stage) .leaf{transition:opacity .25s ease}
+  :is(.grid,.stage) img.st{transition:transform .3s cubic-bezier(.3,1.6,.5,1) calc(var(--i,0)*35ms)}
   @media (hover:hover){
-    .grid:has(.leaf:hover) .leaf:not(:hover){opacity:.45}
-    .grid .leaf:hover .plate{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 10px 12px rgba(35,39,48,.18))}
-    .grid .leaf:hover img.st{transform:translate(-50%,-50%) rotate(0deg) scale(1.1)}
-    .grid .leaf:hover img.st:hover{transform:translate(-50%,-50%) rotate(calc(var(--r)*-2)) scale(1.45);transition-delay:0s;z-index:2}
+    .grid:has(.leaf:hover) .leaf:not(:hover),.belt:has(.leaf:hover) .leaf:not(:hover){opacity:.45}
+    :is(.grid,.stage) .leaf:hover .plate{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 10px 12px rgba(35,39,48,.18))}
+    :is(.grid,.stage) .leaf:hover img.st{transform:translate(-50%,-50%) rotate(0deg) scale(1.1)}
+    :is(.grid,.stage) .leaf:hover img.st:hover{transform:translate(-50%,-50%) rotate(calc(var(--r)*-2)) scale(1.45);transition-delay:0s;z-index:2}
   }
-  .grid .leaf.tipped .plate{transform:translateY(-5px) scale(1.06)}
-  .grid .leaf.tipped img.st{transform:translate(-50%,-50%) rotate(0deg) scale(1.1)}
-  .grid img.st.hl{transform:translate(-50%,-50%) rotate(calc(var(--r)*-2)) scale(1.45)!important;transition-delay:0s;z-index:2}
+  :is(.grid,.stage) .leaf.tipped .plate{transform:translateY(-5px) scale(1.06)}
+  :is(.grid,.stage) .leaf.tipped img.st{transform:translate(-50%,-50%) rotate(0deg) scale(1.1)}
+  :is(.grid,.stage) img.st.hl{transform:translate(-50%,-50%) rotate(calc(var(--r)*-2)) scale(1.45)!important;transition-delay:0s;z-index:2}
 
   /* the tooltip that reads a leaf in fit view */
   .tip{position:fixed;z-index:30;left:0;top:0;width:min(290px,calc(100vw - 24px));padding:12px 14px 10px;background:var(--card-bg);
@@ -112,7 +94,7 @@
   .trow small{display:block;font-size:.72rem;line-height:1.25;color:var(--muted)}
   .trow.hl{background:color-mix(in srgb,var(--accent1) 16%,transparent)}
   .trow.hl .ic img{transform:scale(1.25) rotate(-6deg)}
-  body:not(.view-fit) .tip{display:none}
+  body.view-original .tip{display:none}
   body:not(.view-scroll) .stage{display:none}
   body:not(.view-fit) #fitGrid{display:none}
 
@@ -202,10 +184,6 @@
 
 <div class="tip" id="tip" role="tooltip" aria-live="polite"></div>
 
-<div class="sheet" id="sheet" hidden role="dialog" aria-live="polite">
-  <button class="btn x" id="close" type="button">Close</button>
-  <div id="body"></div>
-</div>
 
 <script>
 (function(){
@@ -220,27 +198,11 @@
   const file=(k,v)=>k==='pp'?({'1':'papad1','2':'papad2','3+':'papad3'})[v]:v.replace(/ /g,'');
   const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const $=id=>document.getElementById(id);
-  const stage=$('stage'),sheet=$('sheet'),body=$('body'),pause=$('pause');
-  let current=null,held=false;
-  const setPaused=()=>stage.classList.toggle('paused',held||current!==null);
+  const stage=$('stage'),pause=$('pause');
+  let held=false;
+  const setPaused=()=>stage.classList.toggle('paused',held||!!tipLeaf);
 
 
-  function closeSheet(){
-    sheet.hidden=true;current=null;setPaused();
-    document.querySelectorAll('.leaf.on').forEach(e=>e.classList.remove('on'));
-  }
-  function show(d){
-    const parts=v=>v.split(' + ').map(s=>{const m=s.match(/^(.*?)(?: x(\d+))?$/);return [m[1],+(m[2]||1)]});
-    let h='<h2>'+(d.name?esc(d.name):'No name on this leaf')+'</h2><div class="rows">';
-    for(const q of Q){
-      const v=d[q.k];let ic='',a='No sticker';
-      if(v){const p=parts(v);
-        ic=p.map(([n])=>'<img src="s/'+file(q.k,n)+'.webp" alt="">').join('');
-        a=p.map(([n,c])=>q.o[n]+(c>1?' ×'+c:'')).join(' + ');}
-      h+='<div class="row"><div class="ic">'+ic+'</div><div><div class="q">'+q.q+'</div><div class="a">'+a+'</div></div></div>';
-    }
-    body.innerHTML=h+'</div>';sheet.hidden=false;setPaused();
-  }
   // which question a sticker answers, e.g. KEY.roohafza = 'dr'
   const KEY={};for(const q of Q)for(const o in q.o)KEY[file(q.k,o)]=q.k;
   const tip=$('tip');let tipLeaf=null,pinned=false;
@@ -255,12 +217,12 @@
     }
     tip.innerHTML=h;
     if(tipLeaf&&tipLeaf!==b)tipLeaf.classList.remove('tipped');
-    tipLeaf=b;b.classList.add('tipped');placeTip();
+    tipLeaf=b;b.classList.add('tipped');setPaused();placeTip();
     requestAnimationFrame(()=>tip.classList.add('show'));
   }
   function tipOff(){
     tip.classList.remove('show','pinned');hlRow(null);
-    if(tipLeaf)tipLeaf.classList.remove('tipped');tipLeaf=null;
+    if(tipLeaf)tipLeaf.classList.remove('tipped');tipLeaf=null;setPaused();
   }
   function hlRow(k){
     tip.querySelectorAll('.trow').forEach(r=>r.classList.toggle('hl',!!k&&r.dataset.k===k));
@@ -270,13 +232,14 @@
   function placeTip(){
     if(!tipLeaf)return;
     const r=tipLeaf.querySelector('.plate').getBoundingClientRect(),rb=tipLeaf.getBoundingClientRect(),W=innerWidth,H=innerHeight,m=12,
-          tw=tip.offsetWidth,th=tip.offsetHeight;
+          tw=tip.offsetWidth,th=tip.offsetHeight,nav=document.querySelector('.sf-nav'),
+          top=nav?Math.max(0,nav.getBoundingClientRect().bottom):0;
     let x,y,o;
     if(r.right+m+tw<=W-m){x=r.right+m;y=r.top+r.height/2-th/2;o='left center';}
     else if(r.left-m-tw>=m){x=r.left-m-tw;y=r.top+r.height/2-th/2;o='right center';}
-    else{x=r.left+r.width/2-tw/2;
-      if(rb.bottom+m+th<=H-m){y=rb.bottom+m;o='center top';}else{y=r.top-m-th;o='center bottom';}}
-    x=Math.max(m,Math.min(W-m-tw,x));y=Math.max(m,Math.min(H-m-th,y));
+    else{x=r.left+r.width/2-tw/2;   // below or above, whichever has more room (clear of the nav bar)
+      if(H-rb.bottom>=r.top-top){y=rb.bottom+m;o='center top';}else{y=r.top-m-th;o='center bottom';}}
+    x=Math.max(m,Math.min(W-m-tw,x));y=Math.max(top+m,Math.min(H-m-th,y));
     tip.style.setProperty('--tx',Math.round(x)+'px');tip.style.setProperty('--ty',Math.round(y)+'px');tip.style.setProperty('--to',o);
   }
   addEventListener('scroll',()=>{if(pinned)placeTip();else if(tipLeaf)tipOff();},{passive:true});
@@ -296,7 +259,7 @@
     }
     b.appendChild(p);
     const nm=document.createElement('span');nm.className='nm';nm.textContent=d.name||'';b.appendChild(nm);
-    if(clone==='lazy'){            // the fit grid reads leaves with a tooltip instead of the sheet
+    {                              // every leaf is read with the tooltip
       b.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&!pinned)tipOn(d,b);});
       b.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&!pinned)tipOff();});
       b.addEventListener('focus',()=>{if(!pinned)tipOn(d,b);});
@@ -308,14 +271,7 @@
         tipOn(d,b);pinned=e.pointerType!=='mouse';tip.classList.toggle('pinned',pinned);
         if(e.target.classList.contains('st'))hlRow(e.target.dataset.k);
       });
-      return b;
     }
-    b.addEventListener('click',()=>{
-      if(current===d.id){closeSheet();return;}
-      document.querySelectorAll('.leaf.on').forEach(e=>e.classList.remove('on'));
-      document.querySelectorAll('.leaf[data-id="'+d.id+'"]').forEach(e=>e.classList.add('on'));
-      current=d.id;show(d);
-    });
     return b;
   }
   fetch('data.json').then(r=>r.json()).then(D=>{
@@ -335,11 +291,10 @@
       f.appendChild(im);$('strips').appendChild(f);
     }
   });
-  $('close').addEventListener('click',closeSheet);
   pause.addEventListener('click',()=>{held=!held;$('ppIcon').setAttribute('d',held?'M2 1l9 5-9 5z':'M2 1h3v10H2zM7 1h3v10H7z');pause.setAttribute('aria-label',held?'Play':'Pause');setPaused();});
   // views
   document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{
-    closeSheet();pinned=false;tipOff();
+    pinned=false;tipOff();
     document.querySelectorAll('[data-view]').forEach(o=>o.classList.toggle('active',o===btn));
     document.body.classList.remove('view-scroll','view-fit','view-original');
     document.body.classList.add('view-'+btn.dataset.view);
@@ -359,7 +314,7 @@
   }
   addEventListener('resize',()=>{if(document.body.classList.contains('view-fit'))fitCells();});
 
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSheet();pinned=false;tipOff();}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){pinned=false;tipOff();}});
 })();
 </script>
 <div id="sf-footer-mount"></div>
