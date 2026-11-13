@@ -153,6 +153,14 @@
   /* ---- insights: one dot per hand, per answer ------------------------------ */
   .hov-insights{display:none;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:18px;padding:10px var(--gutter) 4px}
   .hov-insights.on{display:grid;}
+  /* wide screens: everything on one screen. Four columns; the average hand and the
+     jellyfish (the two tallest cards) each take two rows. --s shrinks the drawings
+     further if the window is short (set by fitInsights). */
+  .hov-insights.wide{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding-top:6px;align-items:start;}
+  .hov-insights.wide .icard:nth-child(1),.hov-insights.wide .icard:nth-child(4){grid-row:span 2;}
+  .hov-insights.wide .icard{padding:12px 15px 10px;}
+  .hov-insights.wide .icard h3{margin-bottom:8px;font-size:1rem;}
+  .hov-insights.wide .irow{padding:4px 0;}
   .icard{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:16px 18px 14px;}
   .icard h3{margin:0 0 12px;font:700 1.08rem/1.2 var(--display);color:var(--text);}
   .irow{display:grid;grid-template-columns:minmax(0,1fr) 2.6em;gap:4px 10px;align-items:center;padding:6px 0;border-top:1px dashed var(--border);}
@@ -163,11 +171,11 @@
   .irow .n small{display:block;margin-top:2px;font:600 .62rem/1 var(--hand);color:var(--muted);text-align:right;}
   .irow.top .n{color:var(--accent1-text);}
   .units{grid-column:1;display:flex;flex-wrap:wrap;gap:2px 1px;align-items:flex-end;}
-  .unit{height:var(--uh,24px);width:auto;display:block;pointer-events:none;}
+  .unit{height:calc(var(--uh,24px)*var(--s,1));width:auto;display:block;pointer-events:none;}
   .hov-insights.on .unit{animation:hovpop .32s cubic-bezier(.3,1.6,.5,1) backwards;animation-delay:calc(var(--n)*16ms);}
   @keyframes hovpop{from{transform:scale(0) rotate(-20deg)}}
   /* the pentagon card: the average hand, drawn like the loader */
-  .pent{display:block;width:100%;max-width:330px;margin:0 auto;height:auto;overflow:visible;}
+  .pent{display:block;width:100%;max-width:calc(330px*var(--s,1));margin:0 auto;height:auto;overflow:visible;}
   .pent .hand{fill:none;stroke:var(--text);stroke-width:11;stroke-linejoin:round;opacity:.85;}
   .pent .arcs circle{fill:none;stroke-width:46;opacity:.55;mix-blend-mode:multiply;}
   .pent .ring{fill:none;stroke:var(--text);stroke-opacity:.18;stroke-width:5;stroke-dasharray:14 14;}
@@ -197,7 +205,7 @@
   .roll-scroller::-webkit-scrollbar-thumb{background:var(--paper-edge);border-radius:6px;}
   .roll-scroller.dragging{cursor:grabbing;}
   .roll-scroller:focus-visible{box-shadow:inset 0 0 0 2px var(--accent2);}
-  .roll-scroller img{flex:none;display:block;height:100%;width:auto;max-width:none;
+  .roll-scroller img{flex:none;display:block;height:100%;width:auto;max-width:none;margin-inline:auto;
     user-select:none;-webkit-user-drag:none;border-radius:4px;box-shadow:0 1px 3px rgba(35,39,48,.12);
     opacity:0;transition:opacity .5s ease;}
   .roll-scroller img.ready{opacity:1;}
@@ -2365,7 +2373,23 @@ function pentagonChart(avg,best){
   const key=`<div class="pkey">`+K.map((k,i)=>`<span><i class="sw" style="background:var(--${k})"></i>${L[i]} <b class="${avg[k]===best?"top":""}">${avg[k].toFixed(1)}</b></span>`).join("")+`</div>`;
   return `<svg class="pent" viewBox="-20 20 1680 2360" role="img" aria-label="Average enjoyment out of 5: ${K.map((k,i)=>L[i]+" "+avg[k].toFixed(1)).join(", ")}">${g}</svg>`+key;
 }
-function buildInsights(data){INS_DATA=data;if(document.getElementById("hovInsights").classList.contains("on"))drawInsights();}
+// On wide screens, lay the cards out in four columns and shrink the drawings until
+// the whole tab fits under the header without scrolling.
+function fitInsights(){
+  const box=document.getElementById("hovInsights");
+  if(!box||!box.classList.contains("on")) return;
+  const wide=innerWidth>=1200;
+  box.classList.toggle("wide",wide);
+  let s=1; box.style.setProperty("--s",s);
+  if(!wide) return;
+  const fits=()=>box.getBoundingClientRect().bottom+scrollY<=innerHeight-12;
+  while(!fits() && s>0.65){ s=+(s-0.05).toFixed(2); box.style.setProperty("--s",s); }
+  // too short to fit without tiny drawings: keep them full size and let the page scroll
+  if(!fits()) box.style.setProperty("--s",1);
+}
+let insFitT=0;
+addEventListener("resize",()=>{clearTimeout(insFitT);insFitT=setTimeout(fitInsights,150);});
+function buildInsights(data){INS_DATA=data;if(document.getElementById("hovInsights").classList.contains("on")){drawInsights();fitInsights();}}
 function drawInsights(){
   const box=document.getElementById("hovInsights"),data=INS_DATA;
   if(!box||!data||INS_BUILT===data) return; INS_BUILT=data;
@@ -2465,7 +2489,7 @@ function setView(mode){
   const orig=mode==="original";
   roll.classList.toggle("on",orig);
   document.getElementById("hovInsights").classList.toggle("on",mode==="insights");
-  if(mode==="insights") drawInsights();
+  if(mode==="insights"){ drawInsights(); fitInsights(); }
   document.querySelector(".vb-search").style.visibility=(orig||mode==="insights")?"hidden":"";
   if(orig) showRoll();
   try{ localStorage; }catch(e){}
