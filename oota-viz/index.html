@@ -135,6 +135,19 @@
   .irow .big{grid-row:1/3}
   .combo{display:inline-flex;gap:0;padding:0 3px;border-radius:6px;background:color-mix(in srgb,var(--accent4) 12%,transparent)}
   .irow.blank .lb,.irow.blank .n{color:var(--muted)}
+  /* one line per answer: sticker, label, share */
+  .itiles{display:flex;flex-direction:column}
+  .itile{display:grid;grid-template-columns:52px minmax(0,1fr) auto;grid-template-areas:"ico lb n";align-items:center;gap:10px;
+    padding:5px 0;border-top:1px dashed var(--border)}
+  .itile:first-child{border-top:0}
+  .itile .ico{grid-area:ico;display:flex;align-items:center;justify-content:center;height:40px}
+  .itile .ico img{display:block;max-height:100%;max-width:48px;object-fit:contain}
+  .itile .ph{display:none}
+  .itile .lb{grid-area:lb;font-size:.92rem;font-weight:700;line-height:1.2}
+  .itile .n{grid-area:n;font:700 1.3rem/1 var(--display);color:var(--accent2)}
+  .itile.top .n{color:var(--accent1-text)}
+  .itile.plain .n,.itile.plain .lb{color:var(--muted);font-weight:600}
+  body.view-insights .itile .ico img{animation:pop .4s cubic-bezier(.3,1.6,.5,1) backwards}
   .inote{margin:8px 0 0;font-size:.74rem;color:var(--muted)}
   .insights.tracing .unit{opacity:.18;filter:grayscale(.6)}
   .insights.tracing .unit.who{opacity:1;filter:none;transform:scale(1.5);position:relative;z-index:1}
@@ -371,11 +384,14 @@
         units:multi.map(([d,p])=>'<span class="combo">'+p.map(o=>unit('s/'+file(q.k,o)+'.webp',d,i++)).join('')+'</span>').join('')});}
       if(blank.length) rows.push({label:'Left blank',big:'',n:blank.length,units:'',blank:true});
       const pc=shares(rows.map(r=>r.n)),max=Math.max(...rows.filter(r=>!r.blank).map(r=>r.n));
-      h+='<section class="icard"><h3>'+q.q+'</h3>';
+      // one tile per answer: a single sticker, its share, its label
+      h+='<section class="icard"><h3>'+q.q+'</h3><div class="itiles">';
       rows.forEach((r,j)=>{
-        h+='<div class="irow'+(r.n===max&&!r.blank?' top':'')+(r.blank?' blank':'')+'">'+(r.big?'<img class="big" src="'+r.big+'" alt="">':'<span class="big"></span>')+
-           '<span class="lb">'+r.label+'</span><span class="n" title="'+r.n+' of '+D.length+'">'+pc[j]+'%</span><span class="units">'+r.units+'</span></div>';
+        h+='<div class="itile'+(r.n===max&&!r.blank?' top':'')+(r.blank||!r.big?' plain':'')+'" title="'+r.n+' of '+D.length+'">'+
+           '<span class="ico">'+(r.big?'<img src="'+r.big+'" alt="">':'<i class="ph">'+(r.blank?'':'+')+'</i>')+'</span>'+
+           '<span class="n">'+pc[j]+'%</span><span class="lb">'+r.label+'</span></div>';
       });
+      h+='</div>';
       h+='</section>';
     }
     box.innerHTML=h;
@@ -437,7 +453,7 @@
     if(btn.dataset.view==='fit') fitCells();
     if(btn.dataset.view==='scroll') fitBelts();
     if(searchEl.value)requestAnimationFrame(()=>runSearch(searchEl.value));
-    $('hint').innerHTML=btn.dataset.view==='original'?'The 12 strips as they were photographed.':btn.dataset.view==='insights'?'45 Data Thalis, counted by answer. Hover a sticker to follow one person.':'<span id="count">45</span> Data Thalis. Tap a leaf to read it.';
+    $('hint').innerHTML=btn.dataset.view==='original'?'The 12 strips as they were photographed.':btn.dataset.view==='insights'?'45 Data Thalis, counted by answer.':'<span id="count">45</span> Data Thalis. Tap a leaf to read it.';
   }));
   // fit: size cells so all 45 leaves fill one screen
   function fitCells(){

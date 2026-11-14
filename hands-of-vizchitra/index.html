@@ -151,13 +151,31 @@
      blending, which yellowed it); edge fades show while there's more to scroll. */
   .strip.view-original,.strip.view-insights{display:none;}
   /* ---- insights: one dot per hand, per answer ------------------------------ */
-  .hov-insights{display:none;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:18px;padding:10px var(--gutter) 4px}
+  .hov-insights{display:none;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:16px;padding:10px var(--gutter) 4px;align-items:start;grid-auto-flow:row dense;}
+  /* the hand is the tallest card: let it run down beside the others instead of stretching a row */
+  /* below the four-column layout, cards stack in columns like masonry, so no row
+     is stretched to the tallest card (the hand) and nothing leaves a hole */
+  @media (min-width:740px){
+    .hov-insights.on:not(.wide){display:block;column-count:2;column-gap:16px;}
+    .hov-insights.on:not(.wide) .icard{break-inside:avoid;margin:0 0 16px;}
+  }
   .hov-insights.on{display:grid;}
   /* wide screens: everything on one screen. Four columns; the average hand and the
      jellyfish (the two tallest cards) each take two rows. --s shrinks the drawings
      further if the window is short (set by fitInsights). */
   .hov-insights.wide{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding-top:6px;align-items:start;}
-  .hov-insights.wide .icard:nth-child(1),.hov-insights.wide .icard:nth-child(4){grid-row:span 2;}
+  /* packed: each card sits in a fixed column and spans exactly its own height (JS sets the span on 8px rows) */
+  .hov-insights.wide{grid-auto-rows:8px;row-gap:0;}
+  .hov-insights.wide .icard{margin-bottom:14px;}
+  .hov-insights.wide .icard:nth-child(1){grid-column:1;}
+  .hov-insights.wide .icard:nth-child(2),.hov-insights.wide .icard:nth-child(5){grid-column:2;}
+  .hov-insights.wide .icard:nth-child(3),.hov-insights.wide .icard:nth-child(6){grid-column:3;}
+  .hov-insights.wide .icard:nth-child(4){grid-column:4;}
+  /* in-between widths: three columns, the hand down the left */
+  .hov-insights.on.mid{column-count:3;column-gap:14px;padding-top:6px;}
+  .hov-insights.on.mid .icard{margin-bottom:14px;}
+  .hov-insights.mid .icard{padding:12px 15px 10px;}
+  .hov-insights.mid .icard h3{margin-bottom:8px;font-size:1rem;}
   .hov-insights.wide .icard{padding:12px 15px 10px;}
   .hov-insights.wide .icard h3{margin-bottom:8px;font-size:1rem;}
   .hov-insights.wide .irow{padding:4px 0;}
@@ -171,6 +189,19 @@
   .irow .n small{display:block;margin-top:2px;font:600 .62rem/1 var(--hand);color:var(--muted);text-align:right;}
   .irow.top .n{color:var(--accent1-text);}
   .irow.blank .lb,.irow.blank .n{color:var(--muted);}
+  /* one line per answer: drawing, label, share */
+  .itiles{display:flex;flex-direction:column;}
+  .itile{display:grid;grid-template-columns:56px minmax(0,1fr) auto;grid-template-areas:"ico lb n";align-items:center;gap:10px;
+    padding:5px 0;border-top:1px dashed var(--border);}
+  .itile:first-child{border-top:0;}
+  .itile .ico{grid-area:ico;display:flex;align-items:center;justify-content:center;height:calc(40px*var(--s,1));}
+  .itile .ico img{display:block;max-height:100%;max-width:52px;width:auto;object-fit:contain;}
+  .itile .ph{display:none;}
+  .itile .lb{grid-area:lb;font-size:.9rem;font-weight:700;line-height:1.2;color:var(--text);}
+  .itile .n{grid-area:n;font:700 1.3rem/1 var(--display);color:var(--accent2);}
+  .itile.top .n{color:var(--accent1-text);}
+  .itile.blank .n,.itile.blank .lb{color:var(--muted);font-weight:600;}
+  .hov-insights.on .itile .ico img{animation:hovpop .4s cubic-bezier(.3,1.6,.5,1) backwards;}
   .units{grid-column:1;display:flex;flex-wrap:wrap;gap:2px 1px;align-items:flex-end;}
   .unit{height:calc(var(--uh,24px)*var(--s,1));width:auto;display:block;pointer-events:none;}
   .hov-insights.on .unit{animation:hovpop .32s cubic-bezier(.3,1.6,.5,1) backwards;animation-delay:calc(var(--n)*16ms);}
@@ -2381,14 +2412,17 @@ function pentagonChart(avg,best){
 function fitInsights(){
   const box=document.getElementById("hovInsights");
   if(!box||!box.classList.contains("on")) return;
-  const wide=innerWidth>=1200;
-  box.classList.toggle("wide",wide);
+  const wide=innerWidth>=1200, mid=!wide&&innerWidth>=860;
+  box.classList.toggle("wide",wide); box.classList.toggle("mid",mid);
   let s=1; box.style.setProperty("--s",s);
-  if(!wide) return;
-  const fits=()=>box.getBoundingClientRect().bottom+scrollY<=innerHeight-12;
+  if(!wide&&!mid){ box.querySelectorAll(".icard").forEach(c=>c.style.gridRowEnd=""); return; }
+  const cards=[...box.querySelectorAll(".icard")];
+  const pack=()=>{ if(!wide){cards.forEach(c=>c.style.gridRowEnd="");return;}
+    cards.forEach(c=>{c.style.gridRowEnd="";}); cards.forEach(c=>{c.style.gridRowEnd="span "+Math.ceil((c.getBoundingClientRect().height+14)/8);}); };
+  const fits=()=>{ pack(); return box.getBoundingClientRect().bottom+scrollY<=innerHeight-12; };
   while(!fits() && s>0.65){ s=+(s-0.05).toFixed(2); box.style.setProperty("--s",s); }
   // too short to fit without tiny drawings: keep them full size and let the page scroll
-  if(!fits()) box.style.setProperty("--s",1);
+  if(!fits()){ box.style.setProperty("--s",1); pack(); }
 }
 let insFitT=0;
 addEventListener("resize",()=>{clearTimeout(insFitT);insFitT=setTimeout(fitInsights,150);});
@@ -2406,11 +2440,11 @@ function drawInsights(){
      '<p class="inote">Average arcs drawn at each knuckle, out of 5.</p></section>';
   // the hand and the fingers: one glyph per hand
   const Q=[
-    ["lives","Left hand or right hand?",[["in","Lives in Bangalore"],["out","Lives outside Bangalore"]],26],
-    ["pet","Dog person or cat person?",[["dog","Dog person"],["cat","Cat person"],["both","Both"],["other","Other"],["none","Neither"]],30],
-    ["viz","How many DataViz have you made so far?",[["none","Yet to make my first one"],["1-10","1–10"],["11-50","11–50"],["51-100","51–100"],["101-200","101–200"],["lost_count","Lost count!"]],44],
-    ["travel","How far did you travel to get to Vizchitra?",[["under_10km","Under 10km"],["10-25km","10–25km"],["south_india","Within South India"],["north_india","From North India"],["outside_india","From outside India"]],38],
-    ["chrono","Morning person or night owl?",[["morning","Morning person"],["night","Night owl"],["both","Both"]],28]
+    ["lives","Left hand or right hand?",[["in","Lives in Bangalore"],["out","Lives outside Bangalore"]],52],
+    ["pet","Dog person or cat person?",[["dog","Dog person"],["cat","Cat person"],["both","Both"],["other","Other"],["none","Neither"]],52],
+    ["viz","How many DataViz have you made so far?",[["none","Yet to make my first one"],["1-10","1–10"],["11-50","11–50"],["51-100","51–100"],["101-200","101–200"],["lost_count","Lost count!"]],66],
+    ["travel","How far did you travel to get to Vizchitra?",[["under_10km","Under 10km"],["10-25km","10–25km"],["south_india","Within South India"],["north_india","From North India"],["outside_india","From outside India"]],60],
+    ["chrono","Morning person or night owl?",[["morning","Morning person"],["night","Night owl"],["both","Both"]],46]
   ];
   // whole-number shares of every hand that add up to exactly 100 (largest remainder); blank is its own row
   const shares=counts=>{const t=counts.reduce((a,b)=>a+b,0);if(!t)return counts.map(()=>0);
@@ -2422,12 +2456,14 @@ function drawInsights(){
     const blank=data.filter(d=>!d[k]);
     if(blank.length) rows.push({v:"",label:"Left blank",L:blank,blank:true});
     const pc=shares(rows.map(r=>r.L.length)),max=Math.max(...rows.filter(r=>!r.blank).map(r=>r.L.length));
-    h+=`<section class="icard" style="--uh:${uh}px"><h3>${q}</h3>`;
+    // one tile per answer: a single drawing, its share, its label
+    h+=`<section class="icard" style="--uh:${uh}px"><h3>${q}</h3><div class="itiles">`;
     rows.forEach((r,j)=>{
       const g=!r.blank&&GLYPHS[k]&&GLYPHS[k][r.v];
-      h+=`<div class="irow${r.L.length===max&&max&&!r.blank?" top":""}${r.blank?" blank":""}"><span class="lb">${r.label}</span><span class="n" title="${r.L.length} of ${data.length}">${pc[j]}%</span><span class="units">`+
-         (g?r.L.map((d,i)=>`<img class="unit" src="${g.src}" alt="" style="--n:${i}">`).join(""):"")+`</span></div>`;
+      h+=`<div class="itile${r.L.length===max&&max&&!r.blank?" top":""}${r.blank?" blank":""}" title="${r.L.length} of ${data.length}">`+
+         `<span class="ico">${g?`<img src="${g.src}" alt="">`:`<i class="ph"></i>`}</span><span class="n">${pc[j]}%</span><span class="lb">${r.label}</span></div>`;
     });
+    h+="</div>";
     h+="</section>";
   }
   box.innerHTML=h;
