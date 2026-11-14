@@ -156,8 +156,8 @@
   /* below the four-column layout, cards stack in columns like masonry, so no row
      is stretched to the tallest card (the hand) and nothing leaves a hole */
   @media (min-width:740px){
-    .hov-insights.on:not(.wide){display:block;column-count:2;column-gap:16px;}
-    .hov-insights.on:not(.wide) .icard{break-inside:avoid;margin:0 0 16px;}
+    .hov-insights.on:not(.wide):not(.mid){display:block;column-count:2;column-gap:16px;}
+    .hov-insights.on:not(.wide):not(.mid) .icard{break-inside:avoid;margin:0 0 16px;}
   }
   .hov-insights.on{display:grid;}
   /* wide screens: everything on one screen. Four columns; the average hand and the
@@ -172,8 +172,12 @@
   .hov-insights.wide .icard:nth-child(3),.hov-insights.wide .icard:nth-child(6){grid-column:3;}
   .hov-insights.wide .icard:nth-child(4){grid-column:4;}
   /* in-between widths: three columns, the hand down the left */
-  .hov-insights.on.mid{column-count:3;column-gap:14px;padding-top:6px;}
+  /* packed like the wide layout, in three fixed columns: the hand | hands, pets, morning/night | DataViz, travel */
+  .hov-insights.on.mid{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:8px;row-gap:0;column-gap:14px;padding-top:6px;}
   .hov-insights.on.mid .icard{margin-bottom:14px;}
+  .hov-insights.mid .icard:nth-child(1){grid-column:1;}
+  .hov-insights.mid .icard:nth-child(2),.hov-insights.mid .icard:nth-child(3),.hov-insights.mid .icard:nth-child(6){grid-column:2;}
+  .hov-insights.mid .icard:nth-child(4),.hov-insights.mid .icard:nth-child(5){grid-column:3;}
   .hov-insights.mid .icard{padding:12px 15px 10px;}
   .hov-insights.mid .icard h3{margin-bottom:8px;font-size:1rem;}
   .hov-insights.wide .icard{padding:12px 15px 10px;}
@@ -189,18 +193,19 @@
   .irow .n small{display:block;margin-top:2px;font:600 .62rem/1 var(--hand);color:var(--muted);text-align:right;}
   .irow.top .n{color:var(--accent1-text);}
   .irow.blank .lb,.irow.blank .n{color:var(--muted);}
-  /* one line per answer: drawing, label, share */
-  .itiles{display:flex;flex-direction:column;}
-  .itile{display:grid;grid-template-columns:56px minmax(0,1fr) auto;grid-template-areas:"ico lb n";align-items:center;gap:10px;
-    padding:5px 0;border-top:1px dashed var(--border);}
-  .itile:first-child{border-top:0;}
-  .itile .ico{grid-area:ico;display:flex;align-items:center;justify-content:center;height:calc(40px*var(--s,1));}
-  .itile .ico img{display:block;max-height:100%;max-width:52px;width:auto;object-fit:contain;}
+  /* one tile per answer: the drawing leads, the share sits under it, the label is quiet.
+     --cols balances the rows (5 answers -> 3 + 2, centred) */
+  .itiles{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;row-gap:12px;}
+  .itile.noico .ico{height:6px;}   /* no drawing (neither, blank): don't hold a full icon's space */
+  .itile{box-sizing:border-box;min-width:0;flex:0 0 calc(100% / var(--cols,3));display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:0 3px;}
+  .itile .ico{display:flex;align-items:flex-end;justify-content:center;height:calc(62px*var(--s,1));margin-bottom:4px;}
+  .itile .ico img{display:block;height:100%;width:auto;max-width:100%;object-fit:contain;}
   .itile .ph{display:none;}
-  .itile .lb{grid-area:lb;font-size:.9rem;font-weight:700;line-height:1.2;color:var(--text);}
-  .itile .n{grid-area:n;font:700 1.3rem/1 var(--display);color:var(--accent2);}
+  .itile .n{font:700 1.05rem/1 var(--display);color:var(--accent2);}
   .itile.top .n{color:var(--accent1-text);}
-  .itile.blank .n,.itile.blank .lb{color:var(--muted);font-weight:600;}
+  .itile .lb{font-size:.68rem;font-weight:600;line-height:1.15;color:var(--muted);}
+  .itiles.one .itile{flex:1 1 0;min-width:min-content;padding:0 2px;}
+  .itile.blank .n{color:var(--muted);}
   .hov-insights.on .itile .ico img{animation:hovpop .4s cubic-bezier(.3,1.6,.5,1) backwards;}
   .units{grid-column:1;display:flex;flex-wrap:wrap;gap:2px 1px;align-items:flex-end;}
   .unit{height:calc(var(--uh,24px)*var(--s,1));width:auto;display:block;pointer-events:none;}
@@ -2417,10 +2422,11 @@ function fitInsights(){
   let s=1; box.style.setProperty("--s",s);
   if(!wide&&!mid){ box.querySelectorAll(".icard").forEach(c=>c.style.gridRowEnd=""); return; }
   const cards=[...box.querySelectorAll(".icard")];
-  const pack=()=>{ if(!wide){cards.forEach(c=>c.style.gridRowEnd="");return;}
+  const pack=()=>{ if(!wide&&!mid){cards.forEach(c=>c.style.gridRowEnd="");return;}
     cards.forEach(c=>{c.style.gridRowEnd="";}); cards.forEach(c=>{c.style.gridRowEnd="span "+Math.ceil((c.getBoundingClientRect().height+14)/8);}); };
   const fits=()=>{ pack(); return box.getBoundingClientRect().bottom+scrollY<=innerHeight-12; };
-  while(!fits() && s>0.65){ s=+(s-0.05).toFixed(2); box.style.setProperty("--s",s); }
+  const floor=mid?0.5:0.65;   // three columns run taller, so they may shrink further
+  while(!fits() && s>floor){ s=+(s-0.05).toFixed(2); box.style.setProperty("--s",s); }
   // too short to fit without tiny drawings: keep them full size and let the page scroll
   if(!fits()){ box.style.setProperty("--s",1); pack(); }
 }
@@ -2457,10 +2463,10 @@ function drawInsights(){
     if(blank.length) rows.push({v:"",label:"Left blank",L:blank,blank:true});
     const pc=shares(rows.map(r=>r.L.length)),max=Math.max(...rows.filter(r=>!r.blank).map(r=>r.L.length));
     // one tile per answer: a single drawing, its share, its label
-    h+=`<section class="icard" style="--uh:${uh}px"><h3>${q}</h3><div class="itiles">`;
+    h+=`<section class="icard" style="--uh:${uh}px"><h3>${q}</h3><div class="itiles${rows.length<=6?" one":""}" style="--cols:${rows.length<=6?rows.length:Math.ceil(rows.length/2)}">`;
     rows.forEach((r,j)=>{
       const g=!r.blank&&GLYPHS[k]&&GLYPHS[k][r.v];
-      h+=`<div class="itile${r.L.length===max&&max&&!r.blank?" top":""}${r.blank?" blank":""}" title="${r.L.length} of ${data.length}">`+
+      h+=`<div class="itile${r.L.length===max&&max&&!r.blank?" top":""}${r.blank?" blank":""}${g?"":" noico"}" title="${r.L.length} of ${data.length}">`+
          `<span class="ico">${g?`<img src="${g.src}" alt="">`:`<i class="ph"></i>`}</span><span class="n">${pc[j]}%</span><span class="lb">${r.label}</span></div>`;
     });
     h+="</div>";

@@ -119,9 +119,11 @@
 
   /* ---------- insights: one small sticker per person, per answer ---------- */
   body:not(.view-insights) #insights{display:none}
-  .insights{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:18px;padding:10px 0 4px}
-  .icard{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:16px 18px 14px}
-  .icard h3{margin:0 0 12px;font:700 1.08rem/1.2 var(--display);color:var(--text)}
+  .insights{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px;padding:6px 0 4px;align-items:start}
+  /* three columns, packed: each card spans exactly its own height on 8px rows (fitInsights sets the spans) */
+  @media (min-width:860px){.insights{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:8px;row-gap:0;grid-auto-flow:row dense}.insights .icard{margin-bottom:14px}}
+  .icard{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:12px 14px 12px}
+  .icard h3{margin:0 0 10px;font:700 1rem/1.2 var(--display);color:var(--text)}
   .irow{display:grid;grid-template-columns:44px minmax(0,1fr) 3.3em;gap:4px 10px;align-items:center;padding:6px 0;border-top:1px dashed var(--border)}
   .irow:first-of-type{border-top:0}
   .irow .big{width:40px;height:34px;object-fit:contain}
@@ -135,18 +137,20 @@
   .irow .big{grid-row:1/3}
   .combo{display:inline-flex;gap:0;padding:0 3px;border-radius:6px;background:color-mix(in srgb,var(--accent4) 12%,transparent)}
   .irow.blank .lb,.irow.blank .n{color:var(--muted)}
-  /* one line per answer: sticker, label, share */
-  .itiles{display:flex;flex-direction:column}
-  .itile{display:grid;grid-template-columns:52px minmax(0,1fr) auto;grid-template-areas:"ico lb n";align-items:center;gap:10px;
-    padding:5px 0;border-top:1px dashed var(--border)}
-  .itile:first-child{border-top:0}
-  .itile .ico{grid-area:ico;display:flex;align-items:center;justify-content:center;height:40px}
-  .itile .ico img{display:block;max-height:100%;max-width:48px;object-fit:contain}
+  /* one tile per answer: the sticker leads, the share sits under it, the label is quiet.
+     --cols balances the rows (6 answers -> 3 + 3, 5 -> 3 + 2 centred) */
+  .itiles{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;row-gap:14px}
+  .itile.plain .ico{height:6px}   /* no sticker (more than one, blank): don't hold a full icon's space */
+  .itile{box-sizing:border-box;min-width:0;flex:0 0 calc(100% / var(--cols,3));display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:0 3px}
+  .itile .ico{display:flex;align-items:center;justify-content:center;height:calc(64px*var(--s,1));margin-bottom:4px}
+  .itile .ico img{display:block;max-height:100%;max-width:100%;object-fit:contain}
   .itile .ph{display:none}
-  .itile .lb{grid-area:lb;font-size:.92rem;font-weight:700;line-height:1.2}
-  .itile .n{grid-area:n;font:700 1.3rem/1 var(--display);color:var(--accent2)}
+  .itile .n{font:700 1.1rem/1 var(--display);color:var(--accent2)}
   .itile.top .n{color:var(--accent1-text)}
-  .itile.plain .n,.itile.plain .lb{color:var(--muted);font-weight:600}
+  .itile .lb{font-size:.68rem;font-weight:600;line-height:1.15;color:var(--muted)}
+  /* one-row cards: tiles share the width by content, so long words (Communicator) never break */
+  .itiles.one .itile{flex:1 1 0;min-width:min-content;padding:0 2px}
+  .itile.plain .n{color:var(--muted)}
   body.view-insights .itile .ico img{animation:pop .4s cubic-bezier(.3,1.6,.5,1) backwards}
   .inote{margin:8px 0 0;font-size:.74rem;color:var(--muted)}
   .insights.tracing .unit{opacity:.18;filter:grayscale(.6)}
@@ -385,7 +389,7 @@
       if(blank.length) rows.push({label:'Left blank',big:'',n:blank.length,units:'',blank:true});
       const pc=shares(rows.map(r=>r.n)),max=Math.max(...rows.filter(r=>!r.blank).map(r=>r.n));
       // one tile per answer: a single sticker, its share, its label
-      h+='<section class="icard"><h3>'+q.q+'</h3><div class="itiles">';
+      h+='<section class="icard"><h3>'+q.q+'</h3><div class="itiles one" style="--cols:'+rows.length+'">';
       rows.forEach((r,j)=>{
         h+='<div class="itile'+(r.n===max&&!r.blank?' top':'')+(r.blank||!r.big?' plain':'')+'" title="'+r.n+' of '+D.length+'">'+
            '<span class="ico">'+(r.big?'<img src="'+r.big+'" alt="">':'<i class="ph">'+(r.blank?'':'+')+'</i>')+'</span>'+
@@ -452,6 +456,7 @@
     document.body.classList.add('view-'+btn.dataset.view);
     if(btn.dataset.view==='fit') fitCells();
     if(btn.dataset.view==='scroll') fitBelts();
+    if(btn.dataset.view==='insights') fitInsights();
     if(searchEl.value)requestAnimationFrame(()=>runSearch(searchEl.value));
     $('hint').innerHTML=btn.dataset.view==='original'?'The 12 strips as they were photographed.':btn.dataset.view==='insights'?'45 Data Thalis, counted by answer.':'<span id="count">45</span> Data Thalis. Tap a leaf to read it.';
   }));
@@ -467,6 +472,17 @@
     g.style.setProperty('--cell',Math.max(110,best)+'px');
   }
   addEventListener('resize',()=>{if(document.body.classList.contains('view-fit'))fitCells();});
+  // insights: shrink the stickers (to 60% at most) until every card fits on one screen
+  function fitInsights(){
+    if(!document.body.classList.contains('view-insights'))return;
+    const box=$('insights');let s=1;box.style.setProperty('--s',s);
+    const cards=[...box.querySelectorAll('.icard')],packed=innerWidth>=860;
+    const pack=()=>{cards.forEach(c=>c.style.gridRowEnd='');if(packed)cards.forEach(c=>c.style.gridRowEnd='span '+Math.ceil((c.getBoundingClientRect().height+14)/8));};
+    const fits=()=>{pack();return box.getBoundingClientRect().bottom+scrollY<=innerHeight-12;};
+    while(!fits()&&s>0.6){s=+(s-0.05).toFixed(2);box.style.setProperty('--s',s);}
+    if(!fits()){box.style.setProperty('--s',1);pack();}
+  }
+  addEventListener('resize',()=>{clearTimeout(fitInsights.t);fitInsights.t=setTimeout(fitInsights,150);});
   // scroll: if both belts don't fit under the header (phones, short windows), shrink the leaves until they do
   let fitW=0,fitH=0;
   function fitBelts(){
