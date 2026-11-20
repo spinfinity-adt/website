@@ -29,6 +29,14 @@
 .pick button.active{background:var(--accent2);border-color:var(--accent2);color:#fff;box-shadow:3px 3px 0 var(--accent1-text)}
 .pick button:focus-visible{outline:2px solid var(--accent3);outline-offset:3px}
 .ktag[hidden]{display:none}
+/* the tabs on the left, the search box on the right of the same row */
+.pick-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;margin-top:.4rem}
+.pick-row .pick{margin-top:0}
+.proj-search{font-family:var(--hand);font-size:.95rem;color:var(--text);background:var(--card-bg);border:2px solid var(--border);border-radius:999px;
+  padding:.5rem 1.1rem;width:min(100%,260px);outline:none;transition:border-color .15s}
+.proj-search::placeholder{color:var(--muted)}
+.proj-search:focus{border-color:var(--accent2)}
+@media (max-width:640px){.proj-search{width:100%}}
 .rings{margin-top:2.2rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:1.6rem 1.8rem}
 /* a tag hangs from its hoop: the hoop sits on the top-left corner and goes through the punched hole */
 .ktag{position:relative;display:block;padding:30px 0 0 28px;text-decoration:none;color:var(--text);min-width:0}
@@ -59,11 +67,14 @@
     <div id="projects" class="anim-1">
       <!-- Aditi's note about the categories goes inside this paragraph; it stays hidden while empty -->
       <p class="proj-note" id="proj-note"></p>
-      <div class="pick" id="pick" role="group" aria-label="show">
-        <button class="active" data-show="all">all</button>
-        <button data-show="learning">learning engagements</button>
-        <button data-show="tech">creative tech</button>
-        <button data-show="participatory">participatory viz</button>
+      <div class="pick-row">
+        <div class="pick" id="pick" role="group" aria-label="show">
+          <button class="active" data-show="all">all</button>
+          <button data-show="learning">learning engagements</button>
+          <button data-show="tech">creative tech</button>
+          <button data-show="participatory">participatory viz</button>
+        </div>
+        <input class="proj-search" id="proj-search" type="search" placeholder="search projects…" autocomplete="off" aria-label="Search projects">
       </div>
       <p class="hoop-key" id="hoop-key" role="group" aria-label="what the hoop colours mean (click one to filter)"></p>
       <div class="rings" id="rings"></div>
@@ -79,7 +90,7 @@
   // ADD A PROJECT = add one object here. Fields: name, url, img, desc, plus
   //   kind: "learning" (shows under learning engagements) or "tech" (shows under creative tech)
   //   participatory: true also shows it under participatory viz
-  //   "all" shows every project, in the order they're listed here
+  //   every tab lists projects A–Z by name (sorted below), so the order here doesn't matter
   //   made: any of "art", "data", "technology", "math", "movement" - these colour the project's hoop
   const projects = [
    
@@ -97,7 +108,7 @@
       kind:"tech", made:["art","data","technology","math","movement"],
       desc:"One hundred days. One small thing made each day. A log of experiments, failures, sketches and surprises — proof that the practice matters more than the output." },
 
-    { name:"Mosaic Data Viz", url:"https://spinfinity.in/mosaic-data-viz", img:"images/mosaic-data-viz.jpg",
+    { name:"Mosaic Data Viz", url:"https://spinfinity.in/mosaic-data-viz", img:"images/mosaic-data-viz-postcard.jpg",
       kind:"tech", participatory:true, made:["data","technology","art"],
       desc:"A creative coding recreation of a community data selfie — collecting and visualising people's data at Mosaic, a live community event." },
 
@@ -113,7 +124,7 @@
       kind:"tech", made:["technology","data"],
       desc:"A generative data portrait gallery made with Claude. Tell it who you are — your loves, your chaos, your aesthetics — and it translates you into a living p5.js sketch." },
 
-    { name:"Hands of Vizchitra", url:"https://spinfinity.in/hands-of-vizchitra/", img:"images/hands-of-vizchitra.jpg",
+    { name:"Hands of Vizchitra", url:"https://spinfinity.in/hands-of-vizchitra/", img:"images/hands-of-vizchitra-postcard.jpg",
       kind:"tech", participatory:true, made:["data","art","technology"],
       desc:"At Vizchitra 2025, ~44 people traced a hand and encoded themselves onto it in highlighter and ink. Every hand redrawn as data — click one to see the original paper." },
 
@@ -121,7 +132,7 @@
       kind:"tech", participatory:true, made:["data","art"],
       desc:"Inspired by github contribution charts, this was an attempt to record all the IndiaFOSS 2026 attendees" },
 
-    { name:"Oota Viz", url:"https://spinfinity.in/oota-viz/", img:"images/oota-viz.jpg",
+    { name:"Oota Viz", url:"https://spinfinity.in/oota-viz/", img:"images/oota-viz-postcard.jpg",
       kind:"tech", participatory:true, made:["data","art"],
       desc:"A plate of you, served with data" }
   ];
@@ -147,7 +158,7 @@
       + (n === 1 ? '' : ' stroke-dasharray="'+len.toFixed(2)+' '+(len*(cols.length-1)).toFixed(2)+'" stroke-dashoffset="'+(-i*len).toFixed(2)+'"')
       + ' transform="rotate(-90 42 42)"/>').join("") + '</g></svg>';
   }
-  const card = p => '<a class="ktag" data-kind="'+esc(p.kind)+'"'+(p.participatory ? ' data-participatory' : '')+' data-made="'+esc((p.made||[]).join(" "))+'" href="'+esc(p.url)+'">'
+  const card = p => '<a class="ktag" data-find="'+esc(p.find||"")+'" data-kind="'+esc(p.kind)+'"'+(p.participatory ? ' data-participatory' : '')+' data-made="'+esc((p.made||[]).join(" "))+'" href="'+esc(p.url)+'">'
       + '<span class="hoop-slot" title="'+esc((p.made||[]).join(", "))+'">'+hoop(p.made)+'</span>'
       + '<span class="ktag-card">'
       + '<span class="ktag-name">'+esc(p.name)+'</span>'
@@ -155,6 +166,8 @@
       + '<span class="ktag-desc">'+esc(p.desc)+'</span>'
       + '<span class="ktag-go">open project →</span>'
       + '</span></a>';
+  projects.sort((a,b) => a.name.localeCompare(b.name, "en", {numeric:true, sensitivity:"base"}));
+  projects.forEach(p => p.find = (p.name+" "+p.desc).toLowerCase());
   document.getElementById("rings").innerHTML = projects.map(card).join("");
   document.getElementById("hoop-key").innerHTML = Object.keys(MADE).map(m => '<button type="button" data-made="'+m+'" aria-pressed="false"><i style="--k:'+MADE[m]+'"></i>'+m+'</button>').join("");
 
@@ -164,13 +177,14 @@
   const pick = document.getElementById("pick");
   // the hoop colours (art, data, ...) also filter, on top of the tab; click again to clear. Not in the link.
   const key = document.getElementById("hoop-key");
-  let tab = "all", made = "";
+  let tab = "all", made = "", query = "";
   function apply(){
     let n = 0;
     document.querySelectorAll("#rings .ktag").forEach(t => {
       const inTab = tab === "all" || t.dataset.kind === tab || (tab === "participatory" && t.hasAttribute("data-participatory"));
       const inMade = !made || t.dataset.made.split(" ").includes(made);
-      t.hidden = !(inTab && inMade); if (!t.hidden) n++;
+      const inFind = !query || query.split(/\s+/).every(w => t.dataset.find.includes(w));
+      t.hidden = !(inTab && inMade && inFind); if (!t.hidden) n++;
     });
     document.getElementById("rings-empty").hidden = n > 0;
   }
@@ -186,6 +200,9 @@
     key.classList.toggle("on", !!made);
     apply();
   });
+  const search = document.getElementById("proj-search");
+  search.addEventListener("input", () => { query = search.value.trim().toLowerCase(); apply(); });
+  search.addEventListener("keydown", e => { if (e.key === "Escape") { search.value = ""; query = ""; apply(); } });
   function fromLink(){
     const h = location.hash.slice(1);
     showTab(Object.keys(LINK).find(k => LINK[k] === h) || "all");
