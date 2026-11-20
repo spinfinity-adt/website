@@ -14,40 +14,47 @@
     
     main { padding-bottom: 56px; }
 
-    /* hero: title + key on the left, the mosaic beside it */
+    /* title across the top; under it the mosaic (scaled to fit the screen) with its key beside it, like the postcard */
+    .proj-header.split { padding-top: 28px; margin-bottom: 18px; }
+    .proj-header.split .proj-title { max-width: none; }
     .hero {
       display: grid;
-      grid-template-columns: minmax(260px, 1fr) auto;
-      gap: clamp(24px, 3vw, 48px);
+      grid-template-columns: minmax(0, auto) minmax(220px, 260px);
+      justify-content: center;
+      gap: clamp(20px, 2.5vw, 40px);
       align-items: start;
     }
-    .hero-side .proj-header.split { padding-top: 32px; margin-bottom: 20px; }
-    .hero-side .legend { margin-top: 28px; grid-template-columns: 1fr; padding: 4px 0 0; background: none; border: 0; gap: 4px; }
-    .hero-side .legend-section { padding: 10px 0; }
-    .hero-main { padding-top: 40px; }
-    @media (max-width: 1400px) {
-      .hero { grid-template-columns: minmax(0, 1fr); }
-      .hero-main { padding-top: 0; }
-      .hero-side .proj-header.split { margin-bottom: 0; }
-      .hero-side { display: contents; }
-      .hero-side .legend { order: 3; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); padding: 24px 28px; background: var(--card-bg); border: 1px solid var(--border); }
-    }
-    
+    .hero-main { min-width: 0; }
     #canvas-container {
-      display: flex;
-      justify-content: flex-start;
+      width: var(--mw, 100%);
+      max-width: 100%;
       filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.5));
-      overflow-x: auto;
-      overflow-y: hidden;
-      -webkit-overflow-scrolling: touch;
-      margin: 0 calc(-1 * var(--gutter));
-      padding: 0 var(--gutter);
     }
-    
-    canvas {
+    /* p5 draws at 1000x600; show it at whatever size fits, never cropped */
+    #canvas-container canvas {
+      display: block;
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 5 / 3;
       border-radius: 8px;
       background: transparent !important;
-      min-width: 1000px;
+    }
+    .hero .legend {
+      margin: 0; display: block; padding: 0; background: none; border: 0; backdrop-filter: none; overflow: visible;
+    }
+    /* --ks grows the key on big screens so it runs about as tall as the mosaic */
+    .hero .legend { font-size: calc(1rem * var(--ks, 1)); }
+    .hero .legend-section { padding: 0 0 .9em; }
+    .hero .legend-title { font-size: 1em; line-height: 1.2; margin-bottom: .4em; }
+    .hero .legend-item { margin: .32em 0; font-size: .86em; }
+    .hero .legend-color { width: 1.15em; height: 1.15em; }
+    /* when the mosaic is short (narrower windows), set each key section in two columns, like the postcard */
+    .hero.k2 { grid-template-columns: minmax(0, auto) minmax(300px, 340px); }
+    .hero.k2 .legend-section { display: grid; grid-template-columns: 1fr 1fr; column-gap: 14px; }
+    .hero.k2 .legend-title { grid-column: 1 / -1; }
+    @media (max-width: 859px) {
+      .hero { grid-template-columns: minmax(0, 1fr); }
+      .hero .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap: 4px 20px; }
     }
     
     .legend {
@@ -120,11 +127,19 @@
     
     .photos-container {
       display: flex;
+      align-items: flex-start;   /* photos and postcard share a height; the download button hangs below */
       gap: 12px;
       margin-bottom: 12px;
     }
     .photos-container .analog-photo:nth-child(1) { flex: .751 1 0; min-width: 0; aspect-ratio: 1502/2000; }
     .photos-container .analog-photo:nth-child(2) { flex: 1.36 1 0; min-width: 0; aspect-ratio: 1280/941; }
+    /* from paper to postcard: the take-home card sits at the end of the row, the same height as the photos */
+    .photos-container .postcard { flex: 1.542 1 0; min-width: 0; margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+    .postcard img { display: block; width: 100%; height: auto; aspect-ratio: 1800/1167; border-radius: 8px; border: 1px solid var(--border); }
+    .pc-dl { display: inline-flex; align-items: center; height: 34px; padding: 0 16px; border: 1.5px solid var(--accent2); border-radius: 999px;
+      color: var(--text); font-weight: 700; font-size: .86rem; text-decoration: none; transition: background .15s, color .15s; }
+    .pc-dl:hover { background: var(--accent2); color: var(--bg); }
+    .pc-dl:focus-visible { outline: 2px solid var(--accent1-text); outline-offset: 3px; }
     @media (max-width: 760px) { .photos-container { flex-direction: column; } }
     
     .analog-photo {
@@ -178,8 +193,6 @@
   <div id="sf-nav-mount"></div>
 <script src="/nav.js"></script>
 <main class="frame">
-  <div class="hero">
-   <div class="hero-side">
     <header class="proj-header split">
       <div class="proj-title">
         <h1>MOSAIC Data <span class="w">Selfie</span></h1>
@@ -189,7 +202,8 @@
         <a href="https://open.substack.com/pub/spinfinity/p/mosaic-data-selfie" target="_blank" class="read-more-link">Read About the Creative Process →</a>
       </div>
     </header>
-
+  <div class="hero">
+   <div class="hero-main"><div id="canvas-container"></div></div>
     <div class="legend">
       <div class="legend-section">
         <div class="legend-title">Which role do you identify with the most?</div>
@@ -259,14 +273,16 @@
         </div>
       </div>
     </div>
-   </div>
-   <div class="hero-main"><div id="canvas-container"></div></div>
   </div>
 
     <div class="analog-section">
       <div class="photos-container">
         <img src="analog-mosaic-1.jpg" alt="Analog MOSAIC Data Selfie on easel" class="analog-photo">
         <img src="analog-mosaic-2.png" alt="Analog MOSAIC Data Selfie close-up" class="analog-photo">
+        <figure class="postcard">
+          <img src="postcard.webp" width="1800" height="1167" loading="lazy" alt="The MOSAIC #1 Data Selfie postcard: the mosaic of everyone's triangles with its key, and a QR code to this page">
+          <a class="pc-dl" href="postcard.png" download="mosaic-data-viz-postcard.png">download the postcard</a>
+        </figure>
       </div>
       <div class="analog-caption measure">The original analog data selfie created by participants at the Mosaic Science Community launch</div>
     </div>
@@ -680,6 +696,31 @@ function isPointInTriangle(px, py, p) {
   let a3 = abs((p[2].x-px)*(p[0].y-py)-(p[0].x-px)*(p[2].y-py));
   return abs(area-(a1+a2+a3)) < 1;
 }
+
+// Size the mosaic to the screen: as wide as its column allows, but short enough to sit fully
+// under the title (it's drawn at 1000x600, so the shape stays 5:3).
+function fitMosaic(){
+  const box=document.getElementById('canvas-container'), hero=document.querySelector('.hero');
+  if(!box||!hero) return;
+  hero.classList.remove('k2'); sizeMosaic(box,hero);
+  // key taller than the mosaic beside it: two-column key sections, then size the mosaic again
+  const legend=document.querySelector('.hero .legend');
+  legend.style.removeProperty('--ks');
+  if(innerWidth>=860 && legend.getBoundingClientRect().height>box.getBoundingClientRect().height+24){ hero.classList.add('k2'); sizeMosaic(box,hero); }
+  // big screens: the mosaic runs much taller than the key, so let the key grow (up to 1.4x)
+  else if(innerWidth>=860){
+    const r=box.getBoundingClientRect().height/legend.getBoundingClientRect().height;
+    if(r>1.15){ legend.style.setProperty('--ks',Math.min(1.4,r*0.95).toFixed(2)); sizeMosaic(box,hero); }
+  }
+}
+function sizeMosaic(box,hero){
+  const wide=innerWidth>=860, legendW=wide?(document.querySelector('.hero .legend').getBoundingClientRect().width+parseFloat(getComputedStyle(hero).columnGap||0)):0;
+  const colW=hero.clientWidth-legendW, top=box.getBoundingClientRect().top+scrollY;
+  const byH=wide?(innerHeight-top-20)*5/3:Infinity;
+  box.style.setProperty('--mw',Math.round(Math.max(320,Math.min(colW,byH)))+'px');
+}
+fitMosaic(); addEventListener('load',fitMosaic);
+addEventListener('resize',()=>{clearTimeout(fitMosaic.t);fitMosaic.t=setTimeout(fitMosaic,120);});
   </script>
   <div id="sf-footer-mount"></div>
 </body>
