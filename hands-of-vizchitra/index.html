@@ -59,13 +59,8 @@
     gap:0; align-items:center; justify-items:center;
     padding:34px 20px 40px;
     border-top:1px solid var(--paper-edge);border-bottom:1px solid var(--paper-edge);
-    /* the long paper roll: cream ground + faint tooth, distinct from the page */
+    /* the long paper roll: plain cream ground, distinct from the page */
     background-color:var(--paper);
-    background-image:
-      radial-gradient(var(--paper-2) 1px, transparent 1.4px),
-      radial-gradient(var(--paper-2) 1px, transparent 1.4px);
-    background-size:22px 22px, 22px 22px;
-    background-position:0 0, 11px 11px;
   }
   /* Phone: pack 3 across (was 2) so you still get the mass on a small screen */
   @media (max-width:520px){
@@ -149,7 +144,16 @@
   /* ---- original view: the photographed paper roll, scrolled sideways -------
      Same cream band as the hands. The photo sits on it at its true colours (no
      blending, which yellowed it); edge fades show while there's more to scroll. */
-  .strip.view-original,.strip.view-insights{display:none;}
+  .strip.view-original,.strip.view-insights,.strip.view-postcard{display:none;}
+  /* ---- postcard: the printable card, sized to the screen, with a download ---- */
+  .hov-postcard{display:none;flex-direction:column;align-items:center;gap:12px;padding:8px var(--gutter) 0;}
+  .hov-postcard.on{display:flex;}
+  .hov-postcard img{display:block;max-width:100%;width:auto;height:auto;max-height:var(--pc-h,70vh);aspect-ratio:3/2;
+    border-radius:6px;border:1px solid var(--border);box-shadow:0 6px 18px -10px rgba(35,39,48,.35);background:var(--card-bg);}
+  .pc-dl{display:inline-flex;align-items:center;height:34px;padding:0 16px;border:1px solid var(--accent2);border-radius:999px;
+    color:var(--accent2);font:700 .86rem/1 var(--hand);text-decoration:none;transition:background .15s,color .15s;}
+  .pc-dl:hover{background:var(--accent2);color:var(--bg);}
+  .pc-dl:focus-visible{outline:2px solid var(--accent4);outline-offset:3px;}
   /* ---- insights: one dot per hand, per answer ------------------------------ */
   .hov-insights{display:none;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:16px;padding:10px var(--gutter) 4px;align-items:start;grid-auto-flow:row dense;}
   /* the hand is the tallest card: let it run down beside the others instead of stretching a row */
@@ -291,6 +295,9 @@
   /* insights: the word on wide screens, a small bar-chart icon on phones */
   .vb-ins{display:inline-flex;align-items:center;}
   .vbi-ic{display:none;width:13px;height:13px;fill:currentColor;}
+  /* original: the word, until the narrowest phones, where it becomes a small photo icon */
+  .vb-orig{display:inline-flex;align-items:center;}
+  .vbo-ic{display:none;width:13px;height:13px;fill:currentColor;}
   .vbl-q{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
     border:1.5px solid currentColor;font-size:10px;line-height:1;}
   .vb-legend[aria-expanded="true"]{color:var(--accent2);border-color:var(--accent2);}
@@ -312,7 +319,9 @@
     .viewbar{gap:5px;}
     .vb-views{gap:2px;}
     .vb-btn{padding:5px 7px;}
-    .vb-btn.vb-ins,.vb-btn.vb-legend{padding:5px 6px;}
+    .vb-btn.vb-ins,.vb-btn.vb-legend,.vb-btn.vb-orig{padding:5px 6px;}
+    .vbo-text{display:none;}
+    .vbo-ic{display:block;}
     .vb-search input,.vb-search input:focus{width:112px;padding:6px 7px 6px 9px;}
   }
 
@@ -501,8 +510,9 @@
   <div class="vb-views">
     <button data-view="scroll" class="vb-btn active">scroll</button>
     <button data-view="fit" class="vb-btn">fit</button>
-    <button data-view="original" class="vb-btn">original</button>
+    <button data-view="original" class="vb-btn vb-orig" aria-label="original" title="original"><svg class="vbo-ic" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 2h10v8H1zM2 3v5.2l2.6-2.6 2 2 1.4-1.4 2 2V3zM8.2 5.6a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" fill-rule="evenodd"/></svg><span class="vbo-text" aria-hidden="true">original</span></button>
     <button data-view="insights" class="vb-btn vb-ins" aria-label="insights"><svg class="vbi-ic" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 11V7h2.4v4zM4.8 11V2h2.4v9zM8.6 11V5H11v6z"/></svg><span class="vbi-text" aria-hidden="true">insights</span></button>
+    <button data-view="postcard" class="vb-btn vb-ins" aria-label="postcard"><svg class="vbi-ic" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 2.5h10v7H1zM2 3.5v5h8v-5zM6.6 4.4h2.4v2H6.6zM3 4.6h2.8v.7H3zM3 6h2.8v.7H3z" fill-rule="evenodd"/></svg><span class="vbi-text" aria-hidden="true">postcard</span></button>
     <button type="button" class="vb-btn vb-legend" aria-controls="legend" aria-haspopup="dialog"
             aria-expanded="false" aria-label="How to read a hand"><span class="vbl-q" aria-hidden="true">?</span><span class="vbl-text" aria-hidden="true">how to read</span></button>
   </div>
@@ -517,7 +527,11 @@
   </div>
   <p class="roll-caption">the original roll · drag or scroll sideways</p>
 </div>
-<div class="hov-insights" id="hovInsights"></div></div>
+<div class="hov-insights" id="hovInsights"></div>
+<div class="hov-postcard" id="hovPostcard">
+  <img id="pcImg" data-src="postcard.webp" width="1800" height="1200" alt="The Hands of Vizchitra postcard: every coded hand from the roll, with the key to the data pentagon and the fingers, and a QR code to this page">
+  <a class="pc-dl" href="postcard.png" download="hands-of-vizchitra-postcard.png">download the postcard</a>
+</div></div>
 <!-- Developer notes (formerly the hidden #footer):
      Left hand = lives in Bangalore, right = outside. A knuckle with a dashed
      hollow ring means that rating wasn't drawn on the paper; a solid dot with no
@@ -2412,6 +2426,14 @@ function pentagonChart(avg,best){
   const key=`<div class="pkey">`+K.map((k,i)=>`<span><i class="sw" style="background:var(--${k})"></i>${L[i]} <b class="${avg[k]===best?"top":""}">${avg[k].toFixed(1)}</b></span>`).join("")+`</div>`;
   return `<svg class="pent" viewBox="-20 20 1680 2360" role="img" aria-label="Average enjoyment out of 5: ${K.map((k,i)=>L[i]+" "+avg[k].toFixed(1)).join(", ")}">${g}</svg>`+key;
 }
+// Postcard: load on first open, and size it so the card and its download button fit on screen.
+function showPostcard(){
+  const pc=document.getElementById("hovPostcard"), img=document.getElementById("pcImg");
+  if(!img.getAttribute("src")) img.src=img.dataset.src;
+  const top=pc.getBoundingClientRect().top+scrollY;
+  pc.style.setProperty("--pc-h",Math.max(240,innerHeight-top-70)+"px");
+}
+addEventListener("resize",()=>{if(document.getElementById("hovPostcard").classList.contains("on"))showPostcard();});
 // On wide screens, lay the cards out in four columns and shrink the drawings until
 // the whole tab fits under the header without scrolling.
 function fitInsights(){
@@ -2529,7 +2551,7 @@ function applyFitScale(){
 }
 function setView(mode){
   const strip=document.getElementById("strip");
-  strip.classList.remove("view-field","view-scroll","view-fit","view-original","view-insights");
+  strip.classList.remove("view-field","view-scroll","view-fit","view-original","view-insights","view-postcard");
   strip.classList.add("view-"+mode);
   document.querySelectorAll(".vb-btn").forEach(b=>
     b.classList.toggle("active", b.dataset.view===mode));
@@ -2541,7 +2563,9 @@ function setView(mode){
   roll.classList.toggle("on",orig);
   document.getElementById("hovInsights").classList.toggle("on",mode==="insights");
   if(mode==="insights"){ drawInsights(); fitInsights(); }
-  document.querySelector(".vb-search").style.visibility=(orig||mode==="insights")?"hidden":"";
+  document.getElementById("hovPostcard").classList.toggle("on",mode==="postcard");
+  if(mode==="postcard") showPostcard();
+  document.querySelector(".vb-search").style.visibility=(orig||mode==="insights"||mode==="postcard")?"hidden":"";
   if(orig) showRoll();
   try{ localStorage; }catch(e){}
 }

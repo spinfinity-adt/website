@@ -181,6 +181,14 @@
   .context figure{margin:0;max-width:440px}
   .context .credit{padding:0 0 16px}
   .context .more{padding-bottom:0}
+  /* the postcard leads the column beside the instruction poster, above the credits */
+  .context .postcard{margin:0 0 26px;max-width:none;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+  .postcard img{display:block;width:100%;max-width:640px;height:auto;border-radius:6px;border:1px solid var(--border);
+    box-shadow:0 6px 18px -10px rgba(35,39,48,.35);background:var(--card-bg)}
+  .pc-dl{display:inline-flex;align-items:center;height:34px;padding:0 16px;border:1px solid var(--accent2);border-radius:999px;
+    color:var(--accent2);font:700 .86rem/1 var(--hand);text-decoration:none;transition:background .15s,color .15s}
+  .pc-dl:hover{background:var(--accent2);color:var(--bg)}
+  .pc-dl:focus-visible{outline:2px solid var(--accent4);outline-offset:3px}
   @media (max-width:760px){.context{grid-template-columns:minmax(0,1fr)}}
   .context figure img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:6px;background:var(--card-bg)}
   .credit{padding:40px 0 16px;font-size:.96rem;line-height:1.6;color:var(--muted);max-width:70ch}
@@ -236,6 +244,11 @@
       <img src="img/instructions.jpg" width="1046" height="1474" loading="lazy" alt="The Oota Viz instruction sheet. Stamp your leaf on the paper, answer the questions and pick one visual element for each answer, then stick them all together to reveal your Data Thali. Pickle you like: cut mango, lemon, chilli or prawn. Chicken or egg. Role: mango lassi for Educator, rooh afza for Communicator, sol kadhi for Researcher, buttermilk for Enthusiast. Science Santes attended: one, two or three or more papads. Where you last practised science: rasam rice for public space, avial for lab, sambar for kitchen, curd rice for school. How your brain works: laddoo for orderly, payasam for somewhere in between, jalebi for chaos.">
     </figure>
     <div class="context-text">
+      <figure class="postcard">
+        <img src="postcard.webp" width="1800" height="1200" loading="lazy" alt="The Oota Viz postcard: all 45 Data Thalis on their leaf strips, with the sticker key for every question and a QR code to this page">
+        <a class="pc-dl" href="postcard.png" download="oota-viz-postcard.png">download the postcard</a>
+      </figure>
+
       <div class="credit">
         <p>Participatory Data Viz Made for Mosaic #3</p>
         <p>Illustrations by Namisha Katira and Nandita Thakkannavar</p>
