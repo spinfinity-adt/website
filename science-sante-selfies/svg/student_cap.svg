@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="254" viewBox="-3.50 477.84 163.50 103.80"><defs><linearGradient id="foil" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#d3ae40"/><stop offset="0.4" stop-color="#cca639"/>
+<stop offset="0.55" stop-color="#dbbb57"/><stop offset="0.75" stop-color="#cba437"/>
+<stop offset="1" stop-color="#d2ac3e"/></linearGradient></defs>
+  <path fill="url(#foil)" fill-rule="evenodd" d="M130.31,564.56c1.18-.11,2.37-.21,3.56-.34.06-.02,17.23-3.1,21.93-11.99.21-4.22,1.83-43.66-9.43-54.36-10.79-10.25-41.37-15.54-54.65-16.03-16.17.69-42.3,5.65-51.8,13.29h0c-7.88,6.33-9.17,38.04-9.02,51.79-13.27,3.08-29.91,9.08-30.4,14.45.11.58,2.25,2.91,10.71,6.12h0c25.75,9.81,84.81,18.01,119.09-2.91Z"/>
+</svg>

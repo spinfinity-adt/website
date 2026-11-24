@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Science Sante Selfies — Spinfinity</title>
+<meta name="description" content="Designed for Mosaic Science Sante #2 in March 2026.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  /* Uses theme-paper from /styles.css. Same header, view pills and insight tiles as Oota Viz.
+     Views: board (the p5 recreation + a reader beside it), original (the photo), insights, make yours. */
+  .wrap{padding:0 clamp(1.2rem,4vw,3rem);max-width:1320px;margin:0 auto}
+
+  /* ---------- header ---------- */
+  .sf-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px 40px;flex-wrap:wrap;padding:32px 0 18px}
+  .sf-head h1{font-family:var(--display);font-weight:700;font-size:clamp(1.95rem,4.3vw,2.85rem);line-height:1.04;
+    letter-spacing:-.018em;margin:0;color:var(--text)}
+  .sf-head h1 .n{color:var(--accent2)}
+  .dek{margin:.6rem 0 0;font-size:1rem;line-height:1.55;color:var(--muted)}
+  .dek a{color:var(--accent2);text-underline-offset:2px}
+
+  /* ---------- view pills (same as Oota Viz / Hands of Vizchitra) ---------- */
+  .vb-views{display:flex;gap:6px;flex-wrap:wrap}
+  .vb-btn{font-family:var(--hand);font-weight:700;font-size:12px;letter-spacing:.02em;color:var(--muted);background:var(--card-bg);
+    border:1px solid var(--border);border-radius:999px;padding:5px 15px;cursor:pointer;transition:all .15s}
+  .vb-btn:hover{color:var(--accent2);border-color:var(--accent2)}
+  .vb-btn:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+  .vb-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+  .hint{margin:10px 0 0;font-size:.8rem;color:var(--muted)}
+
+  body:not(.view-board):not(.view-original) #boardView{display:none}
+  body:not(.view-original) #original{display:none}
+  /* original: the redrawn board and the photo of the real one, side by side */
+  /* columns in proportion to each one's shape, so the two boards come out the same height
+     (sketch 1060×1070, photo 860×980) */
+  body.view-original .board-view{grid-template-columns:minmax(0,99fr) minmax(0,88fr)}
+  body.view-original .reader{display:none}
+  body:not(.view-insights) #insights{display:none}
+  body:not(.view-make) #make{display:none}
+  body:not(.view-legend) #legend{display:none}
+
+  /* ---------- board: the wall on the left, the face you're reading on the right ---------- */
+  .board-view{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(280px,1fr);gap:clamp(20px,3vw,44px);align-items:start;padding:6px 0 4px}
+  #board{position:relative;border-radius:10px;overflow:hidden;background:#e4e6e7;  /* cool sunboard grey, as in the sketch */
+    box-shadow:0 2px 3px rgba(35,39,48,.10),0 10px 24px -12px rgba(35,39,48,.30)}
+  #board canvas{display:block;cursor:pointer}
+  .reader{position:sticky;top:84px;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:14px 16px 12px}
+  .reader .face{display:flex;justify-content:center;margin:-4px 0 4px}
+  .reader .face canvas{display:block}
+  .reader h3{margin:0 0 8px;font:700 1.05rem/1.2 var(--display);color:var(--accent2)}
+  .reader .empty{margin:6px 0 4px;font-size:.9rem;color:var(--muted)}
+  .reader .close{display:none}
+  .trow{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;padding:5px 0;border-top:1px dashed var(--border)}
+  .trow:first-of-type{border-top:0}
+  .trow .ic{display:flex;justify-content:center;align-items:center;gap:2px;height:30px}
+  .trow .ic img{height:28px;max-width:40px;object-fit:contain}
+  .trow .ic svg{height:28px;width:auto}
+  .trow .ic img+img,.trow .ic img:has(+img){height:20px;max-width:21px}   /* both bows share the slot */
+  .trow b{display:block;font-size:.9rem;line-height:1.2}
+  .trow small{display:block;font-size:.74rem;line-height:1.25;color:var(--muted)}
+  .extras{margin:8px 0 0;font-size:.78rem;line-height:1.4;color:var(--muted);font-style:italic}
+
+  @media (max-width:760px){body.view-original .board-view{grid-template-columns:minmax(0,1fr)}}
+  @media (max-width:1100px){
+    .board-view{grid-template-columns:minmax(0,1fr)}
+    .reader{position:static}
+  }
+  /* phones: the reader slides up from the bottom when a face is tapped */
+  @media (max-width:760px){
+    .reader{position:fixed;top:auto;left:10px;right:10px;bottom:10px;z-index:40;max-height:70vh;overflow:auto;
+      box-shadow:0 10px 30px -8px rgba(35,39,48,.45);transform:translateY(120%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s}
+    .reader.open{transform:none;visibility:visible;transition:transform .25s ease}
+    .reader .close{display:grid;place-items:center;position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;
+      border:1px solid var(--border);background:var(--card-bg);color:var(--muted);font:700 1rem/1 var(--hand);cursor:pointer}
+  }
+
+  /* ---------- original: the photo of the board, taped down ---------- */
+  .photo{position:relative;margin:0;transform:rotate(-.6deg);
+    box-shadow:0 2px 3px rgba(35,39,48,.12),0 8px 18px -8px rgba(35,39,48,.28)}
+  .photo img{display:block;width:100%;height:auto}
+  .photo::after{content:"";position:absolute;top:-8px;left:calc(50% - 40px);width:80px;height:22px;
+    background:color-mix(in srgb,var(--accent3) 55%,transparent);transform:rotate(-3deg);pointer-events:none}
+
+  /* ---------- insights (same tiles as Oota Viz) ---------- */
+  .insights{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px;padding:6px 0 4px;align-items:start}
+  @media (min-width:860px){.insights{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  .icard{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:12px 14px 14px}
+  .icard h3{margin:0 0 12px;font:700 1rem/1.2 var(--display);color:var(--text)}
+  .itiles{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;row-gap:14px}
+  .itile{box-sizing:border-box;min-width:0;flex:1 1 0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:0 3px}
+  .itile .ico{display:flex;align-items:center;justify-content:center;height:56px;margin-bottom:4px;gap:2px}
+  .itile .ico img{display:block;max-height:100%;max-width:64px;object-fit:contain}
+  .itile .ico svg{height:46px;width:auto}
+  .itile .ico img+img,.itile .ico img:has(+img){max-width:38px}
+  .itile .n{font:700 1.1rem/1 var(--display);color:var(--accent2)}
+  .itile.top .n{color:var(--accent1-text)}
+  .itile .lb{font-size:.68rem;font-weight:600;line-height:1.15;color:var(--muted)}
+  .itile.plain .n{color:var(--muted)}
+  body.view-insights .itile .ico>*{animation:pop .4s cubic-bezier(.3,1.6,.5,1) backwards}
+  @keyframes pop{from{transform:scale(0) rotate(-30deg)}}
+  @media (prefers-reduced-motion:reduce){body.view-insights .itile .ico>*{animation:none}}
+
+  /* ---------- make yours: one face, five questions ---------- */
+  .make{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);align-items:center;padding:10px 0 4px}
+  #maker{display:flex;justify-content:center;border-radius:16px;background:#e4e6e7}
+  #maker canvas{display:block}
+  .qs{display:grid;gap:14px}
+  .qs label{display:grid;gap:5px}
+  .qs .q{font:700 1rem/1.2 var(--display);color:var(--text)}
+  .qs select{font:600 .95rem/1.2 var(--hand);color:var(--text);background:var(--card-bg);border:1px solid var(--border);
+    border-radius:999px;padding:8px 14px;cursor:pointer;max-width:440px}
+  .qs select:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+  .btn{justify-self:start;display:inline-flex;align-items:center;height:38px;padding:0 16px;border:1px solid var(--accent2);border-radius:999px;
+    background:transparent;color:var(--accent2);font:700 .86rem/1 var(--hand);cursor:pointer;transition:background .15s,color .15s}
+  .btn:hover{background:var(--accent2);color:var(--bg)}
+  .btns{display:flex;flex-wrap:wrap;gap:10px}
+  .btn:focus-visible{outline:2px solid var(--accent4);outline-offset:3px}
+  @media (max-width:760px){.make{grid-template-columns:minmax(0,1fr)}}
+
+  /* ---------- legend: the instruction sheet people filled in ---------- */
+  .legend{margin:6px auto 4px;max-width:760px}
+  .legend img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:6px;background:var(--card-bg)}
+
+  /* ---------- context: credits beside the links to the other viz ---------- */
+  .context{margin-top:44px;padding:28px 0 56px;border-top:1px solid var(--border);
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px clamp(28px,4vw,56px);align-items:center}
+  .credit{font-size:.96rem;line-height:1.6;color:var(--muted);max-width:70ch}
+  .credit p{margin:0 0 .4rem}
+  .more{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:.92rem;color:var(--muted)}
+  .more span{margin-right:4px}
+  .more a{display:inline-flex;align-items:center;height:34px;padding:0 14px;border:1px solid var(--accent2);border-radius:999px;
+    color:var(--accent2);font-weight:700;text-decoration:none;transition:background .15s ease,color .15s ease}
+  .more a:hover{background:var(--accent2);color:var(--bg)}
+  .more a:focus-visible{outline:2px solid var(--accent4);outline-offset:3px}
+  @media (max-width:760px){.context{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body class="theme-paper view-original">
+<div id="sf-nav-mount"></div>
+<script src="/nav.js"></script>
+
+<div class="wrap">
+  <header class="sf-head">
+    <div>
+      <h1>Science Sante <span class="n">Selfies</span></h1>
+      <p class="dek">Designed for <a href="https://mosaichq.org/blog/reflections-on-science-sante-blr-2/" target="_blank" rel="noopener">Mosaic Science Sante #2</a> in March 2026.</p>
+    </div>
+    <div class="vb-views" role="group" aria-label="View">
+      <button type="button" data-view="board" class="vb-btn">board</button>
+      <button type="button" data-view="original" class="vb-btn active">original</button>
+      <button type="button" data-view="insights" class="vb-btn">insights</button>
+      <button type="button" data-view="make" class="vb-btn">make yours</button>
+      <button type="button" data-view="legend" class="vb-btn">legend</button>
+    </div>
+  </header>
+
+  <div class="board-view" id="boardView">
+    <div id="board" aria-label="The board of data selfie faces, redrawn"></div>
+    <aside class="reader" id="reader" aria-live="polite">
+      <button type="button" class="close" id="readerClose" aria-label="Close">×</button>
+      <div class="face" id="readerFace"></div>
+      <div id="readerBody"><p class="empty">Hover or tap a face to read it.</p></div>
+    </aside>
+    <figure class="photo" id="original">
+      <img src="img/board.jpg" width="860" height="980" loading="lazy" alt="Photo of the board on an easel at the event: rows of paper faces in five colours with gold hats, googly eyes, black mouths and bowties">
+    </figure>
+  </div>
+
+  <div class="insights" id="insights"></div>
+
+  <div class="make" id="make">
+    <div id="maker"></div>
+    <div class="qs" id="qs">
+      <div class="btns" id="makeBtns">
+        <button type="button" class="btn" id="shuffle">shuffle</button>
+        <button type="button" class="btn" id="saveImg">save image</button>
+      </div>
+    </div>
+  </div>
+
+  <figure class="legend" id="legend">
+    <img src="img/instructions.jpg" width="1100" height="1556" alt="The Data selfie instruction sheet. Answer the questions below, for each answer pick a visual element, and stick them all together to reveal your data selfie. What hat are you wearing today: the artist, the scientist, the educator, the student, still figuring it out. Night owl or morning bird: pick your googly eye size. Is this your first time at VITM: first time here, been a couple of times, I basically grew up here. Where did you last practise science: kitchen, garden or outdoors, public space, workplace or lab, school or college. Are you a particle or a wave: your selfie gets a bowtie that matches your nature.">
+  </figure>
+
+  <p class="hint" id="hint">The board as it was photographed.</p>
+
+  <section class="context">
+    <div class="credit">
+      <p>Participatory Data Viz Made for Mosaic #2</p>
+      <p>By Mathura Govindrajan, Kritika Thakkannavar, and Aditi Bhat</p>
+    </div>
+    <nav class="more" aria-label="Other participatory data viz">
+      <span>More participatory data viz</span>
+      <a href="/oota-viz/">Oota Viz</a>
+      <a href="/indiafoss2026/">FOSS Contribution Chart</a>
+      <a href="/mosaic-data-viz/">Mosaic Data Viz</a>
+      <a href="/hands-of-vizchitra/">Hands of Vizchitra</a>
+    </nav>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/p5@2.4.0/lib/p5.min.js"></script>
+<script src="faces.js"></script>
+<script>
+(function(){
+  // ---------- the questions, in Frame 19's words ----------
+  const Q=[
+    {k:'colour',q:'Where did you last practise science?',o:{'orange':'Kitchen','light blue':'Garden/outdoors','yellow':'Public space','dark blue':'Workplace/lab','red':'School/college'}},
+    {k:'hat',q:'What hat are you wearing today?',o:{'beret':'The artist','witch hat':'The scientist','mortarboard':'The educator','cap':'The student','ribbed cap':'Still figuring it out'}},
+    {k:'eyes',q:'Are you a night owl or a morning bird?',o:{'small':'Early bird','big':'Night owl'},off:{'mixed':'One of each','one eye':'One eye','none':'No eyes'}},
+    {k:'mouth',q:'Is this your first time at VITM?',o:{'oval':'First time here!','half-moon':'Been a couple of times','smile':'I basically grew up here'},off:{'none':'No mouth'}},
+    {k:'nature',q:'Are you a particle or a wave?',o:{'particle':'Particle','wave':'Wave'},off:{'both':'Both','none':'Neither'}}
+  ];
+  const HAT_SRC={'beret':'svg/artist_beret.svg','witch hat':'svg/scientist_witch_hat.svg','mortarboard':'svg/educator_mortarboard.svg','cap':'svg/student_cap.svg','ribbed cap':'svg/figuring_it_out_ribbed_cap.svg'};
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // small icons for the reader and the insight tiles
+  function eyeSVG(v){
+    const one=(cx,r)=>'<circle cx="'+cx+'" cy="20" r="'+r+'" fill="#fff" stroke="#afafaf" stroke-width="1.5"/><circle cx="'+cx+'" cy="'+(20+r*.25)+'" r="'+r*.5+'" fill="#141414"/>';
+    if(v==='none')return '';
+    if(v==='one eye')return '<svg viewBox="0 0 40 40">'+one(20,9)+'</svg>';
+    if(v==='mixed')return '<svg viewBox="0 0 40 40">'+one(11,6)+one(28,9)+'</svg>';
+    const r=v==='big'?9:6;return '<svg viewBox="0 0 40 40">'+one(20-r-2,r)+one(20+r+2,r)+'</svg>';
+  }
+  function mouthSVG(v){
+    if(v==='oval')return '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="20" rx="8" ry="11" fill="#141414"/></svg>';
+    if(v==='half-moon')return '<svg viewBox="0 0 40 40"><path d="M8 14 A12 12 0 0 0 32 14 Z" fill="#141414"/></svg>';
+    if(v==='smile')return '<svg viewBox="0 0 40 40"><path d="M7 15 A13 10 0 0 0 33 15 A13 6 0 0 1 7 15 Z" fill="#141414"/></svg>';
+    return '';
+  }
+  function icon(k,v){
+    if(k==='colour')return '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="'+SSF.COLOURS[v]+'"/></svg>';
+    if(k==='hat')return HAT_SRC[v]?'<img src="'+HAT_SRC[v]+'" alt="">':'';
+    if(k==='eyes')return eyeSVG(v);
+    if(k==='mouth')return mouthSVG(v);
+    if(k==='nature'){
+      const p='<img src="svg/bowtie_particle.svg" alt="">',w='<img src="svg/bowtie_wave.svg" alt="">';
+      return v==='particle'?p:v==='wave'?w:v==='both'?p+w:'';
+    }
+    return '';
+  }
+  const label=(q,v)=>q.o[v]||(q.off&&q.off[v])||v;
+
+  // ---------- data ----------
+  let FACES=[];
+  fetch('data.json').then(r=>r.json()).then(D=>{
+    FACES=D;D.forEach(f=>f.pupils=SSF.makePupils());
+    
+    new p5(boardSketch,$('board'));
+    new p5(readerSketch,$('readerFace'));
+    insights(D);
+    buildMaker();
+  });
+
+  // ---------- board ----------
+  // Same layout as the p5 sketch: rows on the paper, each face a little off the grid.
+  const D0=78,GAP=100,ROW_H=150,INDENT=[30,30,20,40,0,50,10];
+  const BX=[14,1074],BY=[40,1110];   // the part of the sketch's canvas the faces sit in
+  let selected=null,hovered=null;
+
+  function boardSketch(p){
+    let A=null,s=1,last=null;
+    const place=f=>{
+      if(f.jx===undefined){f.jx=p.random(-5,5);f.jy=p.random(-6,6);}
+      f.bx=80+INDENT[f.row-1]+(f.pos-1+(f.posDx||0))*GAP+f.jx;   // posDx: room for a neighbour stuck on sideways
+      f.by=130+(f.row-1+(f.rowDy||0))*ROW_H+f.jy;   // rowDy: a face stuck between two rows
+    };
+    const size=()=>{const w=$('board').clientWidth;s=w/(BX[1]-BX[0]);p.resizeCanvas(w,Math.round((BY[1]-BY[0])*s));};
+    p.setup=async()=>{
+      p.createCanvas(10,10);size();
+      A=await SSF.load(p);
+      FACES.forEach(place);
+      p.frameRate(40);
+    };
+    p.windowResized=()=>{const c=document.body.classList;if(c.contains('view-board')||c.contains('view-original'))size();};
+    const at=(mx,my)=>{
+      const x=mx/s+BX[0],y=my/s+BY[0];let best=null,bd=D0*0.66;
+      for(const f of FACES){const d=Math.hypot(f.bx-x,f.by-y);if(d<bd){bd=d;best=f;}}
+      return best;
+    };
+    p.draw=()=>{
+      p.background('#e4e6e7');
+      if(!A)return;
+      // googly eyes: a moving pointer knocks the pupils of nearby faces about; now and then one jiggles on its own
+      const inside=p.mouseX>=0&&p.mouseY>=0&&p.mouseX<=p.width&&p.mouseY<=p.height;
+      if(!calm){
+        if(inside&&last){
+          const mx=p.mouseX/s+BX[0],my=p.mouseY/s+BY[0],vx=(p.mouseX-last[0])/s,vy=(p.mouseY-last[1])/s;
+          if(Math.abs(vx)+Math.abs(vy)>0.5) for(const f of FACES){
+            const d=Math.hypot(f.bx-mx,f.by-my);
+            if(d<D0*1.5){const k=(1-d/(D0*1.5))*0.012;SSF.nudge(f,vx*k,vy*k);}
+          }
+        }
+        if(p.frameCount%90===0){const f=FACES[Math.floor(Math.random()*FACES.length)];SSF.nudge(f,(Math.random()-.5)*.25,-Math.random()*.2);}
+        FACES.forEach(SSF.stepPupils);
+      }
+      last=inside?[p.mouseX,p.mouseY]:null;
+
+      const focus=hovered||selected;
+      p.push();p.scale(s);p.translate(-BX[0],-BY[0]);
+      for(const f of FACES) if(f!==focus) SSF.draw(p,A,f,f.bx,f.by,D0);
+      if(focus){
+        p.noStroke();p.fill(228,230,231,115);p.rect(BX[0],BY[0],BX[1]-BX[0],BY[1]-BY[0]);   // the rest of the board fades back
+        SSF.draw(p,A,focus,focus.bx,focus.by-4,D0*1.12);
+      }
+      p.pop();
+    };
+    p.mouseMoved=()=>{
+      if(!A)return;
+      const inside=p.mouseX>=0&&p.mouseY>=0&&p.mouseX<=p.width&&p.mouseY<=p.height;
+      const f=inside?at(p.mouseX,p.mouseY):null;
+      if(f!==hovered){hovered=f;read(f||selected);}
+    };
+    // tap or click: pin a face in the reader (tap it again to let go)
+    p.mouseClicked=()=>{
+      if(!A)return;
+      if(p.mouseX<0||p.mouseY<0||p.mouseX>p.width||p.mouseY>p.height)return;
+      const f=at(p.mouseX,p.mouseY);
+      selected=f&&f!==selected?f:null;hovered=null;read(selected);
+      $('reader').classList.toggle('open',!!selected);
+    };
+    p.touchStarted=()=>{};   // let the page scroll; taps arrive as clicks
+  }
+
+  // ---------- reader: the face you're on, big, with its five answers ----------
+  let readerFace=null;
+  function readerSketch(p){
+    let A=null;const W=200,H=190;
+    p.setup=async()=>{p.createCanvas(W,H);A=await SSF.load(p);};
+    p.draw=()=>{
+      p.clear();
+      if(!A||!readerFace)return;
+      SSF.draw(p,A,readerFace,W/2,H*0.58,92);
+    };
+  }
+  function read(f){
+    readerFace=f;
+    const body=$('readerBody');
+    if(!f){body.innerHTML='<p class="empty">Hover or tap a face to read it.</p>';$('readerFace').style.display='none';return;}
+    $('readerFace').style.display='';
+    let h='';
+    for(const q of Q){
+      const v=f[q.k];
+      h+='<div class="trow"><span class="ic">'+icon(q.k,v)+'</span><span><b>'+esc(label(q,v))+'</b><small>'+q.q+'</small></span></div>';
+    }
+    if(f.extras)h+='<p class="extras">'+esc(f.extras)+'</p>';
+    body.innerHTML=h;
+  }
+  read(null);
+  $('readerClose').addEventListener('click',()=>{selected=null;read(null);$('reader').classList.remove('open');});
+
+  // ---------- insights: per question, the share of faces for each answer ----------
+  function insights(D){
+    // whole-number shares that add up to exactly 100 (largest remainder)
+    const shares=c=>{const t=c.reduce((a,b)=>a+b,0);if(!t)return c.map(()=>0);
+      const raw=c.map(x=>100*x/t),out=raw.map(Math.floor);let left=100-out.reduce((a,b)=>a+b,0);
+      raw.map((r,i)=>[r-out[i],i]).sort((x,y)=>y[0]-x[0]).slice(0,left).forEach(([,i])=>out[i]++);return out;};
+    let h='';
+    for(const q of Q){
+      const keys=[...Object.keys(q.o),...Object.keys(q.off||{})];
+      const rows=keys.map(v=>({v,n:D.filter(f=>f[q.k]===v).length,main:v in q.o})).filter(r=>r.main||r.n)
+        .sort((a,b)=>(b.main-a.main)||(b.n-a.n));   // biggest share first; off-legend answers after the legend ones
+      const pc=shares(rows.map(r=>r.n)),max=Math.max(...rows.filter(r=>r.main).map(r=>r.n));
+      h+='<section class="icard"><h3>'+q.q+'</h3><div class="itiles">';
+      rows.forEach((r,j)=>{
+        h+='<div class="itile'+(r.main&&r.n===max?' top':'')+(r.main?'':' plain')+'" title="'+r.n+' of '+D.length+'">'+
+           '<span class="ico">'+icon(q.k,r.v)+'</span><span class="n">'+pc[j]+'%</span><span class="lb">'+esc(label(q,r.v)).replace(/\//g,'/<wbr>')+'</span></div>';
+      });
+      h+='</div></section>';
+    }
+    // how many faces went off the legend, by kind (a face can count in more than one)
+    const odd=[
+      ['Extra hats',f=>!!f.hat2,'<img src="svg/scientist_witch_hat.svg" alt=""><img src="svg/artist_beret.svg" alt="">'],
+      ['Bows or ribbons on the hat or head',f=>!!(f.hatBow||f.hatRibbon||f.sideBow||f.sideRibbon||f.faceBow!=null),'<img src="svg/bowtie_particle.svg" alt="">'],
+      ['Something turned or upside down',f=>!!(f.hatAngle||f.hatSpin||f.mouthAngle||f.faceAngle),'<img src="svg/educator_mortarboard.svg" alt="" style="transform:rotate(180deg)">'],
+      ['Eyes off the legend',f=>!['small','big'].includes(f.eyes),eyeSVG('one eye')]
+    ];
+    h+='<section class="icard"><h3>Off the legend</h3><div class="itiles">';
+    for(const [lb,n,ic] of odd.map(([lb,test,ic])=>[lb,D.filter(test).length,ic]).sort((a,b)=>b[1]-a[1])){
+      h+='<div class="itile" title="'+n+' of '+D.length+'"><span class="ico">'+ic+'</span><span class="n">'+n+'</span><span class="lb">'+lb+'</span></div>';}
+    h+='</div></section>';
+    $('insights').innerHTML=h;
+  }
+
+  // ---------- make yours ----------
+  let mine=null;
+  function buildMaker(){
+    const keys={colour:'colour',hat:'hat',eyes:'eyes',mouth:'mouth',nature:'tie'};
+    const qs=$('qs'),shuffle=$('shuffle');
+    mine={colour:'orange',hat:'beret',eyes:'big',mouth:'oval',tie:'wave',pupils:SSF.makePupils()};
+    const sel={};
+    for(const q of Q){
+      const lab=document.createElement('label');
+      lab.innerHTML='<span class="q">'+q.q+'</span>';
+      const s=document.createElement('select');
+      for(const v in q.o){const o=document.createElement('option');o.value=v;o.textContent=q.o[v];s.appendChild(o);}
+      s.value=mine[keys[q.k]];
+      s.addEventListener('change',()=>{mine[keys[q.k]]=s.value;SSF.nudge(mine,(Math.random()-.5)*.3,-.2);});
+      lab.appendChild(s);qs.insertBefore(lab,$('makeBtns'));sel[q.k]=s;
+    }
+    shuffle.addEventListener('click',()=>{
+      for(const q of Q){const vs=Object.keys(q.o),v=vs[Math.floor(Math.random()*vs.length)];sel[q.k].value=v;mine[keys[q.k]]=v;}
+      SSF.nudge(mine,(Math.random()-.5)*.4,-.3);
+    });
+    new p5(makerSketch,$('maker'));
+  }
+  let saveMine=false;
+  $('saveImg').addEventListener('click',()=>{saveMine=true;});
+  function makerSketch(p){
+    let A=null,last=null;const W=360,H=380;
+    p.setup=async()=>{p.createCanvas(W,H);A=await SSF.load(p);};
+    p.draw=()=>{
+      p.clear();
+      if(!A)return;
+      const inside=p.mouseX>=0&&p.mouseY>=0&&p.mouseX<=W&&p.mouseY<=H;
+      if(!calm){
+        if(inside&&last)SSF.nudge(mine,(p.mouseX-last[0])*.004,(p.mouseY-last[1])*.004);
+        SSF.stepPupils(mine);
+      }
+      last=inside?[p.mouseX,p.mouseY]:null;
+      if(saveMine)p.background('#e4e6e7');   // the saved picture gets the board's grey behind it
+      SSF.draw(p,A,mine,W/2,H*0.55,170);
+      if(saveMine){saveMine=false;p.saveCanvas('science-sante-selfie','png');}
+    };
+  }
+
+  // ---------- views ----------
+  const HINT={board:()=>FACES.length+' faces. Hover or tap a face to read it.',original:()=>'The board as it was photographed.',
+              insights:()=>FACES.length+' faces, counted by answer.',make:()=>'Pick your answers to build your own face.',legend:()=>'The instruction sheet everyone followed.'};
+  document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('[data-view]').forEach(o=>o.classList.toggle('active',o===btn));
+    document.body.classList.remove('view-board','view-original','view-insights','view-make','view-legend');
+    document.body.classList.add('view-'+btn.dataset.view);
+    $('hint').textContent=HINT[btn.dataset.view]();
+    if(btn.dataset.view==='board'||btn.dataset.view==='original')dispatchEvent(new Event('resize'));
+  }));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){selected=null;read(null);$('reader').classList.remove('open');}});
+})();
+</script>
+<div id="sf-footer-mount"></div>
+</body>
+</html>
