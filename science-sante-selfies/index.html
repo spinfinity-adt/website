@@ -50,7 +50,7 @@
   body.view-original #board{width:100%}
   #board{position:relative;border-radius:10px;overflow:hidden;background:#e4e6e7;  /* cool sunboard grey, as in the sketch */
     box-shadow:0 2px 3px rgba(35,39,48,.10),0 10px 24px -12px rgba(35,39,48,.30)}
-  #board canvas{display:block;cursor:pointer}
+  #board canvas{display:block}
   /* the small card that reads a face (same as Oota Viz's tooltip) */
   .tip{position:fixed;z-index:30;left:0;top:0;width:min(270px,calc(100vw - 24px));padding:10px 14px 8px;background:var(--card-bg);
     border:2px solid var(--accent2);border-radius:14px;box-shadow:0 5px 0 rgba(80,32,100,.2);pointer-events:none;
@@ -148,10 +148,10 @@
     <div class="vb-views" role="group" aria-label="View">
       <button type="button" data-view="original" class="vb-btn active">with original</button>
       <button type="button" data-view="board" class="vb-btn">code version</button>
-      <button type="button" data-view="legend" class="vb-btn">legend</button>
       <button type="button" data-view="insights" class="vb-btn vb-ins" aria-label="insights" title="insights"><svg class="vbi-ic" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 11V7h2.4v4zM4.8 11V2h2.4v9zM8.6 11V5H11v6z"/></svg></button>
       <button type="button" data-view="make" class="vb-btn">make yours!</button>
       <button type="button" data-view="postcard" class="vb-btn">postcard</button>
+      <button type="button" data-view="legend" class="vb-btn">legend</button>
     </div>
   </header>
 
@@ -259,10 +259,10 @@
   // Same layout as the p5 sketch: rows on the paper, each face a little off the grid.
   const D0=78,GAP=100,ROW_H=150,INDENT=[30,30,20,40,0,50,10];
   const BX=[14,1074],BY=[40,1110];   // the part of the sketch's canvas the faces sit in
-  let selected=null,hovered=null,faceBox=null;   // faceBox(f): where a face sits on screen
+  let selected=null,faceBox=null;   // faceBox(f): where a face sits on screen
 
   function boardSketch(p){
-    let A=null,s=1,last=null;
+    let A=null,s=1,last=null,dim=0,lastFocus=null;   // dim: how far the rest of the board has faded back (0–115)
     const place=f=>{
       if(f.jx===undefined){f.jx=p.random(-5,5);f.jy=p.random(-6,6);}
       f.bx=80+INDENT[f.row-1]+(f.pos-1+(f.posDx||0))*GAP+f.jx;   // posDx: room for a neighbour stuck on sideways
@@ -303,27 +303,30 @@
       }
       last=inside?[p.mouseX,p.mouseY]:null;
 
-      const focus=hovered||selected;
+      // a clicked face comes forward and the rest of the board eases back (and eases in again when let go),
+      // so going from one face to the next keeps the board steady instead of flashing
+      if(selected)lastFocus=selected;
+      dim+=((selected?115:0)-dim)*(calm?1:.18);
+      const focus=dim>1?lastFocus:null;
       p.push();p.scale(s);p.translate(-BX[0],-BY[0]);
       for(const f of FACES) if(f!==focus) SSF.draw(p,A,f,f.bx,f.by,D0);
       if(focus){
-        p.noStroke();p.fill(228,230,231,115);p.rect(BX[0],BY[0],BX[1]-BX[0],BY[1]-BY[0]);   // the rest of the board fades back
-        SSF.draw(p,A,focus,focus.bx,focus.by-4,D0*1.12);
+        p.noStroke();p.fill(228,230,231,dim);p.rect(BX[0],BY[0],BX[1]-BX[0],BY[1]-BY[0]);
+        const k=dim/115;SSF.draw(p,A,focus,focus.bx,focus.by-4*k,D0*(1+.12*k));
       }
       p.pop();
     };
     p.mouseMoved=()=>{
       if(!A||!shown())return;
       const inside=p.mouseX>=0&&p.mouseY>=0&&p.mouseX<=p.width&&p.mouseY<=p.height;
-      const f=inside?at(p.mouseX,p.mouseY):null;
-      if(f!==hovered){hovered=f;read(f||selected);}
+      p.cursor(inside&&at(p.mouseX,p.mouseY)?'pointer':'default');   // hovering only shows it can be clicked
     };
     // tap or click: pin a face's card (tap it again, or anywhere else, to let go)
     p.mouseClicked=()=>{
       if(!A||!shown())return;
       if(p.mouseX<0||p.mouseY<0||p.mouseX>p.width||p.mouseY>p.height)return;
       const f=at(p.mouseX,p.mouseY);
-      selected=f&&f!==selected?f:null;hovered=null;read(selected);
+      selected=f&&f!==selected?f:null;read(selected);
     };
     p.touchStarted=()=>{};   // let the page scroll; taps arrive as clicks
   }
@@ -355,7 +358,7 @@
     x=Math.max(m,Math.min(W-m-tw,x));y=Math.max(top+m,Math.min(H-m-th,y));
     tip.style.setProperty('--tx',Math.round(x)+'px');tip.style.setProperty('--ty',Math.round(y)+'px');tip.style.setProperty('--to',o);
   }
-  const letGo=()=>{selected=null;hovered=null;read(null);};
+  const letGo=()=>{selected=null;read(null);};
   addEventListener('scroll',()=>{if(selected)placeTip();else if(tipFace)letGo();},{passive:true});
   document.addEventListener('pointerdown',e=>{if(selected&&!e.target.closest('#board'))letGo();});
 
@@ -435,7 +438,7 @@
   }
 
   // ---------- views ----------
-  const HINT={board:()=>FACES.length+' faces. Hover or tap a face to read it.',original:()=>'The board as it was photographed.',
+  const HINT={board:()=>FACES.length+' faces. Click or tap a face to read it.',original:()=>'The board as it was photographed.',
               insights:()=>FACES.length+' faces, counted by answer.',make:()=>'Pick your answers to build your own face.',legend:()=>'The instruction sheet everyone followed.',postcard:()=>'The postcard, to print or share.'};
   document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{
     document.querySelectorAll('[data-view]').forEach(o=>o.classList.toggle('active',o===btn));
