@@ -10,7 +10,8 @@
 <link rel="stylesheet" href="/styles.css">
 <style>
   /* Uses theme-paper from /styles.css. Same header, view pills and insight tiles as Oota Viz.
-     Views: board (the p5 recreation + a reader beside it), original (the photo), insights, make yours. */
+     Views: board (the p5 recreation), original (the recreation beside the photo), insights, make yours, legend.
+     Hovering or tapping a face shows a small card beside it, as in Oota Viz. */
   .wrap{padding:0 clamp(1.2rem,4vw,3rem);max-width:1320px;margin:0 auto}
 
   /* ---------- header ---------- */
@@ -36,25 +37,25 @@
   /* columns in proportion to each one's shape, so the two boards come out the same height
      (sketch 1060×1070, photo 860×980) */
   body.view-original .board-view{grid-template-columns:minmax(0,99fr) minmax(0,88fr)}
-  body.view-original .reader{display:none}
   body:not(.view-insights) #insights{display:none}
   body:not(.view-make) #make{display:none}
   body:not(.view-legend) #legend{display:none}
 
-  /* ---------- board: the wall on the left, the face you're reading on the right ---------- */
-  .board-view{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(280px,1fr);gap:clamp(20px,3vw,44px);align-items:start;padding:6px 0 4px}
+  /* ---------- board: on its own, sized to fit the screen ---------- */
+  .board-view{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;gap:clamp(20px,3vw,44px);align-items:start;padding:6px 0 4px}
+  body.view-board #board{width:min(100%,max(520px,calc((100svh - 230px)*.99)))}
+  body.view-original #board{width:100%}
   #board{position:relative;border-radius:10px;overflow:hidden;background:#e4e6e7;  /* cool sunboard grey, as in the sketch */
     box-shadow:0 2px 3px rgba(35,39,48,.10),0 10px 24px -12px rgba(35,39,48,.30)}
   #board canvas{display:block;cursor:pointer}
-  .reader{position:sticky;top:84px;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:14px 16px 12px}
-  .reader .face{display:flex;justify-content:center;margin:-4px 0 4px}
-  .reader .face canvas{display:block}
-  .reader h3{margin:0 0 8px;font:700 1.05rem/1.2 var(--display);color:var(--accent2)}
-  .reader .empty{margin:6px 0 4px;font-size:.9rem;color:var(--muted)}
-  .reader .close{display:none}
-  .trow{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;padding:5px 0;border-top:1px dashed var(--border)}
+  /* the small card that reads a face (same as Oota Viz's tooltip) */
+  .tip{position:fixed;z-index:30;left:0;top:0;width:min(270px,calc(100vw - 24px));padding:10px 14px 8px;background:var(--card-bg);
+    border:2px solid var(--accent2);border-radius:14px;box-shadow:0 5px 0 rgba(80,32,100,.2);pointer-events:none;
+    opacity:0;translate:var(--tx,0) var(--ty,0);scale:.96;transform-origin:var(--to,left center);transition:opacity .15s ease,scale .18s ease}
+  .tip.show{opacity:1;scale:1}
+  .trow{display:grid;grid-template-columns:40px 1fr;gap:8px;align-items:center;padding:4px 0;border-top:1px dashed var(--border)}
   .trow:first-of-type{border-top:0}
-  .trow .ic{display:flex;justify-content:center;align-items:center;gap:2px;height:30px}
+  .trow .ic{display:flex;justify-content:center;align-items:center;gap:2px;height:28px}
   .trow .ic img{height:28px;max-width:40px;object-fit:contain}
   .trow .ic svg{height:28px;width:auto}
   .trow .ic img+img,.trow .ic img:has(+img){height:20px;max-width:21px}   /* both bows share the slot */
@@ -63,18 +64,6 @@
   .extras{margin:8px 0 0;font-size:.78rem;line-height:1.4;color:var(--muted);font-style:italic}
 
   @media (max-width:760px){body.view-original .board-view{grid-template-columns:minmax(0,1fr)}}
-  @media (max-width:1100px){
-    .board-view{grid-template-columns:minmax(0,1fr)}
-    .reader{position:static}
-  }
-  /* phones: the reader slides up from the bottom when a face is tapped */
-  @media (max-width:760px){
-    .reader{position:fixed;top:auto;left:10px;right:10px;bottom:10px;z-index:40;max-height:70vh;overflow:auto;
-      box-shadow:0 10px 30px -8px rgba(35,39,48,.45);transform:translateY(120%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s}
-    .reader.open{transform:none;visibility:visible;transition:transform .25s ease}
-    .reader .close{display:grid;place-items:center;position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;
-      border:1px solid var(--border);background:var(--card-bg);color:var(--muted);font:700 1rem/1 var(--hand);cursor:pointer}
-  }
 
   /* ---------- original: the photo of the board, taped down ---------- */
   .photo{position:relative;margin:0;transform:rotate(-.6deg);
@@ -158,11 +147,6 @@
 
   <div class="board-view" id="boardView">
     <div id="board" aria-label="The board of data selfie faces, redrawn"></div>
-    <aside class="reader" id="reader" aria-live="polite">
-      <button type="button" class="close" id="readerClose" aria-label="Close">×</button>
-      <div class="face" id="readerFace"></div>
-      <div id="readerBody"><p class="empty">Hover or tap a face to read it.</p></div>
-    </aside>
     <figure class="photo" id="original">
       <img src="img/board.jpg" width="860" height="980" loading="lazy" alt="Photo of the board on an easel at the event: rows of paper faces in five colours with gold hats, googly eyes, black mouths and bowties">
     </figure>
@@ -201,6 +185,7 @@
   </section>
 </div>
 
+<div class="tip" id="tip" role="tooltip" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/p5@2.4.0/lib/p5.min.js"></script>
 <script src="faces.js"></script>
 <script>
@@ -218,7 +203,7 @@
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // small icons for the reader and the insight tiles
+  // small icons for the face card and the insight tiles
   function eyeSVG(v){
     const one=(cx,r)=>'<circle cx="'+cx+'" cy="20" r="'+r+'" fill="#fff" stroke="#afafaf" stroke-width="1.5"/><circle cx="'+cx+'" cy="'+(20+r*.25)+'" r="'+r*.5+'" fill="#141414"/>';
     if(v==='none')return '';
@@ -251,7 +236,6 @@
     FACES=D;D.forEach(f=>f.pupils=SSF.makePupils());
     
     new p5(boardSketch,$('board'));
-    new p5(readerSketch,$('readerFace'));
     insights(D);
     buildMaker();
   });
@@ -260,7 +244,7 @@
   // Same layout as the p5 sketch: rows on the paper, each face a little off the grid.
   const D0=78,GAP=100,ROW_H=150,INDENT=[30,30,20,40,0,50,10];
   const BX=[14,1074],BY=[40,1110];   // the part of the sketch's canvas the faces sit in
-  let selected=null,hovered=null;
+  let selected=null,hovered=null,faceBox=null;   // faceBox(f): where a face sits on screen
 
   function boardSketch(p){
     let A=null,s=1,last=null;
@@ -276,7 +260,9 @@
       FACES.forEach(place);
       p.frameRate(40);
     };
-    p.windowResized=()=>{const c=document.body.classList;if(c.contains('view-board')||c.contains('view-original'))size();};
+    p.windowResized=()=>{const c=document.body.classList;if(c.contains('view-board')||c.contains('view-original')){size();placeTip();}};
+    faceBox=f=>{const r=p.canvas.getBoundingClientRect(),x=r.left+(f.bx-BX[0])*s,y=r.top+(f.by-BY[0])*s,d=D0*s;
+      return {left:x-d*.62,right:x+d*.62,top:y-d*1.05,bottom:y+d*.95};};   // the face, its hat and its tie
     const at=(mx,my)=>{
       const x=mx/s+BX[0],y=my/s+BY[0];let best=null,bd=D0*0.66;
       for(const f of FACES){const d=Math.hypot(f.bx-x,f.by-y);if(d<bd){bd=d;best=f;}}
@@ -315,43 +301,46 @@
       const f=inside?at(p.mouseX,p.mouseY):null;
       if(f!==hovered){hovered=f;read(f||selected);}
     };
-    // tap or click: pin a face in the reader (tap it again to let go)
+    // tap or click: pin a face's card (tap it again, or anywhere else, to let go)
     p.mouseClicked=()=>{
       if(!A)return;
       if(p.mouseX<0||p.mouseY<0||p.mouseX>p.width||p.mouseY>p.height)return;
       const f=at(p.mouseX,p.mouseY);
       selected=f&&f!==selected?f:null;hovered=null;read(selected);
-      $('reader').classList.toggle('open',!!selected);
     };
     p.touchStarted=()=>{};   // let the page scroll; taps arrive as clicks
   }
 
-  // ---------- reader: the face you're on, big, with its five answers ----------
-  let readerFace=null;
-  function readerSketch(p){
-    let A=null;const W=200,H=190;
-    p.setup=async()=>{p.createCanvas(W,H);A=await SSF.load(p);};
-    p.draw=()=>{
-      p.clear();
-      if(!A||!readerFace)return;
-      SSF.draw(p,A,readerFace,W/2,H*0.58,92);
-    };
-  }
+  // ---------- the card: a face's five answers, beside the face ----------
+  const tip=$('tip');let tipFace=null;
   function read(f){
-    readerFace=f;
-    const body=$('readerBody');
-    if(!f){body.innerHTML='<p class="empty">Hover or tap a face to read it.</p>';$('readerFace').style.display='none';return;}
-    $('readerFace').style.display='';
+    tipFace=f;
+    if(!f){tip.classList.remove('show');return;}
     let h='';
     for(const q of Q){
       const v=f[q.k];
       h+='<div class="trow"><span class="ic">'+icon(q.k,v)+'</span><span><b>'+esc(label(q,v))+'</b><small>'+q.q+'</small></span></div>';
     }
     if(f.extras)h+='<p class="extras">'+esc(f.extras)+'</p>';
-    body.innerHTML=h;
+    tip.innerHTML=h;placeTip();
+    requestAnimationFrame(()=>tip.classList.add('show'));
   }
-  read(null);
-  $('readerClose').addEventListener('click',()=>{selected=null;read(null);$('reader').classList.remove('open');});
+  // beside the face if there is room (right first), otherwise above or below it
+  function placeTip(){
+    if(!tipFace||!faceBox)return;
+    const r=faceBox(tipFace),W=innerWidth,H=innerHeight,m=12,tw=tip.offsetWidth,th=tip.offsetHeight,
+          nav=document.querySelector('.sf-nav'),top=nav?Math.max(0,nav.getBoundingClientRect().bottom):0;
+    let x,y,o;
+    if(r.right+m+tw<=W-m){x=r.right+m;y=(r.top+r.bottom)/2-th/2;o='left center';}
+    else if(r.left-m-tw>=m){x=r.left-m-tw;y=(r.top+r.bottom)/2-th/2;o='right center';}
+    else{x=(r.left+r.right)/2-tw/2;
+      if(H-r.bottom>=r.top-top){y=r.bottom+m;o='center top';}else{y=r.top-m-th;o='center bottom';}}
+    x=Math.max(m,Math.min(W-m-tw,x));y=Math.max(top+m,Math.min(H-m-th,y));
+    tip.style.setProperty('--tx',Math.round(x)+'px');tip.style.setProperty('--ty',Math.round(y)+'px');tip.style.setProperty('--to',o);
+  }
+  const letGo=()=>{selected=null;hovered=null;read(null);};
+  addEventListener('scroll',()=>{if(selected)placeTip();else if(tipFace)letGo();},{passive:true});
+  document.addEventListener('pointerdown',e=>{if(selected&&!e.target.closest('#board'))letGo();});
 
   // ---------- insights: per question, the share of faces for each answer ----------
   function insights(D){
@@ -433,12 +422,13 @@
               insights:()=>FACES.length+' faces, counted by answer.',make:()=>'Pick your answers to build your own face.',legend:()=>'The instruction sheet everyone followed.'};
   document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{
     document.querySelectorAll('[data-view]').forEach(o=>o.classList.toggle('active',o===btn));
+    letGo();
     document.body.classList.remove('view-board','view-original','view-insights','view-make','view-legend');
     document.body.classList.add('view-'+btn.dataset.view);
     $('hint').textContent=HINT[btn.dataset.view]();
     if(btn.dataset.view==='board'||btn.dataset.view==='original')dispatchEvent(new Event('resize'));
   }));
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){selected=null;read(null);$('reader').classList.remove('open');}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')letGo();});
 })();
 </script>
 <div id="sf-footer-mount"></div>
