@@ -275,7 +275,9 @@
       FACES.forEach(place);
       p.frameRate(40);
     };
-    p.windowResized=()=>{const c=document.body.classList;if(c.contains('view-board')||c.contains('view-original')){size();placeTip();}};
+    // p5 hears the pointer anywhere on the page, so only listen while a board tab is showing
+    const shown=()=>{const c=document.body.classList;return c.contains('view-board')||c.contains('view-original');};
+    p.windowResized=()=>{if(shown()){size();placeTip();}};
     faceBox=f=>{const r=p.canvas.getBoundingClientRect(),x=r.left+(f.bx-BX[0])*s,y=r.top+(f.by-BY[0])*s,d=D0*s;
       return {left:x-d*.62,right:x+d*.62,top:y-d*1.05,bottom:y+d*.95};};   // the face, its hat and its tie
     const at=(mx,my)=>{
@@ -287,7 +289,7 @@
       p.background('#e4e6e7');
       if(!A)return;
       // googly eyes: a moving pointer knocks the pupils of nearby faces about; now and then one jiggles on its own
-      const inside=p.mouseX>=0&&p.mouseY>=0&&p.mouseX<=p.width&&p.mouseY<=p.height;
+      const inside=shown()&&p.mouseX>=0&&p.mouseY>=0&&p.mouseX<=p.width&&p.mouseY<=p.height;
       if(!calm){
         if(inside&&last){
           const mx=p.mouseX/s+BX[0],my=p.mouseY/s+BY[0],vx=(p.mouseX-last[0])/s,vy=(p.mouseY-last[1])/s;
@@ -311,14 +313,14 @@
       p.pop();
     };
     p.mouseMoved=()=>{
-      if(!A)return;
+      if(!A||!shown())return;
       const inside=p.mouseX>=0&&p.mouseY>=0&&p.mouseX<=p.width&&p.mouseY<=p.height;
       const f=inside?at(p.mouseX,p.mouseY):null;
       if(f!==hovered){hovered=f;read(f||selected);}
     };
     // tap or click: pin a face's card (tap it again, or anywhere else, to let go)
     p.mouseClicked=()=>{
-      if(!A)return;
+      if(!A||!shown())return;
       if(p.mouseX<0||p.mouseY<0||p.mouseX>p.width||p.mouseY>p.height)return;
       const f=at(p.mouseX,p.mouseY);
       selected=f&&f!==selected?f:null;hovered=null;read(selected);
