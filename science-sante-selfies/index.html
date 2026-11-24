@@ -28,6 +28,8 @@
     border:1px solid var(--border);border-radius:999px;padding:5px 15px;cursor:pointer;transition:all .15s}
   .vb-btn:hover{color:var(--accent2);border-color:var(--accent2)}
   .vb-btn:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+  .vb-ins{display:inline-flex;align-items:center;padding-left:11px;padding-right:11px}   /* insights: an icon, as on Hands of Vizchitra */
+  .vbi-ic{display:block;width:13px;height:13px;fill:currentColor}
   .vb-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
   .hint{margin:10px 0 0;font-size:.8rem;color:var(--muted)}
 
@@ -40,6 +42,7 @@
   body:not(.view-insights) #insights{display:none}
   body:not(.view-make) #make{display:none}
   body:not(.view-legend) #legend{display:none}
+  body:not(.view-postcard) #postcard{display:none}
 
   /* ---------- board: on its own, sized to fit the screen ---------- */
   .board-view{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;gap:clamp(20px,3vw,44px);align-items:start;padding:6px 0 4px}
@@ -112,6 +115,12 @@
   .legend{margin:6px auto 4px;max-width:760px}
   .legend img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:6px;background:var(--card-bg)}
 
+  /* ---------- postcard: the printable card, sized to the screen, with a download (as on Hands of Vizchitra) ---------- */
+  .pcard{margin:6px 0 4px;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .pcard img{display:block;max-width:100%;width:auto;height:auto;max-height:calc(100svh - 300px);aspect-ratio:3/2;
+    border:1px solid var(--border);border-radius:6px;box-shadow:0 2px 3px rgba(35,39,48,.10),0 10px 24px -12px rgba(35,39,48,.30)}
+  .pcard .btn{justify-self:auto;text-decoration:none}
+
   /* ---------- context: credits beside the links to the other viz ---------- */
   .context{margin-top:44px;padding:28px 0 56px;border-top:1px solid var(--border);
     display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px clamp(28px,4vw,56px);align-items:center}
@@ -137,11 +146,12 @@
       <p class="dek">Designed for <a href="https://mosaichq.org/blog/reflections-on-science-sante-blr-2/" target="_blank" rel="noopener">Mosaic Science Sante #2</a> in March 2026.</p>
     </div>
     <div class="vb-views" role="group" aria-label="View">
-      <button type="button" data-view="board" class="vb-btn">board</button>
-      <button type="button" data-view="original" class="vb-btn active">original</button>
-      <button type="button" data-view="insights" class="vb-btn">insights</button>
-      <button type="button" data-view="make" class="vb-btn">make yours</button>
+      <button type="button" data-view="original" class="vb-btn active">with original</button>
+      <button type="button" data-view="board" class="vb-btn">code version</button>
       <button type="button" data-view="legend" class="vb-btn">legend</button>
+      <button type="button" data-view="insights" class="vb-btn vb-ins" aria-label="insights" title="insights"><svg class="vbi-ic" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 11V7h2.4v4zM4.8 11V2h2.4v9zM8.6 11V5H11v6z"/></svg></button>
+      <button type="button" data-view="make" class="vb-btn">make yours!</button>
+      <button type="button" data-view="postcard" class="vb-btn">postcard</button>
     </div>
   </header>
 
@@ -166,6 +176,11 @@
 
   <figure class="legend" id="legend">
     <img src="img/instructions.jpg" width="1100" height="1556" alt="The Data selfie instruction sheet. Answer the questions below, for each answer pick a visual element, and stick them all together to reveal your data selfie. What hat are you wearing today: the artist, the scientist, the educator, the student, still figuring it out. Night owl or morning bird: pick your googly eye size. Is this your first time at VITM: first time here, been a couple of times, I basically grew up here. Where did you last practise science: kitchen, garden or outdoors, public space, workplace or lab, school or college. Are you a particle or a wave: your selfie gets a bowtie that matches your nature.">
+  </figure>
+
+  <figure class="pcard" id="postcard">
+    <img src="postcard.webp" width="1800" height="1200" loading="lazy" alt="The Science Sante Selfies postcard: all 60 faces on the board, with the five questions and their answers, and a QR code to this page">
+    <a class="btn" href="postcard.png" download="science-sante-selfies-postcard.png">download the postcard</a>
   </figure>
 
   <p class="hint" id="hint">The board as it was photographed.</p>
@@ -419,11 +434,11 @@
 
   // ---------- views ----------
   const HINT={board:()=>FACES.length+' faces. Hover or tap a face to read it.',original:()=>'The board as it was photographed.',
-              insights:()=>FACES.length+' faces, counted by answer.',make:()=>'Pick your answers to build your own face.',legend:()=>'The instruction sheet everyone followed.'};
+              insights:()=>FACES.length+' faces, counted by answer.',make:()=>'Pick your answers to build your own face.',legend:()=>'The instruction sheet everyone followed.',postcard:()=>'The postcard, to print or share.'};
   document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{
     document.querySelectorAll('[data-view]').forEach(o=>o.classList.toggle('active',o===btn));
     letGo();
-    document.body.classList.remove('view-board','view-original','view-insights','view-make','view-legend');
+    document.body.classList.remove('view-board','view-original','view-insights','view-make','view-legend','view-postcard');
     document.body.classList.add('view-'+btn.dataset.view);
     $('hint').textContent=HINT[btn.dataset.view]();
     if(btn.dataset.view==='board'||btn.dataset.view==='original')dispatchEvent(new Event('resize'));
